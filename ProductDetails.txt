@@ -36,9 +36,8 @@ document summarization?
 		- End-to-End Case Guidance: Guides clients seamlessly through each phase of the small claims court process.
 	Limitations: 
 		
-6.SDG Mapping
-	6.1 SDG identified
-	6.2 How the case study is related to the SDG
+6.SDG Mapping (6.1 SDG identified, 6.2 How the case study is related to the SDG)
+	SDG 16 (Peace, Justice, and Strong Institutions) – specifically Target 16.3 (promoting the rule of law and equal access to justice)
 
 7.Dataset Details
 	(IEEE Dataport)
@@ -48,4 +47,7 @@ document summarization?
 		(ex: preprocessing, Noise,data cleaning...)
 
 8.What is the novelty in the product(can be as paragraph or points)
-
+- Novelty A: "Cite & Verify" (Attribution Mapping).
+The #1 problem with AI in law is hallucination. Your novelty: every sentence in the generated summary must be mapped back to the exact paragraph number in the original judgment.
+- Novelty B: The "Layman" Toggle (Jargon Busting).
+Legal text is full of latin terms (prima facie, inter alia). Build a custom legal-to-simple dictionary (using WordNet or a custom mapping). When generating the summary, your model replaces complex legal jargon with plain English.

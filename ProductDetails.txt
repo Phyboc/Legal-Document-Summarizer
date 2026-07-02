@@ -1,16 +1,19 @@
 Product Name: Legal Document Summarizer
 
-Slogan:
+Slogan: Justice begins with understanding
 
 1.Introduction
+- The legal system, while designed to protect the rights of every citizen, remains largely inaccessible to the general public due to the complexity and volume of legal documentation. Legal judgments, contracts, and filings are often lengthy, filled with technical jargon, and written in a language that the average person cannot comprehend without professional assistance. In India alone, over 5 crore cases are pending in courts, reflecting a system overwhelmed by volume and understaffed in legal aid.
+Artificial Intelligence, particularly Natural Language Processing (NLP) and Large Language Models (LLMs), has opened new possibilities in automating the understanding and summarization of complex documents. Legal document summarization using AI can bridge the gap between the legal system and the common citizen by converting lengthy, complex judgments into concise, plain-language summaries that are easy to understand.
+___________ is an AI-powered legal document summarizer designed to address this gap. It leverages state-of-the-art LLM technology to generate accurate, citation-backed summaries of Indian legal documents. With features like the "Cite & Verify" attribution mapping and a "Layman Toggle" for jargon simplification, ________ aims to make legal information accessible to every citizen regardless of their legal background or literacy level.
 
 2.Problem Statement:
 - India has over 5 crore pending cases. The average citizen cannot read a 50-page judgment to understand their rights. Public Defenders don't have time to read lengthy filings.
-
-- People usually donot read full legal document. They are way too big and abstract. Most people who got cheated and backstabbed leaglly didn't read their legal documents properly.
+- People usually do not read full legal document. They are way too big and abstract. Most people who got cheated and backstabbed leaglly didn't read their legal documents properly.
 
 
 3.Motivation
+- Legal illiteracy is a silent crisis. In India, millions sign contracts, loan agreements, and rental documents without understanding them. When disputes arise, they are helpless. Public defenders handle hundreds of cases simultaneously with no time to read lengthy filings. This tool aims to bridge the gap between complex legal language and the common citizen.
 
 4.1.Research Questions? 
 - How can NLP models be trained to generate legally accurate and procedurally compliant summarized form of document?
@@ -35,7 +38,10 @@ document summarization?
 		- Web-Based Client Platform: Allows users to easily upload contracts and unpaid invoices directly to a digital portal.
 		- End-to-End Case Guidance: Guides clients seamlessly through each phase of the small claims court process.
 	Limitations: 
-		
+		- Only operates under UK law (England and Wales specifically), cannot handle Indian or US legal systems
+		- It assumes a certain level of digital and legal literacy, making it difficult for common citizens with no legal background to use effectively.
+		- Susceptible to AI hallucinations, where incorrect or fabricated legal information may be generated without any citation or verification.
+
 6.SDG Mapping (6.1 SDG identified, 6.2 How the case study is related to the SDG)
 	SDG 16 (Peace, Justice, and Strong Institutions) – specifically Target 16.3 (promoting the rule of law and equal access to justice)
 

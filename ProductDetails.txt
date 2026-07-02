@@ -1,1 +1,28 @@
+Product Name: Legal Document Summarizer
+
+Slogan:
+
+1.Introduction
+
+2.Problem Statement
+
+3.Motivation
+
+4.Research Questions?Gaps to be addressed?
+
+5.Related products and their details
+(Product name,URL,features,limitations)
+
+6.SDG Mapping
+	6.1 SDG identified
+	6.2 How the case study is related to the SDG
+
+7.Dataset Details
+	(IEEE Dataport)
+	--- A sample is shared for reference
+	7.1 Dataset description(As a paragraph)
+	7.2 Any specific challenges addressed in dataset
+		(ex: preprocessing, Noise,data cleaning...)
+
+8.What is the novelty in the product(can be as paragraph or points)
 

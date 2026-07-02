@@ -4,15 +4,38 @@ Slogan:
 
 1.Introduction
 
-2.Problem Statement
+2.Problem Statement:
+- India has over 5 crore pending cases. The average citizen cannot read a 50-page judgment to understand their rights. Public Defenders don't have time to read lengthy filings.
+
+- People usually donot read full legal document. They are way too big and abstract. Most people who got cheated and backstabbed leaglly didn't read their legal documents properly.
+
 
 3.Motivation
 
-4.Research Questions?Gaps to be addressed?
+4.1.Research Questions? 
+- How can NLP models be trained to generate legally accurate and procedurally compliant summarized form of document?
+- What dataset characteristics and preprocessing techniques are necessary to train LLMs for legal 
+document summarization?
+- How can AI systems be designed to prevent "hallucinations"—the generation of incorrect
+ or fabricated legal summarization? 
+
+4.2.Gaps to be addressed?
+- Hallucination Mitigation in Legal Contexts
+
 
 5.Related products and their details
 (Product name,URL,features,limitations)
-
+- Garfield AI (Garfield.Law Ltd) : 
+	URL: https://www.garfield.law/
+	Garfield AI is the world's first regulator-authorised, purely AI-powered law firm, approved by the UK's SRA in 2025 to automate small claims court debt recovery without human lawyer involvement.
+	Features: 
+		- Regulator-Authorised Operation: The world's first purely AI-powered law firm approved by the UK's Solicitors Regulation Authority (SRA).
+		- Fully Automated Document Preparation: Generates legal claims, creates documents, and handles case correspondence without any human lawyer involvement.
+		- Targeted Debt Recovery: Specializes in helping individuals and small-to-medium businesses recover unpaid debts of up to £10,000.
+		- Web-Based Client Platform: Allows users to easily upload contracts and unpaid invoices directly to a digital portal.
+		- End-to-End Case Guidance: Guides clients seamlessly through each phase of the small claims court process.
+	Limitations: 
+		
 6.SDG Mapping
 	6.1 SDG identified
 	6.2 How the case study is related to the SDG

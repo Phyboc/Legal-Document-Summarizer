@@ -46,11 +46,9 @@ document summarization?
 	SDG 16 (Peace, Justice, and Strong Institutions) – specifically Target 16.3 (promoting the rule of law and equal access to justice)
 
 7.Dataset Details
-	(IEEE Dataport)
-	--- A sample is shared for reference
-	7.1 Dataset description(As a paragraph)
-	7.2 Any specific challenges addressed in dataset
-		(ex: preprocessing, Noise,data cleaning...)
+	Description: The percins/IN-ABS dataset is a curated corpus of 7,128 Indian Supreme Court and High Court judgments from 1950 onwards, structured into train, validation, and test splits to benchmark abstractive text summarization models on long-form legal text.
+	Link: https://huggingface.co/datasets/percins/IN-ABS
+	Challenges addresed in the dataset: The dataset addresses the challenges of processing massive document lengths (up to 808k characters), cleaning noisy structural artifacts like irregular section breaks and case citations from raw court PDFs, and mitigating the presence of sensitive personally identifiable information (PII).
 
 8.What is the novelty in the product(can be as paragraph or points)
 - Novelty A: "Cite & Verify" (Attribution Mapping).

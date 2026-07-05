@@ -1,11 +1,11 @@
-Product Name: Legal Document Summarizer
+Product Name: LegalLens (Legal Document Summarizer)
 
 Slogan: Justice begins with understanding
 
 1.Introduction
 - The legal system, while designed to protect the rights of every citizen, remains largely inaccessible to the general public due to the complexity and volume of legal documentation. Legal judgments, contracts, and filings are often lengthy, filled with technical jargon, and written in a language that the average person cannot comprehend without professional assistance. In India alone, over 5 crore cases are pending in courts, reflecting a system overwhelmed by volume and understaffed in legal aid.
 Artificial Intelligence, particularly Natural Language Processing (NLP) and Large Language Models (LLMs), has opened new possibilities in automating the understanding and summarization of complex documents. Legal document summarization using AI can bridge the gap between the legal system and the common citizen by converting lengthy, complex judgments into concise, plain-language summaries that are easy to understand.
-___________ is an AI-powered legal document summarizer designed to address this gap. It leverages state-of-the-art LLM technology to generate accurate, citation-backed summaries of Indian legal documents. With features like the "Cite & Verify" attribution mapping and a "Layman Toggle" for jargon simplification, ________ aims to make legal information accessible to every citizen regardless of their legal background or literacy level.
+LegalLens is an AI-powered legal document summarizer designed to address this gap. It leverages state-of-the-art LLM technology to generate accurate, citation-backed summaries of Indian legal documents. With features like the "Cite & Verify" attribution mapping and a "Layman Toggle" for jargon simplification, LegalLens aims to make legal information accessible to every citizen regardless of their legal background or literacy level.
 
 2.Problem Statement:
 - India has over 5 crore pending cases. The average citizen cannot read a 50-page judgment to understand their rights. Public Defenders don't have time to read lengthy filings.

@@ -42,8 +42,15 @@ document summarization?
 		- It assumes a certain level of digital and legal literacy, making it difficult for common citizens with no legal background to use effectively.
 		- Susceptible to AI hallucinations, where incorrect or fabricated legal information may be generated without any citation or verification.
 
-6.SDG Mapping (6.1 SDG identified, 6.2 How the case study is related to the SDG)
-	SDG 16 (Peace, Justice, and Strong Institutions) – specifically Target 16.3 (promoting the rule of law and equal access to justice)
+6. SDG Mapping
+	6.1 SDG Identified
+		SDG 16: Peace, Justice, and Strong Institutions
+		Target 16.3: Promote the rule of law and ensure equal access to justice for all.
+		Target 16.10: Ensure public access to information.
+	6.2 How the Case Study is Related to the SDG
+		Ensures Equal Access to Justice (Target 16.3): LegalLens breaks down dense, 50-page judgments using the "Layman Toggle," translating complex legalese into plain language so the average citizen can understand their rights without expensive counsel.
+		Prevents Legal Exploitation: Millions sign contracts, loans, and rental agreements without understanding them. By providing instant, clear summaries before signing, the tool ensures informed consent and protects vulnerable citizens from predatory terms.
+		Empowers Overwhelmed Public Defenders: With over 5 crore pending cases in India, legal aid lawyers lack the time to read massive filings. The "Cite & Verify" feature lets them rapidly extract facts and precedents with zero-hallucination risks, accelerating legal aid delivery.
 
 7.Dataset Details
 	Description: The percins/IN-ABS dataset is a curated corpus of 7,128 Indian Supreme Court and High Court judgments from 1950 onwards, structured into train, validation, and test splits to benchmark abstractive text summarization models on long-form legal text.

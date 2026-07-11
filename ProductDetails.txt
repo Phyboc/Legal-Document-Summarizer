@@ -62,3 +62,55 @@ document summarization?
 The #1 problem with AI in law is hallucination. Your novelty: every sentence in the generated summary must be mapped back to the exact paragraph number in the original judgment.
 - Novelty B: The "Layman" Toggle (Jargon Busting).
 Legal text is full of latin terms (prima facie, inter alia). Build a custom legal-to-simple dictionary (using WordNet or a custom mapping). When generating the summary, your model replaces complex legal jargon with plain English.
+
+
+
+
+1. Use Case Description – Legal Document Summarizer
+Use Case
+A Legal Document Summarizer is an AI-powered system that automatically analyzes lengthy legal documents such as contracts, court judgments, agreements, petitions, and legal notices, and generates concise, easy-to-understand summaries while preserving important legal information.
+The system helps lawyers, judges, corporate legal teams, students, and ordinary citizens quickly identify key clauses, obligations, deadlines, liabilities, and legal outcomes without reading hundreds of pages.
+For example:
+•	A lawyer receives a 150-page court judgment and wants the final verdict, important precedents, and reasoning within minutes. 
+•	A citizen receives a 20-page rental agreement and wants to understand important clauses before signing. 
+•	A company's legal department reviews hundreds of contracts every month and needs a quick summary of payment terms, penalties, confidentiality clauses, and termination conditions. 
+The Legal Document Summarizer significantly reduces reading time, improves legal accessibility, minimizes the chance of overlooking critical information, and assists faster legal decision-making.
+________________________________________
+2. Challenges in Building a Legal Document Summarizer
+Challenge	Description
+Complex Legal Language	Legal documents contain archaic words, Latin phrases, and technical terminology that are difficult for general NLP models to understand.
+Very Long Documents	Court judgments often exceed 100–500 pages, exceeding the context window of many language models.
+Domain-specific Vocabulary	Words have different meanings in law than in everyday language (e.g., "consideration," "execution," "charge").
+Maintaining Legal Accuracy	Missing a single clause or misrepresenting facts can change the legal meaning of the summary.
+Confidentiality & Privacy	Legal documents often contain sensitive personal and corporate information requiring secure processing.
+Multiple Document Formats	Legal files come as scanned PDFs, handwritten documents, Word files, or images requiring OCR before processing.
+Multilingual Documents	Courts and legal systems often use multiple languages within the same country.
+Hallucination	Generative AI may fabricate facts or legal interpretations not present in the original document.
+Named Entity Recognition	Correctly identifying judges, parties, organizations, dates, case numbers, and statutes is challenging.
+Citation Preservation	Important legal citations and precedents must remain accurate in the summary.
+________________________________________
+3. Companies Solving These Challenges
+Company	Product	Challenge Addressed	Solution Used
+Harvey AI	Legal AI Assistant	Legal research, drafting, summarization	Fine-tuned LLMs with Retrieval-Augmented Generation (RAG) and secure enterprise deployment
+Thomson Reuters	CoCounsel	Large legal documents	AI-assisted legal search, document summarization, contract review
+LexisNexis	Lexis+ AI	Legal research	Uses proprietary legal databases with generative AI and citation verification
+Spellbook	Spellbook	Contract analysis	GPT-based contract clause analysis integrated with Microsoft Word
+Luminance	Luminance	Contract review	Machine learning for anomaly detection, clause extraction, and summarization
+CaseMine	CaseMine	Indian judgments	AI-powered legal research, precedent identification, semantic search
+Juro	Juro	Contract lifecycle	AI-assisted drafting, summarization, and clause extraction
+Evisort	Evisort	Enterprise contracts	NLP-driven clause extraction, contract intelligence, obligation tracking
+________________________________________
+4. Role of NLP in Solving These Problems
+Problem	NLP Technique	Purpose
+Lengthy documents	Text Summarization	Generates concise summaries while preserving key information
+Legal terminology	Domain-specific Language Models	Understands legal vocabulary and context
+Identifying important information	Named Entity Recognition (NER)	Detects parties, judges, dates, statutes, organizations, and case numbers
+Finding similar cases	Semantic Search	Retrieves legally relevant judgments based on meaning instead of keywords
+Organizing legal content	Text Classification	Categorizes documents (contracts, petitions, judgments, notices, etc.)
+Clause identification	Information Extraction	Extracts obligations, payment terms, confidentiality clauses, and penalties
+Handling scanned documents	OCR + NLP	Converts scanned legal documents into machine-readable text
+Multiple languages	Machine Translation + Multilingual NLP	Processes legal documents across different languages
+Reducing hallucinations	Retrieval-Augmented Generation (RAG)	Grounds summaries in the source document to improve factual accuracy
+Detecting legal references	Citation Extraction	Identifies statutes, case citations, and legal precedents accurately
+Understanding context	Transformer Models (BERT, LegalBERT, LLMs)	Captures relationships between clauses and legal concepts
+

@@ -1,0 +1,116 @@
+Product Name: LegalLens (Legal Document Summarizer)
+
+Slogan: Justice begins with understanding
+
+1.Introduction
+- The legal system, while designed to protect the rights of every citizen, remains largely inaccessible to the general public due to the complexity and volume of legal documentation. Legal judgments, contracts, and filings are often lengthy, filled with technical jargon, and written in a language that the average person cannot comprehend without professional assistance. In India alone, over 5 crore cases are pending in courts, reflecting a system overwhelmed by volume and understaffed in legal aid.
+Artificial Intelligence, particularly Natural Language Processing (NLP) and Large Language Models (LLMs), has opened new possibilities in automating the understanding and summarization of complex documents. Legal document summarization using AI can bridge the gap between the legal system and the common citizen by converting lengthy, complex judgments into concise, plain-language summaries that are easy to understand.
+LegalLens is an AI-powered legal document summarizer designed to address this gap. It leverages state-of-the-art LLM technology to generate accurate, citation-backed summaries of Indian legal documents. With features like the "Cite & Verify" attribution mapping and a "Layman Toggle" for jargon simplification, LegalLens aims to make legal information accessible to every citizen regardless of their legal background or literacy level.
+
+2.Problem Statement:
+- India has over 5 crore pending cases. The average citizen cannot read a 50-page judgment to understand their rights. Public Defenders don't have time to read lengthy filings.
+- People usually do not read full legal document. They are way too big and abstract. Most people who got cheated and backstabbed leaglly didn't read their legal documents properly.
+
+
+3.Motivation
+- Legal illiteracy is a silent crisis. In India, millions sign contracts, loan agreements, and rental documents without understanding them. When disputes arise, they are helpless. Public defenders handle hundreds of cases simultaneously with no time to read lengthy filings. This tool aims to bridge the gap between complex legal language and the common citizen.
+
+4.1.Research Questions? 
+- How can NLP models be trained to generate legally accurate and procedurally compliant summarized form of document?
+- What dataset characteristics and preprocessing techniques are necessary to train LLMs for legal 
+document summarization?
+- How can AI systems be designed to prevent "hallucinations"—the generation of incorrect
+ or fabricated legal summarization? 
+
+4.2.Gaps to be addressed?
+- Hallucination Mitigation in Legal Contexts
+
+
+5.Related products and their details
+(Product name,URL,features,limitations)
+- Garfield AI (Garfield.Law Ltd) : 
+	URL: https://www.garfield.law/
+	Garfield AI is the world's first regulator-authorised, purely AI-powered law firm, approved by the UK's SRA in 2025 to automate small claims court debt recovery without human lawyer involvement.
+	Features: 
+		- Regulator-Authorised Operation: The world's first purely AI-powered law firm approved by the UK's Solicitors Regulation Authority (SRA).
+		- Fully Automated Document Preparation: Generates legal claims, creates documents, and handles case correspondence without any human lawyer involvement.
+		- Targeted Debt Recovery: Specializes in helping individuals and small-to-medium businesses recover unpaid debts of up to £10,000.
+		- Web-Based Client Platform: Allows users to easily upload contracts and unpaid invoices directly to a digital portal.
+		- End-to-End Case Guidance: Guides clients seamlessly through each phase of the small claims court process.
+	Limitations: 
+		- Only operates under UK law (England and Wales specifically), cannot handle Indian or US legal systems
+		- It assumes a certain level of digital and legal literacy, making it difficult for common citizens with no legal background to use effectively.
+		- Susceptible to AI hallucinations, where incorrect or fabricated legal information may be generated without any citation or verification.
+
+6. SDG Mapping
+	6.1 SDG Identified
+		SDG 16: Peace, Justice, and Strong Institutions
+		Target 16.3: Promote the rule of law and ensure equal access to justice for all.
+		Target 16.10: Ensure public access to information.
+	6.2 How the Case Study is Related to the SDG
+		Ensures Equal Access to Justice (Target 16.3): LegalLens breaks down dense, 50-page judgments using the "Layman Toggle," translating complex legalese into plain language so the average citizen can understand their rights without expensive counsel.
+		Prevents Legal Exploitation: Millions sign contracts, loans, and rental agreements without understanding them. By providing instant, clear summaries before signing, the tool ensures informed consent and protects vulnerable citizens from predatory terms.
+		Empowers Overwhelmed Public Defenders: With over 5 crore pending cases in India, legal aid lawyers lack the time to read massive filings. The "Cite & Verify" feature lets them rapidly extract facts and precedents with zero-hallucination risks, accelerating legal aid delivery.
+
+7.Dataset Details
+	Description: The percins/IN-ABS dataset is a curated corpus of 7,128 Indian Supreme Court and High Court judgments from 1950 onwards, structured into train, validation, and test splits to benchmark abstractive text summarization models on long-form legal text.
+	Link: https://huggingface.co/datasets/percins/IN-ABS
+	Challenges addresed in the dataset: The dataset addresses the challenges of processing massive document lengths (up to 808k characters), cleaning noisy structural artifacts like irregular section breaks and case citations from raw court PDFs, and mitigating the presence of sensitive personally identifiable information (PII).
+
+8.What is the novelty in the product(can be as paragraph or points)
+- Novelty A: "Cite & Verify" (Attribution Mapping).
+The #1 problem with AI in law is hallucination. Your novelty: every sentence in the generated summary must be mapped back to the exact paragraph number in the original judgment.
+- Novelty B: The "Layman" Toggle (Jargon Busting).
+Legal text is full of latin terms (prima facie, inter alia). Build a custom legal-to-simple dictionary (using WordNet or a custom mapping). When generating the summary, your model replaces complex legal jargon with plain English.
+
+
+
+
+1. Use Case Description – Legal Document Summarizer
+Use Case
+A Legal Document Summarizer is an AI-powered system that automatically analyzes lengthy legal documents such as contracts, court judgments, agreements, petitions, and legal notices, and generates concise, easy-to-understand summaries while preserving important legal information.
+The system helps lawyers, judges, corporate legal teams, students, and ordinary citizens quickly identify key clauses, obligations, deadlines, liabilities, and legal outcomes without reading hundreds of pages.
+For example:
+•	A lawyer receives a 150-page court judgment and wants the final verdict, important precedents, and reasoning within minutes. 
+•	A citizen receives a 20-page rental agreement and wants to understand important clauses before signing. 
+•	A company's legal department reviews hundreds of contracts every month and needs a quick summary of payment terms, penalties, confidentiality clauses, and termination conditions. 
+The Legal Document Summarizer significantly reduces reading time, improves legal accessibility, minimizes the chance of overlooking critical information, and assists faster legal decision-making.
+________________________________________
+2. Challenges in Building a Legal Document Summarizer
+Challenge	Description
+Complex Legal Language	Legal documents contain archaic words, Latin phrases, and technical terminology that are difficult for general NLP models to understand.
+Very Long Documents	Court judgments often exceed 100–500 pages, exceeding the context window of many language models.
+Domain-specific Vocabulary	Words have different meanings in law than in everyday language (e.g., "consideration," "execution," "charge").
+Maintaining Legal Accuracy	Missing a single clause or misrepresenting facts can change the legal meaning of the summary.
+Confidentiality & Privacy	Legal documents often contain sensitive personal and corporate information requiring secure processing.
+Multiple Document Formats	Legal files come as scanned PDFs, handwritten documents, Word files, or images requiring OCR before processing.
+Multilingual Documents	Courts and legal systems often use multiple languages within the same country.
+Hallucination	Generative AI may fabricate facts or legal interpretations not present in the original document.
+Named Entity Recognition	Correctly identifying judges, parties, organizations, dates, case numbers, and statutes is challenging.
+Citation Preservation	Important legal citations and precedents must remain accurate in the summary.
+________________________________________
+3. Companies Solving These Challenges
+Company	Product	Challenge Addressed	Solution Used
+Harvey AI	Legal AI Assistant	Legal research, drafting, summarization	Fine-tuned LLMs with Retrieval-Augmented Generation (RAG) and secure enterprise deployment
+Thomson Reuters	CoCounsel	Large legal documents	AI-assisted legal search, document summarization, contract review
+LexisNexis	Lexis+ AI	Legal research	Uses proprietary legal databases with generative AI and citation verification
+Spellbook	Spellbook	Contract analysis	GPT-based contract clause analysis integrated with Microsoft Word
+Luminance	Luminance	Contract review	Machine learning for anomaly detection, clause extraction, and summarization
+CaseMine	CaseMine	Indian judgments	AI-powered legal research, precedent identification, semantic search
+Juro	Juro	Contract lifecycle	AI-assisted drafting, summarization, and clause extraction
+Evisort	Evisort	Enterprise contracts	NLP-driven clause extraction, contract intelligence, obligation tracking
+________________________________________
+4. Role of NLP in Solving These Problems
+Problem	NLP Technique	Purpose
+Lengthy documents	Text Summarization	Generates concise summaries while preserving key information
+Legal terminology	Domain-specific Language Models	Understands legal vocabulary and context
+Identifying important information	Named Entity Recognition (NER)	Detects parties, judges, dates, statutes, organizations, and case numbers
+Finding similar cases	Semantic Search	Retrieves legally relevant judgments based on meaning instead of keywords
+Organizing legal content	Text Classification	Categorizes documents (contracts, petitions, judgments, notices, etc.)
+Clause identification	Information Extraction	Extracts obligations, payment terms, confidentiality clauses, and penalties
+Handling scanned documents	OCR + NLP	Converts scanned legal documents into machine-readable text
+Multiple languages	Machine Translation + Multilingual NLP	Processes legal documents across different languages
+Reducing hallucinations	Retrieval-Augmented Generation (RAG)	Grounds summaries in the source document to improve factual accuracy
+Detecting legal references	Citation Extraction	Identifies statutes, case citations, and legal precedents accurately
+Understanding context	Transformer Models (BERT, LegalBERT, LLMs)	Captures relationships between clauses and legal concepts
+

@@ -1,0 +1,290 @@
+{
+  "settings": {
+    "threshold": 0.4,
+    "relative_margin": 0.9,
+    "cross_encoder": "cross-encoder/ms-marco-MiniLM-L-6-v2"
+  },
+  "totals": {
+    "documents": 20,
+    "fallback_documents": 6,
+    "sentences": 415,
+    "unassigned": 55,
+    "multi_label": 129,
+    "judgement_sections": 9,
+    "judgement_with_outcome_cue": 5,
+    "facts_sections": 11,
+    "facts_with_fact_cue": 8,
+    "both_argument_sides": 7,
+    "argument_assignments": 102
+  },
+  "rates": {
+    "unassigned_rate": 0.133,
+    "multi_label_rate": 0.311,
+    "structure_fallback_rate": 0.3,
+    "judgement_outcome_cue_rate": 0.556,
+    "facts_cue_rate": 0.727,
+    "appellant_respondent_confusion": 0.069
+  },
+  "per_document": [
+    {
+      "doc_id": "train_00000",
+      "fallback": false,
+      "chunks": 13,
+      "sentences": 41,
+      "unassigned_rate": 0.122,
+      "multi_label_rate": 0.341,
+      "sections": {
+        "facts": 26,
+        "issues": 8,
+        "judgement": 5,
+        "reasoning": 17
+      }
+    },
+    {
+      "doc_id": "train_00001",
+      "fallback": false,
+      "chunks": 5,
+      "sentences": 11,
+      "unassigned_rate": 0.091,
+      "multi_label_rate": 0.0,
+      "sections": {
+        "arguments_appellant": 3,
+        "facts": 6,
+        "reasoning": 1
+      }
+    },
+    {
+      "doc_id": "train_00002",
+      "fallback": true,
+      "chunks": 2,
+      "sentences": 17,
+      "unassigned_rate": 0.706,
+      "multi_label_rate": 0.0,
+      "sections": {
+        "full_document": 5
+      }
+    },
+    {
+      "doc_id": "train_00003",
+      "fallback": true,
+      "chunks": 9,
+      "sentences": 37,
+      "unassigned_rate": 0.243,
+      "multi_label_rate": 0.0,
+      "sections": {
+        "full_document": 28
+      }
+    },
+    {
+      "doc_id": "train_00004",
+      "fallback": false,
+      "chunks": 15,
+      "sentences": 15,
+      "unassigned_rate": 0.067,
+      "multi_label_rate": 0.8,
+      "sections": {
+        "arguments_appellant": 8,
+        "facts": 11,
+        "issues": 3,
+        "judgement": 1,
+        "reasoning": 8
+      }
+    },
+    {
+      "doc_id": "train_00005",
+      "fallback": true,
+      "chunks": 2,
+      "sentences": 7,
+      "unassigned_rate": 0.143,
+      "multi_label_rate": 0.0,
+      "sections": {
+        "full_document": 6
+      }
+    },
+    {
+      "doc_id": "train_00006",
+      "fallback": false,
+      "chunks": 11,
+      "sentences": 22,
+      "unassigned_rate": 0.091,
+      "multi_label_rate": 0.273,
+      "sections": {
+        "arguments_appellant": 6,
+        "facts": 3,
+        "issues": 4,
+        "judgement": 1,
+        "reasoning": 14
+      }
+    },
+    {
+      "doc_id": "train_00007",
+      "fallback": false,
+      "chunks": 15,
+      "sentences": 37,
+      "unassigned_rate": 0.027,
+      "multi_label_rate": 0.459,
+      "sections": {
+        "arguments_appellant": 6,
+        "facts": 34,
+        "judgement": 1,
+        "reasoning": 17
+      }
+    },
+    {
+      "doc_id": "train_00008",
+      "fallback": false,
+      "chunks": 6,
+      "sentences": 1,
+      "unassigned_rate": 0.0,
+      "multi_label_rate": 0.0,
+      "sections": {
+        "arguments_appellant": 1
+      }
+    },
+    {
+      "doc_id": "train_00009",
+      "fallback": false,
+      "chunks": 15,
+      "sentences": 36,
+      "unassigned_rate": 0.0,
+      "multi_label_rate": 0.75,
+      "sections": {
+        "arguments_appellant": 22,
+        "facts": 19,
+        "issues": 13,
+        "judgement": 1,
+        "reasoning": 21
+      }
+    },
+    {
+      "doc_id": "train_00010",
+      "fallback": false,
+      "chunks": 15,
+      "sentences": 69,
+      "unassigned_rate": 0.174,
+      "multi_label_rate": 0.246,
+      "sections": {
+        "arguments_appellant": 9,
+        "arguments_respondent": 2,
+        "facts": 29,
+        "judgement": 6,
+        "reasoning": 33
+      }
+    },
+    {
+      "doc_id": "train_00011",
+      "fallback": true,
+      "chunks": 4,
+      "sentences": 12,
+      "unassigned_rate": 0.083,
+      "multi_label_rate": 0.0,
+      "sections": {
+        "full_document": 11
+      }
+    },
+    {
+      "doc_id": "train_00012",
+      "fallback": false,
+      "chunks": 10,
+      "sentences": 24,
+      "unassigned_rate": 0.125,
+      "multi_label_rate": 0.333,
+      "sections": {
+        "facts": 20,
+        "issues": 8,
+        "judgement": 1
+      }
+    },
+    {
+      "doc_id": "train_00013",
+      "fallback": false,
+      "chunks": 5,
+      "sentences": 22,
+      "unassigned_rate": 0.136,
+      "multi_label_rate": 0.182,
+      "sections": {
+        "arguments_appellant": 10,
+        "facts": 9,
+        "judgement": 1,
+        "reasoning": 4
+      }
+    },
+    {
+      "doc_id": "train_00014",
+      "fallback": false,
+      "chunks": 10,
+      "sentences": 21,
+      "unassigned_rate": 0.048,
+      "multi_label_rate": 0.238,
+      "sections": {
+        "arguments_appellant": 14,
+        "arguments_respondent": 4,
+        "reasoning": 10
+      }
+    },
+    {
+      "doc_id": "train_00015",
+      "fallback": false,
+      "chunks": 8,
+      "sentences": 13,
+      "unassigned_rate": 0.0,
+      "multi_label_rate": 0.615,
+      "sections": {
+        "arguments_appellant": 6,
+        "arguments_respondent": 9,
+        "facts": 3,
+        "reasoning": 6
+      }
+    },
+    {
+      "doc_id": "train_00016",
+      "fallback": true,
+      "chunks": 1,
+      "sentences": 5,
+      "unassigned_rate": 0.2,
+      "multi_label_rate": 0.0,
+      "sections": {
+        "full_document": 4
+      }
+    },
+    {
+      "doc_id": "train_00017",
+      "fallback": true,
+      "chunks": 2,
+      "sentences": 10,
+      "unassigned_rate": 0.1,
+      "multi_label_rate": 0.0,
+      "sections": {
+        "full_document": 9
+      }
+    },
+    {
+      "doc_id": "train_00018",
+      "fallback": false,
+      "chunks": 8,
+      "sentences": 5,
+      "unassigned_rate": 0.2,
+      "multi_label_rate": 0.6,
+      "sections": {
+        "arguments_respondent": 3,
+        "issues": 1,
+        "reasoning": 3
+      }
+    },
+    {
+      "doc_id": "train_00019",
+      "fallback": false,
+      "chunks": 7,
+      "sentences": 10,
+      "unassigned_rate": 0.0,
+      "multi_label_rate": 0.8,
+      "sections": {
+        "arguments_respondent": 6,
+        "facts": 7,
+        "issues": 3,
+        "judgement": 3,
+        "reasoning": 5
+      }
+    }
+  ]
+}

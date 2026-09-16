@@ -1,0 +1,19 @@
+{
+  "split": "train",
+  "documents": 100,
+  "input_tokens": {
+    "average": 4704.95,
+    "median": 3683.0,
+    "max": 32146,
+    "min": 601
+  },
+  "target_tokens": {
+    "average": 1027.1,
+    "median": 783.5,
+    "max": 8457,
+    "min": 102
+  },
+  "inputs_over_1024": 99,
+  "targets_over_1024": 34,
+  "estimated_chunks_at_850": 4.97
+}

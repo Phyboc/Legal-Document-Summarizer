@@ -1,0 +1,512 @@
+[
+  {
+    "threshold": 0.3,
+    "relative_margin": 0.0,
+    "sentences": 415,
+    "unassigned_rate": 0.1180722891566265,
+    "multi_label_rate": 0.5253012048192771,
+    "labels_per_sentence": 1.8433734939759037,
+    "label_distribution": {
+      "facts": 211,
+      "issues": 69,
+      "judgement": 51,
+      "reasoning": 197,
+      "arguments_appellant": 139,
+      "full_document": 63,
+      "arguments_respondent": 35
+    }
+  },
+  {
+    "threshold": 0.3,
+    "relative_margin": 0.7,
+    "sentences": 415,
+    "unassigned_rate": 0.1180722891566265,
+    "multi_label_rate": 0.43132530120481927,
+    "labels_per_sentence": 1.5759036144578313,
+    "label_distribution": {
+      "facts": 193,
+      "issues": 53,
+      "judgement": 37,
+      "reasoning": 163,
+      "arguments_appellant": 116,
+      "full_document": 63,
+      "arguments_respondent": 29
+    }
+  },
+  {
+    "threshold": 0.3,
+    "relative_margin": 0.8,
+    "sentences": 415,
+    "unassigned_rate": 0.1180722891566265,
+    "multi_label_rate": 0.39036144578313253,
+    "labels_per_sentence": 1.4843373493975904,
+    "label_distribution": {
+      "facts": 186,
+      "issues": 46,
+      "judgement": 32,
+      "reasoning": 156,
+      "arguments_appellant": 106,
+      "full_document": 63,
+      "arguments_respondent": 27
+    }
+  },
+  {
+    "threshold": 0.3,
+    "relative_margin": 0.9,
+    "sentences": 415,
+    "unassigned_rate": 0.1180722891566265,
+    "multi_label_rate": 0.3108433734939759,
+    "labels_per_sentence": 1.3349397590361445,
+    "label_distribution": {
+      "facts": 172,
+      "issues": 41,
+      "judgement": 28,
+      "reasoning": 139,
+      "arguments_appellant": 87,
+      "full_document": 63,
+      "arguments_respondent": 24
+    }
+  },
+  {
+    "threshold": 0.3,
+    "relative_margin": 0.95,
+    "sentences": 415,
+    "unassigned_rate": 0.1180722891566265,
+    "multi_label_rate": 0.25783132530120484,
+    "labels_per_sentence": 1.2313253012048193,
+    "label_distribution": {
+      "facts": 159,
+      "issues": 33,
+      "judgement": 26,
+      "reasoning": 126,
+      "arguments_appellant": 84,
+      "full_document": 63,
+      "arguments_respondent": 20
+    }
+  },
+  {
+    "threshold": 0.4,
+    "relative_margin": 0.0,
+    "sentences": 415,
+    "unassigned_rate": 0.13493975903614458,
+    "multi_label_rate": 0.5012048192771085,
+    "labels_per_sentence": 1.7518072289156625,
+    "label_distribution": {
+      "facts": 200,
+      "issues": 67,
+      "judgement": 45,
+      "reasoning": 186,
+      "arguments_appellant": 135,
+      "full_document": 63,
+      "arguments_respondent": 31
+    }
+  },
+  {
+    "threshold": 0.4,
+    "relative_margin": 0.7,
+    "sentences": 415,
+    "unassigned_rate": 0.13493975903614458,
+    "multi_label_rate": 0.43132530120481927,
+    "labels_per_sentence": 1.5590361445783132,
+    "label_distribution": {
+      "facts": 188,
+      "issues": 53,
+      "judgement": 37,
+      "reasoning": 161,
+      "arguments_appellant": 116,
+      "full_document": 63,
+      "arguments_respondent": 29
+    }
+  },
+  {
+    "threshold": 0.4,
+    "relative_margin": 0.8,
+    "sentences": 415,
+    "unassigned_rate": 0.13493975903614458,
+    "multi_label_rate": 0.39036144578313253,
+    "labels_per_sentence": 1.4674698795180723,
+    "label_distribution": {
+      "facts": 181,
+      "issues": 46,
+      "judgement": 32,
+      "reasoning": 154,
+      "arguments_appellant": 106,
+      "full_document": 63,
+      "arguments_respondent": 27
+    }
+  },
+  {
+    "threshold": 0.4,
+    "relative_margin": 0.9,
+    "sentences": 415,
+    "unassigned_rate": 0.13493975903614458,
+    "multi_label_rate": 0.3108433734939759,
+    "labels_per_sentence": 1.3180722891566266,
+    "label_distribution": {
+      "facts": 167,
+      "issues": 41,
+      "judgement": 28,
+      "reasoning": 137,
+      "arguments_appellant": 87,
+      "full_document": 63,
+      "arguments_respondent": 24
+    }
+  },
+  {
+    "threshold": 0.4,
+    "relative_margin": 0.95,
+    "sentences": 415,
+    "unassigned_rate": 0.13493975903614458,
+    "multi_label_rate": 0.25783132530120484,
+    "labels_per_sentence": 1.2144578313253012,
+    "label_distribution": {
+      "facts": 154,
+      "issues": 33,
+      "judgement": 26,
+      "reasoning": 124,
+      "arguments_appellant": 84,
+      "full_document": 63,
+      "arguments_respondent": 20
+    }
+  },
+  {
+    "threshold": 0.5,
+    "relative_margin": 0.0,
+    "sentences": 415,
+    "unassigned_rate": 0.1493975903614458,
+    "multi_label_rate": 0.46987951807228917,
+    "labels_per_sentence": 1.657831325301205,
+    "label_distribution": {
+      "facts": 192,
+      "issues": 59,
+      "judgement": 37,
+      "reasoning": 178,
+      "arguments_appellant": 130,
+      "full_document": 62,
+      "arguments_respondent": 30
+    }
+  },
+  {
+    "threshold": 0.5,
+    "relative_margin": 0.7,
+    "sentences": 415,
+    "unassigned_rate": 0.1493975903614458,
+    "multi_label_rate": 0.42650602409638555,
+    "labels_per_sentence": 1.5397590361445783,
+    "label_distribution": {
+      "facts": 186,
+      "issues": 53,
+      "judgement": 34,
+      "reasoning": 159,
+      "arguments_appellant": 116,
+      "full_document": 62,
+      "arguments_respondent": 29
+    }
+  },
+  {
+    "threshold": 0.5,
+    "relative_margin": 0.8,
+    "sentences": 415,
+    "unassigned_rate": 0.1493975903614458,
+    "multi_label_rate": 0.3855421686746988,
+    "labels_per_sentence": 1.4481927710843374,
+    "label_distribution": {
+      "facts": 179,
+      "issues": 46,
+      "judgement": 29,
+      "reasoning": 152,
+      "arguments_appellant": 106,
+      "full_document": 62,
+      "arguments_respondent": 27
+    }
+  },
+  {
+    "threshold": 0.5,
+    "relative_margin": 0.9,
+    "sentences": 415,
+    "unassigned_rate": 0.1493975903614458,
+    "multi_label_rate": 0.3060240963855422,
+    "labels_per_sentence": 1.2987951807228915,
+    "label_distribution": {
+      "facts": 165,
+      "issues": 41,
+      "judgement": 25,
+      "reasoning": 135,
+      "arguments_appellant": 87,
+      "full_document": 62,
+      "arguments_respondent": 24
+    }
+  },
+  {
+    "threshold": 0.5,
+    "relative_margin": 0.95,
+    "sentences": 415,
+    "unassigned_rate": 0.1493975903614458,
+    "multi_label_rate": 0.25301204819277107,
+    "labels_per_sentence": 1.1951807228915663,
+    "label_distribution": {
+      "facts": 152,
+      "issues": 33,
+      "judgement": 23,
+      "reasoning": 122,
+      "arguments_appellant": 84,
+      "full_document": 62,
+      "arguments_respondent": 20
+    }
+  },
+  {
+    "threshold": 0.6,
+    "relative_margin": 0.0,
+    "sentences": 415,
+    "unassigned_rate": 0.15903614457831325,
+    "multi_label_rate": 0.44819277108433736,
+    "labels_per_sentence": 1.5855421686746989,
+    "label_distribution": {
+      "facts": 183,
+      "issues": 57,
+      "judgement": 36,
+      "reasoning": 168,
+      "arguments_appellant": 122,
+      "full_document": 62,
+      "arguments_respondent": 30
+    }
+  },
+  {
+    "threshold": 0.6,
+    "relative_margin": 0.7,
+    "sentences": 415,
+    "unassigned_rate": 0.15903614457831325,
+    "multi_label_rate": 0.41686746987951806,
+    "labels_per_sentence": 1.5204819277108435,
+    "label_distribution": {
+      "facts": 182,
+      "issues": 53,
+      "judgement": 33,
+      "reasoning": 156,
+      "arguments_appellant": 116,
+      "full_document": 62,
+      "arguments_respondent": 29
+    }
+  },
+  {
+    "threshold": 0.6,
+    "relative_margin": 0.8,
+    "sentences": 415,
+    "unassigned_rate": 0.15903614457831325,
+    "multi_label_rate": 0.3783132530120482,
+    "labels_per_sentence": 1.4313253012048193,
+    "label_distribution": {
+      "facts": 175,
+      "issues": 46,
+      "judgement": 28,
+      "reasoning": 150,
+      "arguments_appellant": 106,
+      "full_document": 62,
+      "arguments_respondent": 27
+    }
+  },
+  {
+    "threshold": 0.6,
+    "relative_margin": 0.9,
+    "sentences": 415,
+    "unassigned_rate": 0.15903614457831325,
+    "multi_label_rate": 0.30120481927710846,
+    "labels_per_sentence": 1.2843373493975903,
+    "label_distribution": {
+      "facts": 162,
+      "issues": 41,
+      "judgement": 24,
+      "reasoning": 133,
+      "arguments_appellant": 87,
+      "full_document": 62,
+      "arguments_respondent": 24
+    }
+  },
+  {
+    "threshold": 0.6,
+    "relative_margin": 0.95,
+    "sentences": 415,
+    "unassigned_rate": 0.15903614457831325,
+    "multi_label_rate": 0.24819277108433735,
+    "labels_per_sentence": 1.180722891566265,
+    "label_distribution": {
+      "facts": 149,
+      "issues": 33,
+      "judgement": 22,
+      "reasoning": 120,
+      "arguments_appellant": 84,
+      "full_document": 62,
+      "arguments_respondent": 20
+    }
+  },
+  {
+    "threshold": 0.7,
+    "relative_margin": 0.0,
+    "sentences": 415,
+    "unassigned_rate": 0.19036144578313252,
+    "multi_label_rate": 0.4,
+    "labels_per_sentence": 1.4602409638554217,
+    "label_distribution": {
+      "facts": 171,
+      "issues": 52,
+      "judgement": 31,
+      "reasoning": 153,
+      "arguments_appellant": 111,
+      "full_document": 59,
+      "arguments_respondent": 29
+    }
+  },
+  {
+    "threshold": 0.7,
+    "relative_margin": 0.7,
+    "sentences": 415,
+    "unassigned_rate": 0.19036144578313252,
+    "multi_label_rate": 0.4,
+    "labels_per_sentence": 1.4602409638554217,
+    "label_distribution": {
+      "facts": 171,
+      "issues": 52,
+      "judgement": 31,
+      "reasoning": 153,
+      "arguments_appellant": 111,
+      "full_document": 59,
+      "arguments_respondent": 29
+    }
+  },
+  {
+    "threshold": 0.7,
+    "relative_margin": 0.8,
+    "sentences": 415,
+    "unassigned_rate": 0.19036144578313252,
+    "multi_label_rate": 0.36626506024096384,
+    "labels_per_sentence": 1.3855421686746987,
+    "label_distribution": {
+      "facts": 166,
+      "issues": 45,
+      "judgement": 28,
+      "reasoning": 147,
+      "arguments_appellant": 103,
+      "full_document": 59,
+      "arguments_respondent": 27
+    }
+  },
+  {
+    "threshold": 0.7,
+    "relative_margin": 0.9,
+    "sentences": 415,
+    "unassigned_rate": 0.19036144578313252,
+    "multi_label_rate": 0.29397590361445786,
+    "labels_per_sentence": 1.2457831325301205,
+    "label_distribution": {
+      "facts": 153,
+      "issues": 40,
+      "judgement": 24,
+      "reasoning": 131,
+      "arguments_appellant": 86,
+      "full_document": 59,
+      "arguments_respondent": 24
+    }
+  },
+  {
+    "threshold": 0.7,
+    "relative_margin": 0.95,
+    "sentences": 415,
+    "unassigned_rate": 0.19036144578313252,
+    "multi_label_rate": 0.2433734939759036,
+    "labels_per_sentence": 1.144578313253012,
+    "label_distribution": {
+      "facts": 141,
+      "issues": 32,
+      "judgement": 22,
+      "reasoning": 118,
+      "arguments_appellant": 83,
+      "full_document": 59,
+      "arguments_respondent": 20
+    }
+  },
+  {
+    "threshold": 0.8,
+    "relative_margin": 0.0,
+    "sentences": 415,
+    "unassigned_rate": 0.23373493975903614,
+    "multi_label_rate": 0.3397590361445783,
+    "labels_per_sentence": 1.3036144578313253,
+    "label_distribution": {
+      "facts": 160,
+      "issues": 42,
+      "judgement": 26,
+      "reasoning": 136,
+      "arguments_appellant": 97,
+      "full_document": 53,
+      "arguments_respondent": 27
+    }
+  },
+  {
+    "threshold": 0.8,
+    "relative_margin": 0.7,
+    "sentences": 415,
+    "unassigned_rate": 0.23373493975903614,
+    "multi_label_rate": 0.3397590361445783,
+    "labels_per_sentence": 1.3036144578313253,
+    "label_distribution": {
+      "facts": 160,
+      "issues": 42,
+      "judgement": 26,
+      "reasoning": 136,
+      "arguments_appellant": 97,
+      "full_document": 53,
+      "arguments_respondent": 27
+    }
+  },
+  {
+    "threshold": 0.8,
+    "relative_margin": 0.8,
+    "sentences": 415,
+    "unassigned_rate": 0.23373493975903614,
+    "multi_label_rate": 0.3397590361445783,
+    "labels_per_sentence": 1.3036144578313253,
+    "label_distribution": {
+      "facts": 160,
+      "issues": 42,
+      "judgement": 26,
+      "reasoning": 136,
+      "arguments_appellant": 97,
+      "full_document": 53,
+      "arguments_respondent": 27
+    }
+  },
+  {
+    "threshold": 0.8,
+    "relative_margin": 0.9,
+    "sentences": 415,
+    "unassigned_rate": 0.23373493975903614,
+    "multi_label_rate": 0.2891566265060241,
+    "labels_per_sentence": 1.1975903614457832,
+    "label_distribution": {
+      "facts": 149,
+      "issues": 40,
+      "judgement": 22,
+      "reasoning": 126,
+      "arguments_appellant": 83,
+      "full_document": 53,
+      "arguments_respondent": 24
+    }
+  },
+  {
+    "threshold": 0.8,
+    "relative_margin": 0.95,
+    "sentences": 415,
+    "unassigned_rate": 0.23373493975903614,
+    "multi_label_rate": 0.2433734939759036,
+    "labels_per_sentence": 1.1012048192771084,
+    "label_distribution": {
+      "facts": 137,
+      "issues": 32,
+      "judgement": 21,
+      "reasoning": 114,
+      "arguments_appellant": 80,
+      "full_document": 53,
+      "arguments_respondent": 20
+    }
+  }
+]

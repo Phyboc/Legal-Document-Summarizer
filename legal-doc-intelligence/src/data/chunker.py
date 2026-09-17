@@ -54,44 +54,87 @@ def split_by_tokens(text: str, max_tokens: int) -> list[str]:
     return result
 
 
+def _bounded_units(paragraphs: list, chunk_size: int) -> list[tuple[int, str]]:
+    """Expand paragraphs into ``(paragraph_index, text)`` units bounded by ``chunk_size``.
+
+    A paragraph longer than ``chunk_size`` used to be emitted as one over-long
+    chunk, which the summarizer then truncated silently at ``MAX_INPUT_LENGTH`` -
+    everything past the window never reached the model. Oversized paragraphs are
+    split with the existing sentence-aware ``split_by_tokens`` instead, so no text
+    is dropped. Each piece keeps its paragraph's own index, so ``para_range`` still
+    points at the source paragraph.
+    """
+    units = []
+    for span in paragraphs:
+        if approximate_tokens(span.text) > chunk_size:
+            units.extend((span.index, piece) for piece in split_by_tokens(span.text, chunk_size))
+        else:
+            units.append((span.index, span.text))
+    return units
+
+
 def chunk_section(paragraphs: list, section: str, chunk_size: int = CHUNK_SIZE,
                   overlap: int = CHUNK_OVERLAP, start_chunk_id: int = 0) -> list[Chunk]:
-    """Chunk a single section's paragraphs into overlapping windows."""
+    """Chunk a single section's paragraphs into overlapping, size-bounded windows.
+
+    Every returned chunk is bounded by ``chunk_size`` estimated tokens: a paragraph
+    larger than that budget is split into several pieces rather than emitted whole,
+    while paragraphs already within the budget are windowed exactly as before. The
+    overlap tail is carried over only when it still fits, so a near-budget piece
+    cannot push the next window over the limit. At the configured ``CHUNK_SIZE``
+    (850) that leaves a clear margin against ``MAX_INPUT_LENGTH`` (1024) for the
+    +-1 token slack of the per-unit estimate.
+    """
     if not paragraphs:
         return []
 
     chunks = []
     current_text = []
     current_tokens = 0
-    current_start_para = paragraphs[0].index
+    units = _bounded_units(paragraphs, chunk_size)
+
+    current_start_para = units[0][0]
+    current_end_para = units[0][0]
     chunk_id = start_chunk_id
 
-    for para in paragraphs:
-        para_tokens = approximate_tokens(para.text)
+    for para_index, para_text in units:
+        unit_tokens = approximate_tokens(para_text)
 
-        if current_tokens + para_tokens > chunk_size and current_text:
+        if current_tokens + unit_tokens > chunk_size and current_text:
             text = "\n".join(current_text)
             chunks.append(Chunk(
                 text=text, section=section, chunk_id=chunk_id,
                 token_count=current_tokens,
-                para_range=(current_start_para, para.index - 1),
+                # End on the index of the last paragraph actually included, not on
+                # ``para_index - 1``: the two differ when the section's paragraph
+                # indices are non-contiguous, or when the incoming unit is another
+                # piece of the same oversized paragraph.
+                para_range=(current_start_para, current_end_para),
             ))
             chunk_id += 1
 
-            # Overlap: keep last chunk's tail
+            # Overlap: keep the previous chunk's tail, unless carrying it over would
+            # push this window past the budget (which is what happens when the
+            # incoming unit is itself close to chunk_size).
             tail_text = text[-overlap*4:]  # approx 4 chars/token
-            current_text = [tail_text, para.text]
-            current_tokens = approximate_tokens(tail_text) + para_tokens
-            current_start_para = para.index
+            tail_tokens = approximate_tokens(tail_text)
+            if tail_tokens + unit_tokens > chunk_size:
+                tail_text = ""
+                tail_tokens = 0
+            current_text = [tail_text, para_text] if tail_text else [para_text]
+            current_tokens = tail_tokens + unit_tokens
+            current_start_para = para_index
+            current_end_para = para_index
         else:
-            current_text.append(para.text)
-            current_tokens += para_tokens
+            current_text.append(para_text)
+            current_tokens += unit_tokens
+            current_end_para = para_index
 
     if current_text:
         chunks.append(Chunk(
             text="\n".join(current_text), section=section, chunk_id=chunk_id,
             token_count=current_tokens,
-            para_range=(current_start_para, paragraphs[-1].index),
+            para_range=(current_start_para, current_end_para),
         ))
 
     return chunks

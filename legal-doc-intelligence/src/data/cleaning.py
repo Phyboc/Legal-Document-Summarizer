@@ -31,8 +31,16 @@ def strip_preamble(text: str) -> str:
 
 
 def split_paragraphs(text: str) -> list[str]:
-    """Split text into paragraphs on blank lines."""
+    """Split text into paragraphs on blank lines.
+
+    Falls back to single-newline splitting when the text has no blank-line
+    breaks (e.g. IN-ABS-style judgments, which separate clauses with a lone
+    "\\n" rather than a blank line) — otherwise the whole document collapses
+    into one paragraph and section detection becomes meaningless.
+    """
     paras = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
+    if len(paras) <= 1 and text.count("\n") > 1:
+        paras = [p.strip() for p in text.split("\n") if p.strip()]
     return paras
 
 

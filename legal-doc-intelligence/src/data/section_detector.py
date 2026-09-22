@@ -27,6 +27,15 @@ SECTION_PATTERNS = {
         r"\b(?:respondent|state|government)(?:['']s)?\s+(?:counsel|submitt|contend|argue|urge)",
         r"\blearned\s+counsel\s+for\s+the\s+(?:respondent|state)",
         r"\bon\s+behalf\s+of\s+the\s+(?:respondent|state)",
+        # Rebuttal/transition cues: respondent-side paragraphs often don't
+        # repeat "respondent" and instead open by countering the appellant.
+        r"\bper\s+contra\b",
+        r"\bon\s+the\s+other\s+hand\b",
+        r"\bin\s+(?:reply|rebuttal|refutation)\b",
+        r"\b(?:refut|rebutt|oppos|resist)(?:ed|ing|es)?\s+the\s+(?:submissions?|contentions?|arguments?)",
+        r"\b(?:additional\s+)?solicitor\s+general\b",
+        r"\bstanding\s+counsel\b",
+        r"\bcounsel\s+for\s+the\s+union\b",
     ],
     "reasoning": [
         r"\b(?:we|court|it)\s+(?:hold|observe|consider|note|find)",
@@ -111,14 +120,7 @@ def _predict_learned(texts: list[str], positions: list[float]):
     vec, clf = model
     X = sp.hstack([vec.transform(texts), sp.csr_matrix(_posfeat(np.array(positions, float)))]).tocsr()
     labels = clf.predict(X)
-    out = []
-    for text, label in zip(texts, labels):
-        if label == "arguments":
-            # The training data does not separate sides; use the cue patterns.
-            s = score_paragraph(text)
-            label = "arguments_respondent" if s["arguments_respondent"] > s["arguments_appellant"] else "arguments_appellant"
-        out.append(str(label))
-    return out
+    return [str(label) for label in labels]
 
 
 def detect_sections(paragraphs: list[str]) -> list[Paragraph]:

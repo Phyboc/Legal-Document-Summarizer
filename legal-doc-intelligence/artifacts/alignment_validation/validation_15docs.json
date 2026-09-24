@@ -1,0 +1,25 @@
+{
+  "valid_documents": 15,
+  "total_sentences": 546,
+  "assigned": 675,
+  "unassigned": 28,
+  "unassigned_rate": 0.051,
+  "per_section_assignment_counts": {
+    "facts": 204,
+    "arguments_appellant": 1,
+    "arguments_respondent": 2,
+    "reasoning": 458,
+    "judgement": 10
+  },
+  "model_history": [
+    "v1 (MARRO-only, ARG unsplit): arguments_respondent alignment assignments = 1/15 docs. Regex tie-break defaulted every ambiguous ARG paragraph to appellant.",
+    "v2 (MARRO + regex cue-pattern fix): arguments_respondent = 4 assignments, 3/15 docs with any respondent paragraphs. Modest, heuristic-only improvement.",
+    "v3 (MARRO + OpenNyAI InRhetoricalRoles, real ARG_PETITIONER/ARG_RESPONDENT labels): classifier now directly trained on 1315 appellant + 698 respondent labeled spans (real ground truth, not regex). Section detection coverage: arguments_respondent now appears in 6/15 docs (was 1/15), roughly balanced with arguments_appellant (7 vs 12 paragraphs) instead of 9:1 skewed."
+  ],
+  "v3_tradeoff": "The v3 classifier is more conservative overall -- total arguments-tagged paragraphs dropped from 70 to 19 across the 15 docs, so per-document argument coverage is thinner even though the appellant/respondent split within it is now genuinely balanced rather than heuristic-defaulted. judgement detection also improved as a side effect (10 alignment assignments vs 3), likely because OpenNyAI RPC has more training volume (1081) than MARRO RPC (546).",
+  "notes": [
+    "reasoning dominance (~68%) persists and is expected: MARRO Ratio+PRE+STA (70% of MARRO train) and OpenNyAI ANALYSIS+STA+PRE_RELIED+PRE_NOT_RELIED+RATIO all map to reasoning -- Indian SC judgments are genuinely reasoning-heavy.",
+    "Unassigned rate held steady at 5.1%, well below the 30-40% concern threshold from the plan.",
+    "Next tuning option if more arguments recall is wanted: lower class_weight for majority classes or add more OpenNyAI-labeled examples; current model trades recall for a genuine (non-heuristic) appellant/respondent distinction."
+  ]
+}

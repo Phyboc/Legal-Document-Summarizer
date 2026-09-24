@@ -1,6 +1,13 @@
 """Rule-based section detector: identifies Facts, Arguments, Reasoning, Judgement."""
 import re
 from dataclasses import dataclass
+from pathlib import Path
+
+import numpy as np
+
+MODEL_PATH = Path(__file__).resolve().parents[2] / "models" / "section_classifier.joblib"
+_model = None
+_model_missing = False
 
 
 SECTION_PATTERNS = {
@@ -20,6 +27,15 @@ SECTION_PATTERNS = {
         r"\b(?:respondent|state|government)(?:['']s)?\s+(?:counsel|submitt|contend|argue|urge)",
         r"\blearned\s+counsel\s+for\s+the\s+(?:respondent|state)",
         r"\bon\s+behalf\s+of\s+the\s+(?:respondent|state)",
+        # Rebuttal/transition cues: respondent-side paragraphs often don't
+        # repeat "respondent" and instead open by countering the appellant.
+        r"\bper\s+contra\b",
+        r"\bon\s+the\s+other\s+hand\b",
+        r"\bin\s+(?:reply|rebuttal|refutation)\b",
+        r"\b(?:refut|rebutt|oppos|resist)(?:ed|ing|es)?\s+the\s+(?:submissions?|contentions?|arguments?)",
+        r"\b(?:additional\s+)?solicitor\s+general\b",
+        r"\bstanding\s+counsel\b",
+        r"\bcounsel\s+for\s+the\s+union\b",
     ],
     "reasoning": [
         r"\b(?:we|court|it)\s+(?:hold|observe|consider|note|find)",
@@ -70,20 +86,41 @@ def classify_paragraph(text: str, position: float) -> tuple[str, dict]:
         scores["facts"] += 1
     if position > 0.85:
         scores["judgement"] += 1
-    if 0.2 < position < 0.5:
-        scores["arguments_appellant"] += 0.5
-
-    if all(v == 0 for v in scores.values()):
-        # Fallback based on position
-        if position < 0.35:
-            return "facts", scores
-        elif position < 0.7:
-            return "reasoning", scores
-        else:
-            return "judgement", scores
 
     best = max(scores.items(), key=lambda x: x[1])
+    if best[1] < 2:
+        # Weak evidence: most sentences in a judgment are the court's own reasoning.
+        if position < 0.2:
+            return "facts", scores
+        return ("judgement" if position > 0.9 else "reasoning"), scores
     return best[0], scores
+
+
+def _load_model():
+    global _model, _model_missing
+    if _model is None and not _model_missing:
+        if MODEL_PATH.exists():
+            import joblib
+            _model = joblib.load(MODEL_PATH)
+        else:
+            _model_missing = True
+    return _model
+
+
+def _posfeat(pos):
+    return np.c_[pos, pos ** 2, pos > 0.85, pos < 0.2]
+
+
+def _predict_learned(texts: list[str], positions: list[float]):
+    """Learned labels for each text, or None if the model file is unavailable."""
+    model = _load_model()
+    if model is None:
+        return None
+    import scipy.sparse as sp
+    vec, clf = model
+    X = sp.hstack([vec.transform(texts), sp.csr_matrix(_posfeat(np.array(positions, float)))]).tocsr()
+    labels = clf.predict(X)
+    return [str(label) for label in labels]
 
 
 def detect_sections(paragraphs: list[str]) -> list[Paragraph]:
@@ -92,12 +129,15 @@ def detect_sections(paragraphs: list[str]) -> list[Paragraph]:
     if total == 0:
         return []
 
+    positions = [i / max(total - 1, 1) for i in range(total)]
+    learned = _predict_learned(paragraphs, positions)
+
     results = []
     for i, para in enumerate(paragraphs):
-        position = i / max(total - 1, 1)
-        section, scores = classify_paragraph(para, position)
+        rule_section, scores = classify_paragraph(para, positions[i])
+        section = learned[i] if learned else rule_section
         results.append(Paragraph(
-            index=i, text=para, section=section, position=position, scores=scores
+            index=i, text=para, section=section, position=positions[i], scores=scores
         ))
     return results
 

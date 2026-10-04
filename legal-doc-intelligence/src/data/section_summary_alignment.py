@@ -52,8 +52,16 @@ This module reuses, and does not reimplement:
     ``artifacts/alignment_sweep.json`` (0.40 / 0.90).
   * ``src.shared.cross_encoder.get_cross_encoder`` - the single shared
     Cross-Encoder singleton (``cross-encoder/ms-marco-MiniLM-L-6-v2``).
-  * ``src.postprocess.cite_verify.split_sentences`` - the repository's existing
-    sentence splitter.
+
+It does **not** use ``src.postprocess.cite_verify.split_sentences``: that helper
+quietly drops sentences with fewer than three words, which would discard terse
+operative orders. ``cite_verify`` itself is untouched; this module keeps its own
+non-empty-sentence splitter (``summary_sentences``).
+
+Each sentence has at most **one primary chunk** - the single highest-scoring
+chunk among its plausible sections - so a sentence is never duplicated across
+training records. ``SentenceAlignment.assigned`` still records every plausible
+section label as metadata.
 
 The pseudo-targets produced here are a training aid, never an evaluation
 target. Final evaluation runs against the true IN-ABS summary.
@@ -61,21 +69,35 @@ target. Final evaluation runs against the true IN-ABS summary.
 from __future__ import annotations
 
 import logging
+import re
 import sys
 from dataclasses import dataclass, field
 
 sys.path.insert(0, ".")
 
 import config
-from src.postprocess.cite_verify import split_sentences
+from src.data.chunker import approximate_tokens
 from src.shared.cross_encoder import get_cross_encoder
 
 logger = logging.getLogger(__name__)
 
-# Sentences shorter than this are dropped before scoring: fragments like
-# "Hence the appeal." carry no alignment signal, and the shared Cross-Encoder
-# rates them as plausible matches for almost any chunk.
-_MIN_SENTENCE_CHARS = 25
+# Every non-empty reference-summary sentence is retained. The previous behaviour
+# dropped sentences shorter than 25 characters, which silently removed terse
+# operative orders ("The appeal is dismissed.") - exactly the sentences that
+# carry the judgement signal. Conservative rejection is now left to the
+# Cross-Encoder threshold instead of a length filter.
+#
+# ``cite_verify.split_sentences`` is deliberately NOT used here: it also drops
+# sentences with fewer than three words, so a 25-char filter was not the only
+# thing discarding short orders ("Appeal dismissed." is two words).
+# ``cite_verify.split_sentences`` is left unchanged because cite-and-verify
+# depends on its existing behaviour.
+def summary_sentences(full_summary: str) -> list[str]:
+    """Split a reference summary into sentences, keeping every non-empty one."""
+    if not full_summary:
+        return []
+    parts = re.split(r"(?<=[.!?])\s+", full_summary)
+    return [part.strip() for part in parts if part.strip()]
 
 # The historical config module carried these alongside ALIGNMENT_THRESHOLD and
 # ALIGNMENT_RELATIVE_MARGIN. They are read from config when present so the
@@ -114,7 +136,12 @@ class SentenceAlignment:
 
     sentence: str
     scores: dict[str, float]
+    # Plausible section labels (metadata / multi-label statistics).
     assigned: list[str] = field(default_factory=list)
+    # The single chunk this sentence is actually written to, if any. A sentence
+    # is never copied into one chunk per assigned section.
+    primary_chunk: int | None = None
+    primary_chunk_score: float = 0.0
 
     @property
     def best_label(self) -> str | None:
@@ -212,7 +239,7 @@ def score_summary_sentences(
     All sentence x chunk pairs are scored in a single batch: the per-pair
     call was the dominant cost of the alignment pass.
     """
-    sentences = [s for s in split_sentences(full_summary or "") if len(s) >= _MIN_SENTENCE_CHARS]
+    sentences = summary_sentences(full_summary or "")
     if not sentences or not section_chunks:
         return sentences, [], []
 
@@ -310,20 +337,22 @@ def align_summary_to_sections(
         else:
             record.assigned = [max(above, key=lambda lbl: per_label[lbl])]
 
+        # ``assigned`` remains the plausible section labels (build statistics and
+        # metadata depend on it), but the sentence now has at most ONE training
+        # destination: the single highest-scoring chunk among the plausible
+        # sections. It is never copied into one chunk per section.
         for label in record.assigned:
             aligned_sentences[label].append(sentence)
 
-            # Attach the sentence to the single best-matching chunk of this
-            # section. ``default=None`` guards the degenerate case where a label
-            # was declared but has no chunk.
-            best_chunk = max(
-                (j for j, (lbl, _) in enumerate(section_chunks) if lbl == label),
-                key=lambda j: row[j],
-                default=None,
-            )
-            if best_chunk is not None:
-                chunk_sentences.setdefault(best_chunk, []).append(sentence)
-                chunk_pair_scores.setdefault(best_chunk, []).append(float(row[best_chunk]))
+        candidate_indices = [
+            j for j, (label, _) in enumerate(section_chunks) if label in record.assigned
+        ]
+        if candidate_indices:
+            primary_chunk = max(candidate_indices, key=lambda j: row[j])
+            record.primary_chunk = primary_chunk
+            record.primary_chunk_score = float(row[primary_chunk])
+            chunk_sentences.setdefault(primary_chunk, []).append(sentence)
+            chunk_pair_scores.setdefault(primary_chunk, []).append(float(row[primary_chunk]))
 
         per_sentence.append(record)
 
@@ -352,3 +381,77 @@ def align_summary_to_sections(
         )
 
     return result
+
+
+def build_aligned_target(
+    sentences: list[str],
+    max_tokens: int | None = None,
+    measure=None,
+) -> tuple[str, list[str], list[str]]:
+    """Join ``sentences`` into one target without ever splitting a sentence.
+
+    Returns ``(target, kept, overflow)``. Sentences are added in the given
+    (deterministic reference-summary) order while the accumulated target stays
+    within ``max_tokens`` as measured by ``measure`` (``chunker.approximate_tokens``
+    by default). As soon as adding the next complete sentence would exceed the
+    budget, construction stops; that sentence and every sentence after it are
+    returned as ``overflow`` so the caller can report them rather than discard
+    them silently. ``max_tokens=None`` means no budget.
+    """
+    measure = measure or approximate_tokens
+    kept: list[str] = []
+    current = ""
+    for position, sentence in enumerate(sentences):
+        candidate = f"{current} {sentence}".strip() if current else sentence
+        if max_tokens is not None and measure(candidate) > max_tokens:
+            return current, kept, list(sentences[position:])
+        kept.append(sentence)
+        current = candidate
+    return current, kept, []
+
+
+def validate_token_lengths(
+    records,
+    tokenizer,
+    max_input_tokens: int,
+    max_target_tokens: int,
+) -> dict:
+    """Measure every record with the real BART tokenizer and report violations.
+
+    This is the only place real tokenizer counts are computed. Nothing is
+    truncated here: a record that exceeds a limit is counted and reported, and
+    the caller decides what to do. ``tokenizer`` is any callable returning a
+    mapping with an ``input_ids`` entry, so the check is unit-testable without
+    ``transformers`` installed.
+    """
+    report = {
+        "records": 0,
+        "max_input_tokens": 0,
+        "max_target_tokens": 0,
+        "input_violations": 0,
+        "target_violations": 0,
+        "violation_examples": [],
+        "ok": True,
+    }
+    for record in records:
+        report["records"] += 1
+        n_input = len(tokenizer(record["chunk_text"])["input_ids"])
+        n_target = len(tokenizer(record["aligned_target"])["input_ids"])
+        report["max_input_tokens"] = max(report["max_input_tokens"], n_input)
+        report["max_target_tokens"] = max(report["max_target_tokens"], n_target)
+        for field_name, tokens, limit, key in (
+            ("chunk_text", n_input, max_input_tokens, "input_violations"),
+            ("aligned_target", n_target, max_target_tokens, "target_violations"),
+        ):
+            if tokens > limit:
+                report[key] += 1
+                if len(report["violation_examples"]) < 10:
+                    report["violation_examples"].append({
+                        "doc_id": record.get("doc_id"),
+                        "chunk_id": record.get("chunk_id"),
+                        "field": field_name,
+                        "tokens": tokens,
+                        "limit": limit,
+                    })
+    report["ok"] = report["input_violations"] == 0 and report["target_violations"] == 0
+    return report

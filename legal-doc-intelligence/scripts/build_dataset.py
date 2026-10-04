@@ -66,7 +66,7 @@ _PKG_ROOT = Path(__file__).resolve().parents[1]
 if str(_PKG_ROOT) not in sys.path:
     sys.path.insert(0, str(_PKG_ROOT))
 
-from config import MAX_CHUNKS_PER_DOC, MAX_INPUT_LENGTH  # noqa: E402
+from config import BART_MODEL, MAX_CHUNKS_PER_DOC, MAX_INPUT_LENGTH, MAX_TARGET_LENGTH  # noqa: E402
 from src.data.chunker import approximate_tokens, chunk_document  # noqa: E402
 from src.data.cleaning import preprocess, split_paragraphs  # noqa: E402
 from src.data.pii_redaction import redact  # noqa: E402
@@ -75,7 +75,11 @@ from src.data.section_detector import (  # noqa: E402
     fallback_to_single_section,
     group_by_section,
 )
-from src.data.section_summary_alignment import align_summary_to_sections  # noqa: E402
+from src.data.section_summary_alignment import (  # noqa: E402
+    align_summary_to_sections,
+    build_aligned_target,
+    validate_token_lengths,
+)
 
 logger = logging.getLogger("build_dataset")
 
@@ -121,6 +125,14 @@ class DocumentBuild:
     summary_sentences: int = 0
     multi_label_sentences: int = 0
     assigned_labels: int = 0
+    # Judgement diagnostics: distinguish "detector found no judgement section"
+    # from "judgement sentences were assigned elsewhere".
+    judgement_section_detected: bool = False
+    judgement_chunks: int = 0
+    judgement_sentences_assigned: int = 0
+    judgement_sentences_retained: int = 0
+    # Sentences that did not fit the target token budget (recorded, not discarded).
+    target_overflow_sentences: int = 0
     pii_counts: dict = field(default_factory=dict)
     error: str | None = None
 
@@ -241,6 +253,56 @@ def require_real_encoder(allow_stub: bool) -> str:
 
 
 # --------------------------------------------------------------------------- #
+# Real BART tokenizer + output safety
+# --------------------------------------------------------------------------- #
+
+# A build into a directory that already holds these is refused unless --overwrite
+# is given. This guards against the failure that produced the earlier
+# 1287-record file: two independent builds concatenated into one JSONL.
+DATASET_OUTPUT_FILES = ("train.jsonl", "validation.jsonl", "test.jsonl", "build_stats.json")
+
+
+def refuse_occupied_output_dir(output_dir: Path, overwrite: bool) -> None:
+    """Refuse to build into a directory that already holds dataset outputs."""
+    present = [name for name in DATASET_OUTPUT_FILES if (output_dir / name).exists()]
+    if present and not overwrite:
+        raise SystemExit(
+            "Refusing to build: output directory already contains dataset output(s) "
+            f"{present} in {output_dir}.\n"
+            "Use a fresh --output_dir, or pass --overwrite to replace them deliberately."
+        )
+
+
+def require_bart_tokenizer():
+    """Load the real BART tokenizer, or fail the build with a clear dependency."""
+    try:
+        from transformers import AutoTokenizer
+    except ImportError as exc:  # pragma: no cover - environment dependent
+        raise SystemExit(
+            "The real BART tokenizer is required to validate training-dataset "
+            "lengths, but `transformers` is not installed. Install the project "
+            "dependencies and retry:\n"
+            "    python -m pip install -r legal-doc-intelligence/requirements.txt\n"
+            "Refusing to build a dataset whose lengths are only approximate.\n"
+            f"(import error was: {exc})"
+        ) from exc
+    try:
+        return AutoTokenizer.from_pretrained(BART_MODEL)
+    except Exception as exc:  # pragma: no cover - network dependent
+        raise SystemExit(
+            f"Could not load the BART tokenizer ({BART_MODEL}): {exc}\n"
+            "The first run downloads it from the Hub, so it needs network access."
+        ) from exc
+
+
+def _tokenizer_measure(tokenizer):
+    """Return a ``text -> token count`` callable backed by the real tokenizer."""
+    def measure(text: str) -> int:
+        return len(tokenizer(text, truncation=False)["input_ids"])
+    return measure
+
+
+# --------------------------------------------------------------------------- #
 # Per-document processing
 # --------------------------------------------------------------------------- #
 
@@ -254,6 +316,8 @@ def build_document(
     strip_preamble: bool = True,
     fallback_label: str = FALLBACK_SECTION_LABEL,
     alignment_kwargs: dict | None = None,
+    token_measure=None,
+    max_target_tokens: int = MAX_TARGET_LENGTH,
 ) -> DocumentBuild:
     """Run one source document through the existing pipeline and align its summary.
 
@@ -290,6 +354,12 @@ def build_document(
         result.chunks_created = len(chunks)
         result.at_chunk_cap = len(chunks) >= MAX_CHUNKS_PER_DOC
 
+        # Judgement diagnostic (case 1 vs 2): was a judgement section detected at
+        # all, and did it yield any chunk? Document position is never used as a
+        # substitute for detection.
+        result.judgement_section_detected = "judgement" in section_groups
+        result.judgement_chunks = sum(1 for chunk in chunks if chunk.section == "judgement")
+
         # 8-10. Split the reference summary into sentences and align it to the
         #       chunks with the shared Cross-Encoder (existing implementation).
         section_chunks = [(chunk.section, chunk.text) for chunk in chunks]
@@ -304,6 +374,21 @@ def build_document(
             {"doc_id": doc_id, **entry} for entry in alignment.unassigned
         ]
 
+        # Judgement diagnostics (cases 3-5): a sentence whose plausible labels
+        # include judgement, and whether its single primary chunk actually landed
+        # in the judgement section.
+        chunk_sections = [chunk.section for chunk in chunks]
+        result.judgement_sentences_assigned = sum(
+            1 for r in alignment.per_sentence if "judgement" in r.assigned
+        )
+        result.judgement_sentences_retained = sum(
+            1
+            for r in alignment.per_sentence
+            if "judgement" in r.assigned
+            and r.primary_chunk is not None
+            and chunk_sections[r.primary_chunk] == "judgement"
+        )
+
         # The published IN-ABS summary, kept once per document for later
         # document-level evaluation.
         result.reference = {
@@ -312,23 +397,39 @@ def build_document(
             "original_reference_summary": summary or "",
         }
 
-        # 11-12. Chunk-level pseudo-targets; chunks with no target are dropped.
+        # 11-12. Chunk-level pseudo-targets. Each sentence has exactly one
+        # primary chunk, so it appears in at most one record. Chunks with no
+        # target are dropped.
         assigned_by_sentence = {r.sentence: r.assigned for r in alignment.per_sentence}
+        measure = token_measure or approximate_tokens
 
         for index, chunk in enumerate(chunks):
-            matched = alignment.chunk_sentences.get(index) or []
-            target = (alignment.aligned_by_chunk.get(index) or "").strip()
+            primary_matched = alignment.chunk_sentences.get(index) or []
+            if not primary_matched:
+                continue
 
-            # Both guards are needed: a chunk can be the best match for a
-            # sentence yet receive no text, and vice versa.
+            # Build the target greedily at complete-sentence boundaries. Any
+            # sentence that does not fit the budget is recorded, never split or
+            # dropped silently.
+            target, matched, overflow = build_aligned_target(
+                primary_matched, max_tokens=max_target_tokens, measure=measure
+            )
+            result.target_overflow_sentences += len(overflow)
             if not matched or not target:
                 continue
 
+            # matched_labels collects every plausible label of every sentence
+            # whose primary chunk is THIS chunk, so a record can carry several
+            # labels while remaining a single training example.
             matched_labels = sorted({
                 label
-                for sentence in matched
+                for sentence in primary_matched
                 for label in assigned_by_sentence.get(sentence, [])
             })
+            alignment_scores = [
+                round(s, 4)
+                for s in alignment.chunk_pair_scores.get(index, [])[:len(matched)]
+            ]
 
             result.records.append({
                 # --- required training fields -------------------------------- #
@@ -341,9 +442,12 @@ def build_document(
                 "para_range": list(chunk.para_range),
                 # --- alignment provenance ----------------------------------- #
                 "matched_sentences": matched,
-                "alignment_scores": [round(s, 4) for s in alignment.chunk_pair_scores.get(index, [])],
+                "alignment_scores": alignment_scores,
                 "matched_labels": matched_labels,
                 "structure_fallback": result.structure_fallback,
+                # --- target-budget provenance ------------------------------- #
+                "overflow_sentences": overflow,
+                "n_overflow_sentences": len(overflow),
                 # --- length metadata (estimates use chunker.approximate_tokens) -- #
                 "chunk_index": index,
                 "n_chunk_tokens_est": chunk.token_count,
@@ -398,11 +502,18 @@ def quality_flags(builds: list[DocumentBuild]) -> dict:
     retained = [r for b in builds for r in b.records]
     return {
         "max_input_length_limit": MAX_INPUT_LENGTH,
+        "max_target_length_limit": MAX_TARGET_LENGTH,
         "records_with_target_over_model_input": sum(
             1 for r in retained if r["n_target_tokens_est"] > MAX_INPUT_LENGTH
         ),
         "records_with_target_longer_than_chunk": sum(
             1 for r in retained if r["n_target_tokens_est"] > r["n_chunk_tokens_est"]
+        ),
+        "records_with_target_overflow": sum(
+            1 for r in retained if r.get("n_overflow_sentences")
+        ),
+        "target_overflow_sentences_total": sum(
+            r.get("n_overflow_sentences", 0) for r in retained
         ),
         "documents_with_single_chunk": sum(1 for b in builds if b.chunks_created == 1),
     }
@@ -469,6 +580,19 @@ def verify_split_isolation(doc_ids_by_split: dict[str, set[str]], content_hash_b
     }
 
 
+def judgement_outcome(build: DocumentBuild) -> str:
+    """Classify why a document did or did not keep judgement supervision."""
+    if not build.judgement_section_detected:
+        return "no_judgement_section"
+    if build.judgement_chunks == 0:
+        return "no_judgement_chunk"
+    if build.judgement_sentences_assigned == 0:
+        return "no_judgement_sentence"
+    if build.judgement_sentences_retained == 0:
+        return "sentences_assigned_elsewhere"
+    return "retained"
+
+
 def build_stats(
     *,
     mode: str,
@@ -478,12 +602,14 @@ def build_stats(
     doc_ids_by_split: dict[str, set[str]],
     content_hash_by_split: dict[str, dict],
     split_isolation: dict,
+    length_validation: dict,
     args: argparse.Namespace,
 ) -> dict:
     """Assemble ``build_stats.json``. No expected count is hard-coded anywhere."""
     chunks_created = sum(b.chunks_created for b in builds)
     chunks_retained = sum(len(b.records) for b in builds)
 
+    retained = [r for b in builds for r in b.records]
     target_tokens = [r["n_target_tokens_est"] for b in builds for r in b.records]
     chunk_tokens = [r["n_chunk_tokens_est"] for b in builds for r in b.records]
     pair_scores = [s for b in builds for r in b.records for s in r["alignment_scores"]]
@@ -529,6 +655,31 @@ def build_stats(
             "multi_label_rate": round(sentences_multi / sentences_total, 4) if sentences_total else 0.0,
             "labels_per_sentence": round(labels_total / sentences_total, 4) if sentences_total else 0.0,
         },
+        "judgement": {
+            "documents_by_outcome": dict(Counter(judgement_outcome(b) for b in builds)),
+            "documents_with_judgement_section": sum(
+                1 for b in builds if b.judgement_section_detected
+            ),
+            "documents_with_judgement_chunks": sum(
+                1 for b in builds if b.judgement_chunks
+            ),
+            "judgement_sentences_assigned": sum(
+                b.judgement_sentences_assigned for b in builds
+            ),
+            "judgement_sentences_retained": sum(
+                b.judgement_sentences_retained for b in builds
+            ),
+            "records_in_judgement_section": retained_by_section.get("judgement", 0),
+        },
+        "targets": {
+            "max_target_length": MAX_TARGET_LENGTH,
+            "records_with_overflow": sum(
+                1 for r in retained if r.get("n_overflow_sentences")
+            ),
+            "overflow_sentences_total": sum(
+                r.get("n_overflow_sentences", 0) for r in retained
+            ),
+        },
         "alignment": {
             "cross_encoder_model": CROSS_ENCODER_MODEL,
             "backend": backend,
@@ -555,6 +706,7 @@ def build_stats(
             "aligned_target": _length_stats(target_tokens),
             "chunk_text": _length_stats(chunk_tokens),
         },
+        "length_validation": length_validation,
         "quality_flags": quality_flags(builds),
         "split_isolation": split_isolation,
     }
@@ -563,6 +715,48 @@ def build_stats(
 # --------------------------------------------------------------------------- #
 # Output writers
 # --------------------------------------------------------------------------- #
+
+def write_manifest(
+    output_dir: Path,
+    args: argparse.Namespace,
+    stats: dict,
+    records_by_split: dict[str, list[dict]],
+    backend: str,
+) -> None:
+    """Write ``build_manifest.json``: identity, counts and hashes of every output."""
+    def sha256(path: Path) -> str | None:
+        if not path.exists():
+            return None
+        digest = hashlib.sha256()
+        with path.open("rb") as handle:
+            for block in iter(lambda: handle.read(65536), b""):
+                digest.update(block)
+        return digest.hexdigest()
+
+    generated = stats["generated_at"]
+    manifest = {
+        "build_id": f"{args.mode}-{generated}",
+        "generated_at": generated,
+        "source_dataset": DATASET_ID,
+        "mode": args.mode,
+        "alignment_backend": backend,
+        "documents_per_split": stats["dataset"]["documents_per_split"],
+        "records_per_split": {split: len(recs) for split, recs in records_by_split.items()},
+        "total_records": sum(len(recs) for recs in records_by_split.values()),
+        "length_validation": stats["length_validation"],
+        "output_hashes": {
+            name: sha256(output_dir / name)
+            for name in (
+                "train.jsonl", "validation.jsonl", "test.jsonl",
+                "reference_summaries.jsonl", "unassigned.jsonl", "build_stats.json",
+            )
+            if (output_dir / name).exists()
+        },
+    }
+    (output_dir / "build_manifest.json").write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+
 
 def write_jsonl(path: Path, rows: list[dict]) -> None:
     with path.open("w", encoding="utf-8") as handle:
@@ -718,6 +912,16 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
     backend = require_real_encoder(args.allow_stub_encoder)
     logger.info("Alignment backend: %s", backend)
 
+    output_dir = Path(args.output_dir)
+    refuse_occupied_output_dir(output_dir, getattr(args, "overwrite", False))
+
+    # Real BART tokenizer: lengths are validated, not estimated, for the dataset
+    # that will later be trained on. This fails the build when transformers is
+    # absent rather than shipping a dataset whose lengths are only approximate.
+    tokenizer = require_bart_tokenizer()
+    token_measure = _tokenizer_measure(tokenizer)
+    logger.info("Validating lengths with the %s tokenizer", BART_MODEL)
+
     splits = args.split or list(OFFICIAL_SPLITS)
     limit = args.sample  # --sample N == N complete documents per selected split
 
@@ -770,6 +974,8 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
                 redact_names=args.redact_names,
                 strip_preamble=not args.no_strip_preamble,
                 alignment_kwargs=alignment_kwargs,
+                token_measure=token_measure,
+                max_target_tokens=MAX_TARGET_LENGTH,
             )
             builds.append(build)
             records_by_split[split].extend(build.records)
@@ -784,6 +990,29 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
                 )
 
     split_isolation = verify_split_isolation(doc_ids_by_split, content_hash_by_split)
+
+    # Real-tokenizer validation. Nothing is truncated silently: a violation
+    # fails the build with a clear report.
+    all_records = [record for records in records_by_split.values() for record in records]
+    length_validation = validate_token_lengths(
+        all_records, tokenizer, MAX_INPUT_LENGTH, MAX_TARGET_LENGTH
+    )
+    if not length_validation["ok"]:
+        raise SystemExit(
+            "Refusing to write the dataset: real BART tokenizer length limits were "
+            "exceeded and nothing is truncated silently.\n"
+            f"  input violations (< {MAX_INPUT_LENGTH}): "
+            f"{length_validation['input_violations']}\n"
+            f"  target violations (< {MAX_TARGET_LENGTH}): "
+            f"{length_validation['target_violations']}\n"
+            f"  examples: {length_validation['violation_examples']}"
+        )
+    logger.info(
+        "Tokenizer validation passed: max input %d <= %d, max target %d <= %d",
+        length_validation["max_input_tokens"], MAX_INPUT_LENGTH,
+        length_validation["max_target_tokens"], MAX_TARGET_LENGTH,
+    )
+
     stats = build_stats(
         mode=args.mode,
         backend=backend,
@@ -792,10 +1021,10 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
         doc_ids_by_split=doc_ids_by_split,
         content_hash_by_split=content_hash_by_split,
         split_isolation=split_isolation,
+        length_validation=length_validation,
         args=args,
     )
 
-    output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     parquet_written = []
@@ -818,10 +1047,13 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
         "unassigned_report": "unassigned.jsonl",
         "inspection_sample": "inspect_sample.txt" if args.sample else None,
         "dataset_card": "README.md",
+        "manifest": "build_manifest.json",
     }
     (output_dir / "build_stats.json").write_text(
         json.dumps(stats, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
+
+    write_manifest(output_dir, args, stats, records_by_split, backend)
 
     inspection_records = []
     for split in records_by_split:
@@ -865,6 +1097,13 @@ def report(stats: dict, output_dir: Path) -> None:
         f"  records w/ target over {stats['quality_flags']['max_input_length_limit']} tok: "
         f"{stats['quality_flags']['records_with_target_over_model_input']}"
         f"  (single-chunk docs: {stats['quality_flags']['documents_with_single_chunk']})",
+        f"  target-overflow recs    : {stats['targets']['records_with_overflow']}"
+        f"  ({stats['targets']['overflow_sentences_total']} sentences)",
+        f"  judgement outcomes     : {stats['judgement']['documents_by_outcome']}",
+        f"  judgement sentences    : {stats['judgement']['judgement_sentences_assigned']} assigned / "
+        f"{stats['judgement']['judgement_sentences_retained']} retained",
+        f"  tokenizer validation   : max input {stats['length_validation']['max_input_tokens']}"
+        f" / max target {stats['length_validation']['max_target_tokens']}",
         f"  split isolation        : {'VERIFIED' if stats['split_isolation']['verified'] else 'FAILED'}"
         f"  (cross-split duplicate text: {stats['split_isolation']['cross_split_content_duplicates']})",
         f"  alignment backend      : {stats['alignment']['backend']}",
@@ -1033,6 +1272,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--allow-stub-encoder", action="store_true",
         help="Allow the meaningless mock encoder (plumbing tests only; blocks --push-to-hub).",
+    )
+    parser.add_argument(
+        "--overwrite", action="store_true",
+        help="Allow writing into an output_dir that already contains dataset outputs.",
     )
 
     args = parser.parse_args(argv)

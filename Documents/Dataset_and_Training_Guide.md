@@ -16,20 +16,25 @@ Covers three things:
 
 | Item | State |
 | --- | --- |
-| `src/data/section_summary_alignment.py` | Committed (`92b07ca`) |
-| `scripts/build_dataset.py` | Committed (`92b07ca`) |
+| `src/data/section_summary_alignment.py` | Committed (`92b07ca`, revised `55efe36`) — per-chunk scoring, one primary chunk per sentence |
+| `scripts/build_dataset.py` | Committed (`92b07ca`, revised `55efe36`) |
+| `scripts/validate_section_alignment.py` | Ported to the new alignment API — now a readable wrapper around `build_dataset.build_document` |
 | `src/data/chunker.py` — oversized-paragraph fix | Committed (`b8c310c`) |
-| `tests/test_chunker.py` | Committed (`b8c310c`) — 10 tests pass |
-| `datasets`, `pyarrow`, `sentence-transformers` | **Not installed** |
-| `transformers`, `torch`, `accelerate`, `rouge_score`, `bert_score` | **Not installed** |
-| Hugging Face login | **Not authenticated** |
+| Section classifier (`models/section_classifier.joblib`) | Merged from `review2` (`a76182d`) — MARRO + OpenNyAI InRhetoricalRoles, real appellant/respondent split |
+| Tests | `test_chunker.py`, `test_alignment.py`, `test_section_detector.py` — 27 pass, 1 skipped |
+| `training data/train.jsonl` | First sample build: 100 train documents → 1,287 records, 0 structure fallbacks. No `build_stats.json` committed with it |
+| `sentence-transformers` | **Install before building** — without it the Cross-Encoder silently falls back to a stub |
+| Hugging Face login | Needed only for upload |
 | `src/model/train.py`, Colab notebook, `src/eval/` | **`[TO BUILD]` — do not exist** |
-| Dataset built / uploaded | **Not yet** |
+| Full dataset built / uploaded | **Not yet** |
 
-So the code side is done and committed; the work that remains is environment setup, then the
-build stages. Since the earlier deliverables were once lost to a merge because they were never
-committed, keep committing as you go — and note this repository tracks `__pycache__/*.pyc` files,
-so `git status` will show bytecode churn; exclude it from commits.
+So the code side is done and committed; the work that remains is the validation and full build
+stages, then training and evaluation. Keep committing as you go. `__pycache__/` is ignored and no
+longer tracked, so `git status` stays free of bytecode churn.
+
+**Retraining the section classifier** (`scripts/train_section_classifier.py`) needs the MARRO data
+under `artifacts/marro/`, which is no longer in the repository. The committed model works as-is;
+re-download MARRO only if you need to retrain.
 
 ---
 
@@ -454,8 +459,9 @@ Carry these into the report; all are measured, not speculative.
    section. On the 12.8k-word sample judgment: 27 bounded chunks are produced, 15 are kept, and the
    capped output covers 60% of the words. Options: leave it, stride-sample across the section, or
    raise the cap.
-2. **Structure fallback is common** (~30% of documents in the existing artifacts) → `full_document`
-   labels, i.e. no section signal for a third of the data.
+2. **Structure fallback** was ~30% of documents with the earlier regex detector → `full_document`
+   labels, i.e. no section signal for a third of the data. With the trained classifier the 100-document
+   sample in `training data/train.jsonl` shows 0 fallbacks; confirm on the full build.
 3. **Alignment is a proxy.** The unassigned rate has measured 13–19%, meaning that share of each
    reference summary is never used as a target; multi-label sentences are deliberately attached to
    more than one chunk.
@@ -466,8 +472,10 @@ Carry these into the report; all are measured, not speculative.
    threshold from 0.30 to 0.65 (`artifacts/citation_distribution.json`), so it cannot support a
    claim that citations are checked. This does not affect training, but do not present it as a
    working hallucination guard until it is recalibrated.
-6. **Test sources are missing from the repo.** `tests/` contains only stale `.pyc` files whose
-   sources were never committed; `tests/test_chunker.py` is the only runnable test.
+6. **Some targets may exceed `MAX_TARGET_LENGTH` (448).** In the sample `train.jsonl`, 73 of 1,287
+   records have an *estimated* target length above 448 (max ~1.7k). The builder measures real
+   tokenizer lengths and reports violations in `build_stats.json` → `length_validation`; check that
+   before training rather than relying on the estimate.
 
 ---
 
@@ -490,7 +498,12 @@ python scripts/build_dataset.py --push-to-hub \
     --output_dir artifacts/training_data/full
 
 # --- tests ---------------------------------------------------------------
-python -m pytest tests/test_chunker.py -q
+python -m pytest tests -q
+
+# --- alignment spot-check (same code path as the builder) ----------------
+python scripts/validate_section_alignment.py --sample-size 15 \
+    --output artifacts/alignment_validation/validation_15docs.json
+python scripts/validate_section_alignment.py --demo
 
 # --- run inference with a fine-tuned checkpoint --------------------------
 export LEGAL_BART_MODEL=<HF_USERNAME>/legalLens-bart-base

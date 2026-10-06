@@ -137,6 +137,28 @@ def make_compute_metrics(tokenizer):
     return compute_metrics
 
 
+def free_cuda_cache_after_eval():
+    """Callback releasing the CUDA cache that beam-search evaluation leaves behind.
+
+    On an 8 GB laptop GPU the memory cached by ``predict_with_generate`` kept the
+    card ~95% full after the first evaluation; Windows then spilled training into
+    shared system memory and steps slowed from ~1.3 s to ~2.4 s for the rest of
+    the run.
+    """
+    import gc
+
+    import torch
+    from transformers import TrainerCallback
+
+    class _FreeCache(TrainerCallback):
+        def on_evaluate(self, args, state, control, **kwargs):
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+
+    return _FreeCache()
+
+
 def parse_args(argv=None):
     p = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     p.add_argument("--data", required=True, help="Build directory (train.jsonl/validation.jsonl) or Hub dataset id")
@@ -228,11 +250,20 @@ def main(argv=None) -> int:
         data_collator=DataCollatorForSeq2Seq(tokenizer, model=model),
         processing_class=tokenizer,
         compute_metrics=make_compute_metrics(tokenizer),
-        callbacks=[EarlyStoppingCallback(early_stopping_patience=args.patience)],
+        callbacks=[
+            EarlyStoppingCallback(early_stopping_patience=args.patience),
+            free_cuda_cache_after_eval(),
+        ],
     )
 
     train_result = trainer.train()
-    final_metrics = trainer.evaluate()
+    # Reuse the best checkpoint's end-of-epoch evaluation instead of running
+    # beam-search generation over the validation set a second time.
+    evals = [entry for entry in trainer.state.log_history if "eval_loss" in entry]
+    final_metrics = next(
+        (e for e in evals if e.get(f"eval_{training_args.metric_for_best_model}") == trainer.state.best_metric),
+        evals[-1] if evals else {},
+    )
 
     # Save the best checkpoint (load_best_model_at_end) at the top of output_dir,
     # which is what LEGAL_BART_MODEL should point at.

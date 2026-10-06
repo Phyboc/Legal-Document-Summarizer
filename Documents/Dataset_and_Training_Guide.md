@@ -495,6 +495,27 @@ Reference summaries average 827 words. The fine-tune wins ROUGE-L on 69/100 docu
 70/100 (full), and generation is ~2.5x faster (864 s vs 2,143 s for 100 documents) because it
 writes summaries rather than copying its input.
 
+### 3.4.2 Results — 3 epochs (`models/legallens-bart-base-e3`, recommended)
+
+Same data and recipe, 3 epochs (2,910 steps). Chunk-level validation ROUGE-L rose every epoch
+(33.2 → 34.6 → 34.7; eval loss 3.04 → 2.98 → 2.96), so the last checkpoint was the best and there
+is no sign of overfitting yet. Same 100 test documents (`artifacts/eval/test100_e3.json`):
+
+| Model | Output | ROUGE-1 | ROUGE-2 | ROUGE-L | BERTScore F1 |
+| --- | --- | --- | --- | --- | --- |
+| zero-shot | lawyer | 50.93 | 24.96 | 44.65 | 83.51 |
+| 1 epoch | lawyer | 53.86 | 29.48 | 48.03 | 84.92 |
+| **3 epochs** | lawyer | **55.15** | **30.75** | **49.64** | **85.04** |
+| zero-shot | full | 52.86 | 30.05 | 45.11 | 83.67 |
+| 1 epoch | full | 57.53 | 32.54 | 49.68 | 85.00 |
+| **3 epochs** | full | **58.80** | **34.04** | **51.07** | **85.13** |
+
+3 epochs beats 1 epoch on ROUGE-L for 65/100 (lawyer) and 64/100 (full) documents.
+
+Timing note: the run took 2 h 22 min instead of ~1 h because beam-search evaluation left the 8 GB GPU
+~96% full and Windows spilled training into shared memory (1.3 s → 2.4–4 s per step). `train.py` now
+frees the CUDA cache after each evaluation and no longer repeats the final evaluation.
+
 ### 3.5 Wiring the fine-tuned model back into inference
 
 ```bash

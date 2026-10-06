@@ -14,18 +14,30 @@ import sys
 from collections import Counter
 from pathlib import Path
 
+import pytest
+
 _PKG_ROOT = Path(__file__).resolve().parents[1]
 if str(_PKG_ROOT) not in sys.path:
     sys.path.insert(0, str(_PKG_ROOT))
 
 from config import CHUNK_OVERLAP, CHUNK_SIZE, MAX_CHUNKS_PER_DOC, MAX_INPUT_LENGTH
+import src.data.chunker as chunker
 from src.data.chunker import (
     approximate_tokens,
     chunk_document,
     chunk_section,
+    enforce_model_limit,
     split_by_tokens,
 )
 from src.data.section_detector import Paragraph
+
+
+@pytest.fixture(autouse=True)
+def estimator_only(monkeypatch):
+    """Keep these tests on the word estimator: offline, and independent of how the
+    real tokenizer happens to split the synthetic ``w0x0`` words. The real-token
+    guard is exercised separately with a fake counter below."""
+    monkeypatch.setattr(chunker, "model_tokens", lambda text: None)
 
 # A word count small enough that a paragraph stays inside the budget.
 SMALL_PARAGRAPH_WORDS = 10
@@ -225,3 +237,36 @@ def test_exploded_paragraph_still_respects_the_chunk_cap():
     assert len(set(ids)) == len(ids)
     assert ids == sorted(ids)
     assert set(ids) <= set(range(len(uncapped) + 2))
+
+
+# --------------------------------------------------------------------------- #
+# Real-token guard (enforce_model_limit)
+# --------------------------------------------------------------------------- #
+
+def _chars_per_token(divisor):
+    return lambda text: len(text) // divisor
+
+
+def test_chunk_dense_in_real_tokens_is_resplit(monkeypatch):
+    """A chunk inside the word budget but over the model window in real tokens is
+    re-split, the way citation-dense IN-ABS text was in the full build."""
+    monkeypatch.setattr(chunker, "model_tokens", _chars_per_token(2))
+    paras = [paragraph(i, prose(4)) for i in range(12)]
+    chunks = chunk_section(paras, "facts", start_chunk_id=3)
+
+    assert len(chunks) > 1
+    assert all(len(c.text) // 2 <= MAX_INPUT_LENGTH for c in chunks)
+    assert [c.chunk_id for c in chunks] == list(range(3, 3 + len(chunks)))
+
+
+def test_chunks_within_real_limit_are_untouched(monkeypatch):
+    monkeypatch.setattr(chunker, "model_tokens", _chars_per_token(100))
+    paras = [paragraph(i, prose(4)) for i in range(12)]
+    chunks = chunk_section(paras, "facts")
+    assert enforce_model_limit(chunks) == chunks
+
+
+def test_guard_is_a_no_op_without_a_tokenizer():
+    paras = [paragraph(i, prose(4)) for i in range(12)]
+    chunks = chunk_section(paras, "facts")
+    assert enforce_model_limit(chunks) == chunks

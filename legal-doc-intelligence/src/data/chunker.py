@@ -3,7 +3,7 @@ import re
 from dataclasses import dataclass, field
 import sys
 sys.path.insert(0, ".")
-from config import CHUNK_SIZE, CHUNK_OVERLAP, MAX_CHUNKS_PER_DOC
+from config import BART_MODEL, CHUNK_SIZE, CHUNK_OVERLAP, MAX_CHUNKS_PER_DOC, MAX_INPUT_LENGTH
 
 
 @dataclass
@@ -19,6 +19,59 @@ def approximate_tokens(text: str) -> int:
     """Rough token estimate: ~0.75 words per token."""
     words = text.split()
     return int(len(words) * 1.33)
+
+
+_tokenizer = None
+_tokenizer_unavailable = False
+
+
+def model_tokens(text: str) -> int | None:
+    """Real BART token count of ``text``, or None when the tokenizer cannot be loaded."""
+    global _tokenizer, _tokenizer_unavailable
+    if _tokenizer_unavailable:
+        return None
+    if _tokenizer is None:
+        try:
+            from transformers import AutoTokenizer
+            _tokenizer = AutoTokenizer.from_pretrained(BART_MODEL)
+        except Exception:  # transformers missing or model not reachable
+            _tokenizer_unavailable = True
+            return None
+    return len(_tokenizer(text, truncation=False)["input_ids"])
+
+
+def enforce_model_limit(chunks: list[Chunk], limit: int = MAX_INPUT_LENGTH) -> list[Chunk]:
+    """Re-split the rare chunk whose *real* token count exceeds the model window.
+
+    ``approximate_tokens`` counts words, which is accurate for prose (real counts
+    run ~0.92x the estimate) but badly under-counts citation-dense text - lists of
+    counsel's initials, "No. 15257 of 1987", "C.K.", "P.F." - where BART spends
+    roughly one token per three characters. The full IN-ABS build found 21 such
+    chunks (of ~37k) between 1,033 and 1,435 real tokens, which the model would
+    silently truncate. Chunks within the limit are returned untouched, so normal
+    chunk boundaries do not move. A no-op when the tokenizer is unavailable.
+    """
+    result = []
+    for chunk in chunks:
+        pieces = [chunk.text]
+        while True:
+            counts = [model_tokens(piece) for piece in pieces]
+            over = [i for i, n in enumerate(counts) if n is not None and n > limit]
+            if not over:
+                break
+            i = over[0]
+            # Shrink the estimated budget by how far the real count overshoots.
+            budget = max(int(approximate_tokens(pieces[i]) * limit / counts[i] * 0.9), 50)
+            pieces[i:i + 1] = split_by_tokens(pieces[i], budget)
+        if len(pieces) == 1:
+            result.append(chunk)
+            continue
+        for piece in pieces:
+            result.append(Chunk(
+                text=piece, section=chunk.section, chunk_id=chunk.chunk_id,
+                token_count=approximate_tokens(piece), para_range=chunk.para_range,
+            ))
+    return result
 
 
 def split_by_tokens(text: str, max_tokens: int) -> list[str]:
@@ -137,6 +190,9 @@ def chunk_section(paragraphs: list, section: str, chunk_size: int = CHUNK_SIZE,
             para_range=(current_start_para, current_end_para),
         ))
 
+    chunks = enforce_model_limit(chunks)
+    for offset, chunk in enumerate(chunks):
+        chunk.chunk_id = start_chunk_id + offset
     return chunks
 
 

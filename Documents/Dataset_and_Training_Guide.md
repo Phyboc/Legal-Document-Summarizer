@@ -471,6 +471,30 @@ The plan it implements:
 Report chunk-level and document-level numbers separately, and state the unassigned rate of the
 alignment pass so readers know how much of each reference summary was actually used as a target.
 
+### 3.4.1 Results — 1 epoch (`models/legallens-bart-base-e1`)
+
+Full build (`artifacts/training_data/full`): 5,346 / 712 / 1,070 documents → 31,029 / 4,198 / 6,133
+records; unassigned 17.9%, multi-label 21.5%, no length violations, 71 structure fallbacks (1%),
+10 cross-split duplicate documents inherited from IN-ABS. The build took ~2 h on an RTX 5070 laptop GPU.
+
+Training: 1 epoch, 970 steps, 27 min (bf16, batch 4 × accumulation 8). Chunk-level validation
+(500 chunks vs pseudo-targets): ROUGE-1/2/L 37.3 / 20.3 / 33.0, eval loss 3.09. The logged *train*
+loss (~25) is the sum over the 8 accumulation steps in this `transformers` version - divide by 8.
+
+Document-level, first 100 IN-ABS **test** documents, same documents for both models
+(`artifacts/eval/test100_e1.json`):
+
+| Model | Output | ROUGE-1 | ROUGE-2 | ROUGE-L | BERTScore F1 | Mean words |
+| --- | --- | --- | --- | --- | --- | --- |
+| `facebook/bart-base` (zero-shot) | lawyer | 50.93 | 24.96 | 44.65 | 83.51 | 592 |
+| fine-tuned, 1 epoch | lawyer | **53.86** | **29.48** | **48.03** | **84.92** | 543 |
+| `facebook/bart-base` (zero-shot) | full | 52.86 | 30.05 | 45.11 | 83.67 | 1,361 |
+| fine-tuned, 1 epoch | full | **57.53** | **32.54** | **49.68** | **85.00** | 730 |
+
+Reference summaries average 827 words. The fine-tune wins ROUGE-L on 69/100 documents (lawyer) and
+70/100 (full), and generation is ~2.5x faster (864 s vs 2,143 s for 100 documents) because it
+writes summaries rather than copying its input.
+
 ### 3.5 Wiring the fine-tuned model back into inference
 
 ```bash

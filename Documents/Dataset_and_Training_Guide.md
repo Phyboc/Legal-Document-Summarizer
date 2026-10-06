@@ -25,7 +25,10 @@ Covers three things:
 | `training data/train.jsonl` | First sample build: 100 train documents → 1,287 records, 0 structure fallbacks. No `build_stats.json` committed with it |
 | `sentence-transformers` | **Install before building** — without it the Cross-Encoder silently falls back to a stub |
 | Hugging Face login | Needed only for upload |
-| `src/model/train.py`, Colab notebook, `src/eval/` | **`[TO BUILD]` — do not exist** |
+| `src/model/train.py` | Written and smoke-tested locally (RTX 5070 8 GB, bf16) — §3.3 |
+| `src/eval/evaluate.py` | Written and smoke-tested — document-level ROUGE vs IN-ABS, §3.4 |
+| Summary sentence splitter | Abbreviation-aware + strips SCR page markers — val100 unassigned rate 28.6% → 12.9% (§1.3) |
+| Colab notebook | Not built — local GPU is sufficient for `bart-base` |
 | Full dataset built / uploaded | **Not yet** |
 
 So the code side is done and committed; the work that remains is the validation and full build
@@ -101,6 +104,15 @@ Check `build_stats.json` after every stage:
 And open `inspect_sample.txt` (written for `--sample` runs). For each record confirm the
 `aligned_target` is genuinely *about* the `chunk_text` above it. **A non-empty target is not
 evidence by itself.**
+
+**Measured on `val100` (100 validation documents, 2.5 min on GPU):** backend `CrossEncoder`,
+split isolation verified, unassigned rate 12.9%, multi-label 23.5%, 0 length violations, 1
+structure fallback, 258 of 871 chunks dropped for lack of an aligned target. The first build gave
+28.6% unassigned; about half of those were fragments ("No.", "V.", "Cr.", "[315 G] T.") from a
+splitter that broke inside citations, which `summary_sentences` now avoids.
+
+Argument sections are thin: 23 of 613 records are `arguments_appellant`/`arguments_respondent`,
+so the model sees few argument targets. Carry this into the report.
 
 ### 1.4 What a build produces
 
@@ -347,9 +359,9 @@ product's assumptions, and §2.7 becomes a workstream of its own rather than a c
 | Chunk-level training data (`chunk_text` → `aligned_target`) | ✅ produced by the builder |
 | Document-level references for evaluation (`reference_summaries.jsonl`) | ✅ produced by the builder |
 | Zero-shot baseline for comparison (`artifacts/baselines/zero_shot.json`) | ✅ exists |
-| `src/model/train.py` | ❌ `[TO BUILD]` |
-| Colab notebook | ❌ `[TO BUILD]` |
-| Document-level evaluation script (`src/eval/`) | ❌ `[TO BUILD]` |
+| `src/model/train.py` | ✅ |
+| Colab notebook | ❌ not needed if a local GPU is available |
+| Document-level evaluation script (`src/eval/evaluate.py`) | ✅ |
 
 Training is **not** CPU-bound work you want to do locally; use Colab (T4) for the fine-tune.
 Dataset *creation* stays local/CPU.
@@ -382,7 +394,21 @@ rather than letting the tokenizer silently truncate. Use the target distribution
 
 ### 3.3 Training recipe
 
-`[TO BUILD]` — the following is the intended configuration, not existing code.
+Implemented in `src/model/train.py`:
+
+```bash
+cd legal-doc-intelligence
+python -m src.model.train --data artifacts/training_data/full --output_dir models/legallens-bart-base
+# quick plumbing check first:
+python -m src.model.train --data artifacts/training_data/full --output_dir models/bart-smoke     --max_train_samples 64 --max_eval_samples 16 --epochs 1
+```
+
+It reads a build directory (or a Hub dataset id), logs how many inputs/targets the length limits
+truncate, saves the best checkpoint at the top of `--output_dir` and writes `training_meta.json`.
+Differences from the plan below, for an 8 GB laptop GPU: per-device batch 4 × accumulation 8
+(effective 32), bf16 when supported, gradient checkpointing on, `max_target_length` =
+`config.MAX_TARGET_LENGTH` (448, what the builder enforces), and validation capped at 500 chunks
+(`--max_eval_samples`) because beam-search generation over every chunk each epoch is slow.
 
 - **Base model**: `facebook/bart-base` (i.e. `config.BART_MODEL`; `LEGAL_BART_MODEL` env var overrides).
 - **Task**: chunk-level abstractive summarization, `chunk_text` → `aligned_target`.
@@ -417,7 +443,20 @@ Time the `val100` build first and extrapolate instead of trusting any estimate.
 
 ### 3.4 Evaluation — document level
 
-`[TO BUILD]`: a script that scores the *product*, not the chunk stage:
+Implemented in `src/eval/evaluate.py`:
+
+```bash
+python -m src.eval.evaluate --models facebook/bart-base models/legallens-bart-base     --sample 100 --output artifacts/eval/test100.json      # add --bertscore if bert-score is installed
+```
+
+It runs `src.pipeline.process_document` with each model on the same test documents and scores two
+outputs against the published summary: `lawyer` (Lawyer Mode body, 700-word budget) and `full`
+(all chunk summaries, de-duplicated). The zero-shot baseline is simply `facebook/bart-base` in the
+same run — the committed `zero_shot.json` covers only 3 documents. Zero-shot `bart-base` already
+scores high (2-doc smoke test: lawyer ROUGE-L ≈ 42, full ≈ 54) because it mostly copies its input
+and IN-ABS summaries are largely extractive, so the fine-tune has a real bar to clear.
+
+The plan it implements:
 
 1. Load the IN-ABS **test** split (`text`, `summary`).
 2. Run the frozen pipeline: preprocessing → section detection → chunking (same modules the builder uses).
@@ -441,7 +480,7 @@ python cli.py summarize artifacts/sample_judgment.txt --mode both
 
 `config.BART_MODEL` reads that env var, so no code change is needed to *run* the fine-tuned model.
 
-Two known bugs will misreport it (small fixes, worth doing before any demo):
+Two bugs that used to misreport it — **both fixed** (the summarizer also runs on GPU when one is available):
 
 1. `Summarizer.is_finetuned` is `False` whenever `model_name is None` — which is always, since the
    API and CLI never pass one — so the API reports `is_finetuned: false` even when

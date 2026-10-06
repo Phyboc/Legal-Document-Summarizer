@@ -92,12 +92,68 @@ logger = logging.getLogger(__name__)
 # thing discarding short orders ("Appeal dismissed." is two words).
 # ``cite_verify.split_sentences`` is left unchanged because cite-and-verify
 # depends on its existing behaviour.
+#
+# A plain ``(?<=[.!?])\s+`` split is not enough for IN-ABS headnotes: on the
+# val100 build roughly half of all "unassigned" sentences were fragments such as
+# "No.", "V.", "Cr." or "[315 G] T." produced by breaking inside case citations
+# and statute references. Those fragments inflate the unassigned rate and the
+# other halves end up in targets as broken sentences, so a boundary is skipped
+# when the period plainly belongs to an abbreviation. Erring towards merging is
+# deliberate: a merged sentence is still a faithful target, a fragment is not.
+_ABBREVIATIONS = frozenset({
+    # citation / statute vocabulary
+    "no", "nos", "v", "vs", "cr", "crl", "art", "arts", "s", "ss", "sec", "secs",
+    "sub", "cl", "cls", "sch", "ord", "r", "rr", "o", "p", "pp", "para", "paras",
+    "vol", "ch", "ed", "ibid", "viz", "cf", "ors", "anr", "govt", "dist", "rs",
+    "ltd", "co", "corp", "inc", "bros", "st", "hon'ble", "mr", "mrs", "ms", "dr",
+    "j", "jj", "cj", "sr", "jr", "approx", "illus", "expln", "explan", "u",
+    "dt", "suppl", "supp", "smt", "shri", "sri", "mohd", "md", "m/s",
+    # Indian law-report court abbreviations ("65 Bom. 425")
+    "all", "bom", "cal", "mad", "pat", "lah", "nag", "ker", "raj", "guj", "del",
+    "ori", "mys", "punj", "andh", "hyd", "sind", "oudh", "trav", "sc", "scr",
+})
+_BOUNDARY = re.compile(r"[.!?][\"')\]]*\s+")
+# SCR headnote pinpoint markers - "[473 B C]", "[184E H; 185A]" - point at pages
+# of the printed report. They are not content, and a model trained on them
+# learns to emit page references it cannot know.
+_PAGE_MARKER = re.compile(r"[ \t]*\[\s*\d{1,4}\s*[A-H]\d?(?:[\s,;-]*(?:\d{1,4}\s*)?[A-H]\d?)*\s*\]")
+
+
+def _is_abbreviation_boundary(text: str, period_index: int, next_char: str) -> bool:
+    """True when the period at ``period_index`` ends an abbreviation, not a sentence."""
+    if text[period_index] != ".":
+        return False
+    if not (next_char.isupper() or next_char.isdigit() or next_char in "\"'(["):
+        return True  # lowercase / punctuation continues the same sentence
+    token = text[:period_index].rsplit(None, 1)[-1] if text[:period_index].strip() else ""
+    token = token.lstrip("([\"'").lower()
+    if not token:
+        return False
+    if len(token) == 1 and token.isalpha():
+        return True  # initials, "v."
+    if "." in token:
+        return True  # "I.L.R", "Cr.P.C", "i.e", "S.C.R"
+    if token.isdigit() and len(token) <= 3:
+        return True  # list markers "1." and pinpoint numbers
+    return token in _ABBREVIATIONS
+
+
 def summary_sentences(full_summary: str) -> list[str]:
     """Split a reference summary into sentences, keeping every non-empty one."""
     if not full_summary:
         return []
-    parts = re.split(r"(?<=[.!?])\s+", full_summary)
-    return [part.strip() for part in parts if part.strip()]
+    full_summary = _PAGE_MARKER.sub("", full_summary)
+    sentences, start = [], 0
+    for match in _BOUNDARY.finditer(full_summary):
+        end = match.end()
+        if end >= len(full_summary):
+            break
+        if _is_abbreviation_boundary(full_summary, match.start(), full_summary[end]):
+            continue
+        sentences.append(full_summary[start:end])
+        start = end
+    sentences.append(full_summary[start:])
+    return [part.strip() for part in sentences if part.strip()]
 
 # The historical config module carried these alongside ALIGNMENT_THRESHOLD and
 # ALIGNMENT_RELATIVE_MARGIN. They are read from config when present so the

@@ -160,6 +160,24 @@ def test_short_operative_sentences_are_not_dropped():
     assert "Appeal dismissed." in sentences, "two-word order must be retained"
 
 
+def test_citation_abbreviations_do_not_split_sentences():
+    text = (
+        "Appeal No. 5 of 1950 was heard under section 561A, Cr. P. C. "
+        "Bhandari v. The District Magistrate, (1941) I.L.R. 65 Bom. 425, referred to. "
+        "1. The first point was argued by M/s. Tata Ltd. Held: the order stands!"
+    )
+    assert summary_sentences(text) == [
+        "Appeal No. 5 of 1950 was heard under section 561A, Cr. P. C. "
+        "Bhandari v. The District Magistrate, (1941) I.L.R. 65 Bom. 425, referred to.",
+        "1. The first point was argued by M/s. Tata Ltd. Held: the order stands!",
+    ]
+
+
+def test_scr_page_markers_are_removed_without_eating_the_period():
+    sentences = summary_sentences("The ambiguity [56 C] remains. It was held [184E H; 185A]. Done.")
+    assert sentences == ["The ambiguity remains.", "It was held.", "Done."]
+
+
 def test_cite_verify_short_sentence_drop_is_why_a_local_splitter_exists():
     # Documents the reason section_summary_alignment does not reuse the shared
     # helper: cite_verify.split_sentences drops < 3-word sentences.

@@ -1,0 +1,141 @@
+{
+  "generated_at": "2026-10-06T03:50:56+00:00",
+  "mode": "sample100",
+  "source_dataset": "percins/IN-ABS",
+  "dataset": {
+    "documents_processed": 100,
+    "documents_per_split": {
+      "validation": 100
+    },
+    "documents_failed": 0,
+    "documents_structure_fallback": 1,
+    "documents_at_chunk_cap": 9,
+    "documents_without_records": 0
+  },
+  "chunks": {
+    "created": 871,
+    "retained": 613,
+    "dropped_no_aligned_target": 258,
+    "retained_per_split": {
+      "validation": 613
+    },
+    "retained_by_section": {
+      "facts": 168,
+      "reasoning": 369,
+      "judgement": 44,
+      "arguments_appellant": 14,
+      "full_document": 9,
+      "arguments_respondent": 9
+    }
+  },
+  "summary_sentences": {
+    "total": 2220,
+    "aligned": 1933,
+    "unassigned": 287,
+    "unassigned_rate": 0.1293,
+    "multi_label": 521,
+    "multi_label_rate": 0.2347,
+    "labels_per_sentence": 1.1383
+  },
+  "judgement": {
+    "documents_by_outcome": {
+      "no_judgement_sentence": 48,
+      "retained": 44,
+      "no_judgement_section": 1,
+      "sentences_assigned_elsewhere": 7
+    },
+    "documents_with_judgement_section": 99,
+    "documents_with_judgement_chunks": 99,
+    "judgement_sentences_assigned": 137,
+    "judgement_sentences_retained": 82,
+    "records_in_judgement_section": 44
+  },
+  "targets": {
+    "max_target_length": 448,
+    "records_with_overflow": 14,
+    "overflow_sentences_total": 24
+  },
+  "alignment": {
+    "cross_encoder_model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+    "backend": "CrossEncoder",
+    "threshold": 0.4,
+    "relative_margin": 0.9,
+    "allow_multi_label": true,
+    "score_stats": {
+      "count": 1909,
+      "mean": 0.9384,
+      "median": 0.9891,
+      "p90": 0.9992,
+      "max": 1.0
+    }
+  },
+  "preprocessing": {
+    "strip_preamble": true,
+    "redact_names": false,
+    "fallback_section_label": "full_document",
+    "pii_pattern_counts": {
+      "aadhaar": 0,
+      "pan": 0,
+      "phone": 0,
+      "email": 0
+    },
+    "chunk_size": null,
+    "max_chunks_per_doc": 15
+  },
+  "lengths_estimated_with_approximate_tokens": {
+    "aligned_target": {
+      "mean": 157.3,
+      "median": 125.0,
+      "p90": 335.0,
+      "max": 543.0
+    },
+    "chunk_text": {
+      "mean": 656.5,
+      "median": 799.0,
+      "p90": 844.0,
+      "max": 850.0
+    }
+  },
+  "length_validation": {
+    "records": 613,
+    "max_input_tokens": 1018,
+    "max_target_tokens": 448,
+    "input_violations": 0,
+    "target_violations": 0,
+    "violation_examples": [],
+    "ok": true
+  },
+  "quality_flags": {
+    "max_input_length_limit": 1024,
+    "max_target_length_limit": 448,
+    "records_with_target_over_model_input": 0,
+    "records_with_target_longer_than_chunk": 24,
+    "records_with_target_overflow": 14,
+    "target_overflow_sentences_total": 24,
+    "documents_with_single_chunk": 0
+  },
+  "split_isolation": {
+    "verified": true,
+    "method": "official IN-ABS splits preserved; documents partitioned before chunking",
+    "documents_per_split": {
+      "validation": 100
+    },
+    "doc_id_overlaps": {},
+    "cross_split_content_duplicates": 0,
+    "cross_split_content_duplicate_examples": []
+  },
+  "outputs": {
+    "directory": "artifacts\\training_data\\val100",
+    "splits": {
+      "validation": "validation.jsonl"
+    },
+    "parquet_splits": [
+      "validation"
+    ],
+    "reference_summaries": "reference_summaries.jsonl",
+    "unassigned_report": "unassigned.jsonl",
+    "inspection_sample": "inspect_sample.txt",
+    "dataset_card": "README.md",
+    "manifest": "build_manifest.json"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "build_id": "sample100-2026-10-06T03:50:56+00:00",
+  "generated_at": "2026-10-06T03:50:56+00:00",
+  "source_dataset": "percins/IN-ABS",
+  "mode": "sample100",
+  "alignment_backend": "CrossEncoder",
+  "documents_per_split": {
+    "validation": 100
+  },
+  "records_per_split": {
+    "validation": 613
+  },
+  "total_records": 613,
+  "length_validation": {
+    "records": 613,
+    "max_input_tokens": 1018,
+    "max_target_tokens": 448,
+    "input_violations": 0,
+    "target_violations": 0,
+    "violation_examples": [],
+    "ok": true
+  },
+  "output_hashes": {
+    "validation.jsonl": "b58ee392413e69fecc0f1b900453eaf67c1abda1177c730be6150e86fa95735a",
+    "reference_summaries.jsonl": "e5beb89f8ca6c0f2d08dc6e4da6b600340524ff787a28b18404aeaf4d239700a",
+    "unassigned.jsonl": "ff3cb6e8b00bd4f60c0e1379bc387678f48ebf6e7a82c61d28ed8e4d9685a955",
+    "build_stats.json": "e310040411266a619294a10a67948a39bb7d63722fff7e2f063427b95967f76a"
+  }
+}

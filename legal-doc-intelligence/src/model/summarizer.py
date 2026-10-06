@@ -20,7 +20,9 @@ class Summarizer:
         self.tokenizer = None
         self.model = None
         self._loaded = False
-        self.is_finetuned = model_name is not None and model_name != "facebook/bart-base"
+        # Judge the resolved name, not the argument: the API and CLI never pass
+        # one, so a fine-tuned LEGAL_BART_MODEL used to report False.
+        self.is_finetuned = self.model_name != "facebook/bart-base"
 
     def _load(self):
         if self._loaded:
@@ -29,6 +31,10 @@ class Summarizer:
             from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
             self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
             self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name)
+            import torch
+            if torch.cuda.is_available():
+                self.model = self.model.to("cuda")
+            self.model.eval()
             self._loaded = True
         except (ImportError, OSError) as e:
             print(f"[Summarizer] Warning: couldn't load {self.model_name}: {e}")
@@ -45,7 +51,7 @@ class Summarizer:
 
         inputs = self.tokenizer(
             text, max_length=MAX_INPUT_LENGTH, truncation=True, return_tensors="pt"
-        )
+        ).to(self.model.device)
         output_ids = self.model.generate(
             **inputs,
             min_length=profile["min_length"],
@@ -87,11 +93,12 @@ def _extractive_fallback(text: str, max_words: int) -> str:
     return " ".join(out)
 
 
-_summarizer_instance = None
+_summarizer_instances: dict[str, Summarizer] = {}
 
 
 def get_summarizer(model_name: str = None) -> Summarizer:
-    global _summarizer_instance
-    if _summarizer_instance is None:
-        _summarizer_instance = Summarizer(model_name)
-    return _summarizer_instance
+    """Return a cached Summarizer per resolved model, so two models can be compared in one process."""
+    key = model_name or BART_MODEL
+    if key not in _summarizer_instances:
+        _summarizer_instances[key] = Summarizer(key)
+    return _summarizer_instances[key]

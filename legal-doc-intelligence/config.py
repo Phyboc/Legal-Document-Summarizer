@@ -26,9 +26,23 @@ MAX_INPUT_LENGTH = 1024
 MAX_TARGET_LENGTH = 448
 NUM_BEAMS = 4
 
-# Citation
-CITATION_THRESHOLD = 0.30
-CITATION_HIGH_CONFIDENCE = 0.65
+# Citation (Cite & Verify). Support is judged by an NLI model on the top-k
+# retrieved chunks (verbatim / compressed copies short-circuit to supported).
+# Thresholds are entailment probabilities calibrated by
+# scripts/calibrate_citations.py on 634 labelled sentences
+# (artifacts/citation_calibration.json): 0.45 maximises F1 (precision 0.84,
+# recall 0.77, AUC 0.891); 0.80 gives precision 0.90.
+_LOCAL_NLI = os.path.join(os.path.dirname(__file__), "models", "nli-deberta-v3-xsmall")
+# Prefer a local copy (models/nli-deberta-v3-xsmall) when present; otherwise the Hub id.
+CITATION_NLI_MODEL = os.getenv(
+    "LEGAL_NLI_MODEL",
+    _LOCAL_NLI if os.path.exists(os.path.join(_LOCAL_NLI, "model.safetensors")) else "cross-encoder/nli-deberta-v3-xsmall",
+)
+CITATION_TOP_K = 2
+CITATION_WINDOW_WORDS = 180
+CITATION_THRESHOLD = 0.45
+CITATION_HIGH_CONFIDENCE = 0.80
+CITATION_CONTRADICTION_THRESHOLD = 0.50
 
 # Sections
 SECTIONS = ["facts", "arguments_appellant", "arguments_respondent", "reasoning", "judgement"]

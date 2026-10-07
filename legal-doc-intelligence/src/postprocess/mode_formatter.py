@@ -31,8 +31,15 @@ def word_count(text: str) -> int:
 
 
 def trim_to_budget(text: str, max_words: int) -> str:
-    """Trim to a max word budget without breaking sentences."""
-    sents = re.split(r"(?<=[.!?])\s+", text)
+    """Trim to a max word budget without breaking sentences.
+
+    Uses the abbreviation-aware splitter: the naive split treated "Nos." and
+    "rr." as sentence ends, so trimming left fragments such as "...commanding
+    the State Government to appoint respondents Nos." in the output.
+    """
+    from src.data.section_summary_alignment import summary_sentences
+
+    sents = summary_sentences(text)
     out = []
     count = 0
     for s in sents:

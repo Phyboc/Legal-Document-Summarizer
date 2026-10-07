@@ -1,10 +1,14 @@
 """Aggregate chunk summaries into section-level and document-level summaries."""
-import re
+import sys
+
+sys.path.insert(0, ".")
+from src.data.section_summary_alignment import summary_sentences
 
 
 def dedupe_sentences(text: str) -> str:
     """Remove exact duplicate sentences that arise from overlapping chunks."""
-    sentences = re.split(r"(?<=[.!?])\s+", text)
+    # Abbreviation-aware: a naive split broke "respondents Nos. 2 and 3" apart.
+    sentences = summary_sentences(text)
     seen = set()
     kept = []
     for s in sentences:

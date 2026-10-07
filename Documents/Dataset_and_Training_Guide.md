@@ -549,13 +549,38 @@ Carry these into the report; all are measured, not speculative.
 3. **Alignment is a proxy.** The unassigned rate has measured 13–19%, meaning that share of each
    reference summary is never used as a target; multi-label sentences are deliberately attached to
    more than one chunk.
-4. **The token estimator is word-based.** A paragraph containing no whitespace at all is
-   under-estimated and would still arrive as one chunk. Low risk on real judgments; the clean fix
-   is a character-length guard.
-5. **`Cite & Verify` does not currently discriminate.** Measured verified rate is ~98.5% at every
-   threshold from 0.30 to 0.65 (`artifacts/citation_distribution.json`), so it cannot support a
-   claim that citations are checked. This does not affect training, but do not present it as a
-   working hallucination guard until it is recalibrated.
+4. **The token estimator is word-based — now guarded.** It under-counts citation-dense text
+   (~3 characters per BART token): the first full build found 21 chunks of 1,033–1,435 real
+   tokens and refused to write. `chunk_section` now measures each chunk with the real tokenizer
+   and re-splits only those over `MAX_INPUT_LENGTH`; normal chunk boundaries are unchanged.
+5. **`Cite & Verify` — fixed and calibrated.** The original verifier used the MS-MARCO
+   *relevance* cross-encoder, which rates every sentence of a summary relevant to its own judgement:
+   ~98.5% "verified" at every threshold (`artifacts/citation_distribution.json`). It now works in
+   two stages: MS-MARCO still picks the cited chunk; support is decided by
+   `cross-encoder/nli-deberta-v3-xsmall` (entailment, scored over ~180-word windows of the top-2
+   chunks), with verbatim or compressed copies (words dropped, none added or changed, no negation
+   dropped) accepted directly. Each citation carries `support` = supported / unsupported /
+   contradicted.
+
+   Calibrated by `scripts/calibrate_citations.py` on 634 sentences from 40 test judgements: the
+   3-epoch model's own summary sentences as positives, and the same sentences with a negation
+   inserted, a number changed, the outcome flipped, or taken from another judgement as negatives
+   (`artifacts/citation_calibration.json`):
+
+   | At the chosen threshold (0.45) | Old (MS-MARCO) | New |
+   | --- | --- | --- |
+   | AUC | 0.545 | **0.891** |
+   | Precision of "verified" | 0.41 | **0.84** |
+   | Hallucinated sentences marked verified | 81% | **9%** |
+   | Caught: negation / number / outcome / other case | 3% / 0% / 3% / 89% | **89% / 91% / 83% / 99%** |
+   | Genuine generated sentences verified | 94% | 77% |
+
+   Limits to state in the report: the negatives are synthetic perturbations, the positives are
+   model output assumed to be supported (some are genuine hallucinations, so true precision is
+   likely higher and recall lower than shown), and NLI still struggles with very long legal
+   sentences and lists of case names. Splitting at legal abbreviations ("Nos.", "Rs.") also
+   produced fragments in the summaries themselves; the formatter and de-duplication now use the
+   abbreviation-aware splitter.
 6. **Some targets may exceed `MAX_TARGET_LENGTH` (448).** In the sample `train.jsonl`, 73 of 1,287
    records have an *estimated* target length above 448 (max ~1.7k). The builder measures real
    tokenizer lengths and reports violations in `build_stats.json` → `length_validation`; check that

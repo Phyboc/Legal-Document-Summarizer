@@ -15,6 +15,19 @@ MAX_CHUNKS_PER_DOC = 15
 ALIGNMENT_THRESHOLD = 0.40
 ALIGNMENT_RELATIVE_MARGIN = 0.90
 
+# Evidence-aware alignment layer (src/data/evidence_alignment.py).
+#
+# OFF by default, deliberately: the layer is implemented but NOT calibrated yet,
+# so the pure Cross-Encoder behaviour stays available for a like-for-like
+# comparison. Calibrate with scripts/audit_alignment_evidence.py, then set these.
+# The numeric values below are UNCALIBRATED placeholders (see EvidenceSettings).
+ALIGNMENT_EVIDENCE_MODE = False
+ALIGNMENT_EVIDENCE_COVERAGE_BOUND = 0.50
+ALIGNMENT_EVIDENCE_AMBIGUITY_MARGIN = 0.02
+ALIGNMENT_EVIDENCE_MIN_SPAN = 4
+ALIGNMENT_EVIDENCE_MAX_RARE_DF = 1
+ALIGNMENT_EVIDENCE_CONTRADICTION_MODE = "high_confidence"
+
 # Summary lengths
 LAWYER_MODE_MIN_WORDS = 500
 LAWYER_MODE_MAX_WORDS = 700

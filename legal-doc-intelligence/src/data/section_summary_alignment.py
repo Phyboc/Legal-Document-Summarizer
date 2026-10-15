@@ -76,6 +76,7 @@ from dataclasses import dataclass, field
 sys.path.insert(0, ".")
 
 import config
+from src.data import evidence_alignment as evidence_layer
 from src.data.chunker import approximate_tokens
 from src.shared.cross_encoder import get_cross_encoder
 
@@ -115,6 +116,27 @@ def _config_value(name: str, default):
     return getattr(config, name, default)
 
 
+def evidence_settings_from_config():
+    """Resolve the evidence-layer knobs from config, with documented fallbacks.
+
+    The fallbacks are the module's own (uncalibrated) placeholders, so a missing
+    config entry cannot silently change behaviour - and ``build_stats.json``
+    records whichever values were actually used.
+    """
+    defaults = evidence_layer.EvidenceSettings()
+    return evidence_layer.EvidenceSettings(
+        coverage_bound=_config_value("ALIGNMENT_EVIDENCE_COVERAGE_BOUND", defaults.coverage_bound),
+        ambiguity_margin=_config_value(
+            "ALIGNMENT_EVIDENCE_AMBIGUITY_MARGIN", defaults.ambiguity_margin
+        ),
+        min_common_span=_config_value("ALIGNMENT_EVIDENCE_MIN_SPAN", defaults.min_common_span),
+        max_rare_df=_config_value("ALIGNMENT_EVIDENCE_MAX_RARE_DF", defaults.max_rare_df),
+        contradiction_mode=_config_value(
+            "ALIGNMENT_EVIDENCE_CONTRADICTION_MODE", defaults.contradiction_mode
+        ),
+    )
+
+
 def alignment_settings() -> tuple[float, bool, float]:
     """Resolve the validated alignment configuration.
 
@@ -142,6 +164,13 @@ class SentenceAlignment:
     # is never copied into one chunk per assigned section.
     primary_chunk: int | None = None
     primary_chunk_score: float = 0.0
+    # --- evidence layer (only populated when evidence mode is enabled) -------- #
+    # One of SUPPORTED / AMBIGUOUS / UNSUPPORTED / NOT_SUMMARY_CONTENT, or None
+    # when the sentence never reached the evidence layer (below the CE threshold).
+    decision: str | None = None
+    evidence: dict | None = None
+    evidence_reason: str | None = None
+    ambiguity: dict | None = None
 
     @property
     def best_label(self) -> str | None:
@@ -177,6 +206,15 @@ class AlignmentResult:
     per_sentence: list[SentenceAlignment] = field(default_factory=list)
     threshold: float = 0.0
     multi_label: bool = True
+    # --- evidence layer ------------------------------------------------------ #
+    # Ambiguous sentences (evidence split across distant chunks, or a genuine
+    # tie). Never written to a training record.
+    ambiguous: list[dict] = field(default_factory=list)
+    # Counts per evidence decision, plus "below_threshold" for sentences the
+    # Cross-Encoder itself refused.
+    decision_counts: dict = field(default_factory=dict)
+    evidence_mode: bool = False
+    evidence_settings: dict = field(default_factory=dict)
 
     @property
     def total_sentences(self) -> int:
@@ -274,6 +312,9 @@ def align_summary_to_sections(
     allow_multi_label: bool | None = None,
     relative_margin: float | None = None,
     precomputed: tuple[list[str], list[dict[str, float]], list[list[float]]] | None = None,
+    evidence_mode: bool | None = None,
+    evidence_settings=None,
+    chunk_positions: list[float] | None = None,
 ) -> AlignmentResult:
     """Align each sentence of ``full_summary`` to section label(s) and to a chunk.
 
@@ -288,7 +329,21 @@ def align_summary_to_sections(
 
     ``precomputed`` allows reusing an existing ``score_summary_sentences``
     result instead of paying for the Cross-Encoder pass twice.
+
+    ``evidence_mode`` (default OFF, from ``config.ALIGNMENT_EVIDENCE_MODE``) adds
+    the evidence layer between the existing candidate selection and the primary
+    chunk. With it off, this function behaves exactly as before. With it on, the
+    plausible candidate chunks are passed through ``evidence_alignment``: only a
+    SUPPORTED sentence is written to a chunk, and AMBIGUOUS / UNSUPPORTED /
+    NOT_SUMMARY_CONTENT sentences are attached nowhere and reported instead.
+    ``chunk_positions`` are optional document positions (0..1) derived from
+    ``Chunk.para_range`` midpoints, used only as the evidence layer's soft final
+    tie-break - never as a hard rule.
     """
+    if evidence_mode is None:
+        evidence_mode = bool(_config_value("ALIGNMENT_EVIDENCE_MODE", False))
+    if evidence_settings is None:
+        evidence_settings = evidence_settings_from_config()
     if threshold is None or allow_multi_label is None or relative_margin is None:
         cfg_threshold, cfg_multi_label, cfg_margin = alignment_settings()
         if threshold is None:
@@ -317,7 +372,16 @@ def align_summary_to_sections(
     chunk_sentences: dict[int, list[str]] = {}
     chunk_pair_scores: dict[int, list[float]] = {}
     unassigned: list[dict] = []
+    ambiguous: list[dict] = []
     per_sentence: list[SentenceAlignment] = []
+    decision_counts: dict = {}
+
+    # Document-local rarity for Tier-2 evidence: how many chunks of THIS document
+    # contain each content word. Computed once, only when evidence mode is on.
+    document_df = (
+        evidence_layer.document_frequency([text for _, text in section_chunks])
+        if evidence_mode else None
+    )
 
     for sentence, per_label, row in zip(sentences, all_scores, chunk_scores):
         record = SentenceAlignment(sentence=sentence, scores=per_label)
@@ -330,6 +394,7 @@ def align_summary_to_sections(
                 "sentence": sentence,
                 "best_score": record.best_score,
                 "best_label": record.best_label,
+                "reason": "below_threshold",
             })
         elif allow_multi_label:
             cutoff = record.best_score * relative_margin
@@ -337,24 +402,91 @@ def align_summary_to_sections(
         else:
             record.assigned = [max(above, key=lambda lbl: per_label[lbl])]
 
-        # ``assigned`` remains the plausible section labels (build statistics and
-        # metadata depend on it), but the sentence now has at most ONE training
-        # destination: the single highest-scoring chunk among the plausible
-        # sections. It is never copied into one chunk per section.
-        for label in record.assigned:
-            aligned_sentences[label].append(sentence)
-
         candidate_indices = [
             j for j, (label, _) in enumerate(section_chunks) if label in record.assigned
         ]
+
+        # Attach at most ONE chunk. In evidence mode the evidence layer decides
+        # whether this sentence is supported by any candidate at all; in the
+        # default mode the previous highest-CE-chunk rule is kept verbatim.
+        attach_index: int | None = None
         if candidate_indices:
-            primary_chunk = max(candidate_indices, key=lambda j: row[j])
-            record.primary_chunk = primary_chunk
-            record.primary_chunk_score = float(row[primary_chunk])
-            chunk_sentences.setdefault(primary_chunk, []).append(sentence)
-            chunk_pair_scores.setdefault(primary_chunk, []).append(float(row[primary_chunk]))
+            if not evidence_mode:
+                attach_index = max(candidate_indices, key=lambda j: row[j])
+            else:
+                candidates = [
+                    evidence_layer.Candidate(
+                        index=j,
+                        label=section_chunks[j][0],
+                        text=section_chunks[j][1],
+                        ce_score=float(row[j]),
+                        position=(chunk_positions[j] if chunk_positions else None),
+                    )
+                    for j in candidate_indices
+                ]
+                decision = evidence_layer.decide(
+                    sentence,
+                    candidates,
+                    settings=evidence_settings,
+                    document_frequency=document_df,
+                )
+                record.decision = decision.decision
+                record.evidence_reason = decision.reason
+                record.ambiguity = decision.ambiguity
+                record.evidence = {
+                    "sentence": (
+                        decision.sentence_evidence.as_dict()
+                        if decision.sentence_evidence is not None else None
+                    ),
+                    "candidates": [c.as_dict() for c in decision.candidates],
+                }
+                decision_counts[decision.decision] = decision_counts.get(decision.decision, 0) + 1
+
+                if decision.decision == evidence_layer.DECISION_AMBIGUOUS:
+                    ambiguous.append({
+                        "sentence": sentence,
+                        "reason": decision.reason,
+                        "assigned_labels": list(record.assigned),
+                        "ambiguity": decision.ambiguity,
+                        "evidence": record.evidence,
+                        "candidates": [
+                            {
+                                "chunk_index": c.index,
+                                "section": c.label,
+                                "ce_score": round(float(c.ce_score), 4),
+                                "chunk_preview": section_chunks[c.index][1][:300],
+                            }
+                            for c in decision.candidates
+                        ],
+                    })
+                elif decision.decision != evidence_layer.DECISION_SUPPORTED:
+                    unassigned.append({
+                        "sentence": sentence,
+                        "best_score": record.best_score,
+                        "best_label": record.best_label,
+                        "reason": decision.reason,
+                        "decision": decision.decision,
+                    })
+                if decision.attached:
+                    attach_index = decision.primary_index
+
+        if attach_index is not None:
+            # ``assigned`` remains the plausible section labels (build statistics
+            # and metadata depend on it), but the sentence has exactly ONE
+            # training destination. It is never copied into one chunk per section.
+            for label in record.assigned:
+                aligned_sentences[label].append(sentence)
+            record.primary_chunk = attach_index
+            record.primary_chunk_score = float(row[attach_index])
+            chunk_sentences.setdefault(attach_index, []).append(sentence)
+            chunk_pair_scores.setdefault(attach_index, []).append(float(row[attach_index]))
 
         per_sentence.append(record)
+
+    if evidence_mode:
+        decision_counts["below_threshold"] = sum(
+            1 for entry in unassigned if entry.get("reason") == "below_threshold"
+        )
 
     aligned = {label: " ".join(sents) for label, sents in aligned_sentences.items() if sents}
     aligned_by_chunk = {j: " ".join(sents) for j, sents in chunk_sentences.items()}
@@ -366,6 +498,10 @@ def align_summary_to_sections(
         chunk_sentences=chunk_sentences,
         chunk_pair_scores=chunk_pair_scores,
         unassigned=unassigned,
+        ambiguous=ambiguous,
+        decision_counts=decision_counts,
+        evidence_mode=bool(evidence_mode),
+        evidence_settings=evidence_settings.as_dict() if evidence_mode else {},
         per_sentence=per_sentence,
         threshold=threshold,
         multi_label=allow_multi_label,

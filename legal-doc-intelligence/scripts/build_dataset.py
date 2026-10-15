@@ -75,9 +75,18 @@ from src.data.section_detector import (  # noqa: E402
     fallback_to_single_section,
     group_by_section,
 )
+from src.data.evidence_alignment import (  # noqa: E402
+    DECISION_AMBIGUOUS,
+    DECISION_NOT_SUMMARY_CONTENT,
+    DECISION_SUPPORTED,
+    DECISION_UNSUPPORTED,
+    DECISIONS,
+    EvidenceSettings,
+)
 from src.data.section_summary_alignment import (  # noqa: E402
     align_summary_to_sections,
     build_aligned_target,
+    evidence_settings_from_config,
     validate_token_lengths,
 )
 
@@ -133,6 +142,10 @@ class DocumentBuild:
     judgement_sentences_retained: int = 0
     # Sentences that did not fit the target token budget (recorded, not discarded).
     target_overflow_sentences: int = 0
+    # Evidence layer: how each sentence was decided, and the ambiguous ones kept
+    # for inspection. Empty when evidence mode is off.
+    evidence_decision_counts: dict = field(default_factory=dict)
+    ambiguous: list[dict] = field(default_factory=list)
     pii_counts: dict = field(default_factory=dict)
     error: str | None = None
 
@@ -259,7 +272,23 @@ def require_real_encoder(allow_stub: bool) -> str:
 # A build into a directory that already holds these is refused unless --overwrite
 # is given. This guards against the failure that produced the earlier
 # 1287-record file: two independent builds concatenated into one JSONL.
-DATASET_OUTPUT_FILES = ("train.jsonl", "validation.jsonl", "test.jsonl", "build_stats.json")
+DATASET_OUTPUT_FILES = (
+    "train.jsonl", "validation.jsonl", "test.jsonl", "build_stats.json", "ambiguous.jsonl",
+)
+
+
+def _chunk_positions(chunks) -> list[float]:
+    """Document position (0..1) of each chunk, from its ``para_range`` midpoint.
+
+    Deliberately NOT ``chunk_index``: ``chunk_document`` emits chunks in
+    section-block order, so the index is not a document position. ``para_range``
+    does span source paragraphs, so its midpoint is a real one. Used only as the
+    evidence layer's soft, final tie-break - never as a hard rule.
+    """
+    spans = [chunk.para_range for chunk in chunks]
+    highest = max((end for _, end in spans), default=0)
+    denominator = highest if highest > 0 else 1
+    return [((start + end) / 2) / denominator for start, end in spans]
 
 
 def refuse_occupied_output_dir(output_dir: Path, overwrite: bool) -> None:
@@ -364,9 +393,14 @@ def build_document(
         #       chunks with the shared Cross-Encoder (existing implementation).
         section_chunks = [(chunk.section, chunk.text) for chunk in chunks]
         alignment = align_summary_to_sections(
-            section_chunks, summary or "", **(alignment_kwargs or {})
+            section_chunks,
+            summary or "",
+            chunk_positions=_chunk_positions(chunks),
+            **(alignment_kwargs or {}),
         )
 
+        result.evidence_decision_counts = dict(alignment.decision_counts)
+        result.ambiguous = [{"doc_id": doc_id, **entry} for entry in alignment.ambiguous]
         result.summary_sentences = alignment.total_sentences
         result.multi_label_sentences = sum(1 for r in alignment.per_sentence if len(r.assigned) > 1)
         result.assigned_labels = sum(len(r.assigned) for r in alignment.per_sentence)
@@ -401,6 +435,9 @@ def build_document(
         # primary chunk, so it appears in at most one record. Chunks with no
         # target are dropped.
         assigned_by_sentence = {r.sentence: r.assigned for r in alignment.per_sentence}
+        # Evidence provenance, only attached when the layer actually ran, so the
+        # default record schema stays identical to the pure Cross-Encoder build.
+        evidence_provenance: dict = {}
         measure = token_measure or approximate_tokens
 
         for index, chunk in enumerate(chunks):
@@ -430,8 +467,17 @@ def build_document(
                 round(s, 4)
                 for s in alignment.chunk_pair_scores.get(index, [])[:len(matched)]
             ]
+            if alignment.evidence_mode:
+                reason_by_sentence = {r.sentence: r.evidence_reason for r in alignment.per_sentence}
+                evidence_provenance = {
+                    "evidence_decision": DECISION_SUPPORTED,
+                    "evidence_reasons": [reason_by_sentence.get(s) for s in matched],
+                    "evidence_settings": alignment.evidence_settings,
+                }
 
             result.records.append({
+                # --- evidence provenance (evidence mode only) --------------- #
+                **evidence_provenance,
                 # --- required training fields -------------------------------- #
                 "doc_id": doc_id,
                 "chunk_id": chunk.chunk_id,
@@ -597,6 +643,7 @@ def build_stats(
     *,
     mode: str,
     backend: str,
+    alignment_kwargs_settings=None,
     builds: list[DocumentBuild],
     records_by_split: dict[str, list[dict]],
     doc_ids_by_split: dict[str, set[str]],
@@ -626,6 +673,19 @@ def build_stats(
     pii_counts: Counter = Counter()
     for build in builds:
         pii_counts.update(build.pii_counts)
+
+    # --- evidence layer accounting ------------------------------------------ #
+    # Counts are reported even at zero, so a build without evidence mode shows
+    # explicit zeros rather than an absent section that could be misread.
+    evidence_mode = bool(getattr(args, "evidence_mode", False))
+    evidence_counts: Counter = Counter()
+    for build in builds:
+        evidence_counts.update(build.evidence_decision_counts or {})
+    decisions_total = sum(v for k, v in evidence_counts.items() if k in DECISIONS)
+    ambiguous_total = sum(len(b.ambiguous) for b in builds)
+
+    def _rate(key: str) -> float:
+        return round(evidence_counts.get(key, 0) / decisions_total, 4) if decisions_total else 0.0
 
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -694,6 +754,28 @@ def build_stats(
                 "max": round(max(pair_scores), 4) if pair_scores else 0.0,
             },
         },
+        "evidence": {
+            "mode": evidence_mode,
+            # Recorded verbatim so an evidence build can never be mistaken for a
+            # calibrated one: these are the values the aligner actually applied.
+            "settings": (
+                alignment_kwargs_settings.as_dict()
+                if alignment_kwargs_settings is not None
+                else evidence_settings_from_config().as_dict()
+            ),
+            "calibrated": False,
+            "decision_counts": dict(evidence_counts),
+            "decisions_total": decisions_total,
+            "supported": evidence_counts.get(DECISION_SUPPORTED, 0),
+            "ambiguous": evidence_counts.get(DECISION_AMBIGUOUS, 0),
+            "unsupported": evidence_counts.get(DECISION_UNSUPPORTED, 0),
+            "not_summary_content": evidence_counts.get(DECISION_NOT_SUMMARY_CONTENT, 0),
+            "supported_rate": _rate(DECISION_SUPPORTED),
+            "ambiguous_rate": _rate(DECISION_AMBIGUOUS),
+            "unsupported_rate": _rate(DECISION_UNSUPPORTED),
+            "not_summary_content_rate": _rate(DECISION_NOT_SUMMARY_CONTENT),
+            "ambiguous_sentences": ambiguous_total,
+        },
         "preprocessing": {
             "strip_preamble": not args.no_strip_preamble,
             "redact_names": args.redact_names,
@@ -740,6 +822,7 @@ def write_manifest(
         "source_dataset": DATASET_ID,
         "mode": args.mode,
         "alignment_backend": backend,
+        "alignment_mode": "evidence" if getattr(args, "evidence_mode", False) else "cross_encoder",
         "documents_per_split": stats["dataset"]["documents_per_split"],
         "records_per_split": {split: len(recs) for split, recs in records_by_split.items()},
         "total_records": sum(len(recs) for recs in records_by_split.values()),
@@ -748,10 +831,13 @@ def write_manifest(
             name: sha256(output_dir / name)
             for name in (
                 "train.jsonl", "validation.jsonl", "test.jsonl",
-                "reference_summaries.jsonl", "unassigned.jsonl", "build_stats.json",
+                "reference_summaries.jsonl", "unassigned.jsonl", "ambiguous.jsonl",
+                "build_stats.json",
             )
             if (output_dir / name).exists()
         },
+        "evidence_mode": bool(getattr(args, "evidence_mode", False)),
+        "evidence_settings": stats["evidence"]["settings"],
     }
     (output_dir / "build_manifest.json").write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
@@ -822,6 +908,24 @@ def write_dataset_card(path: Path, stats: dict, records_by_split: dict[str, list
     """Dataset documentation that states the provenance and the caveats."""
     counts = ", ".join(f"`{split}`: {len(recs)}" for split, recs in records_by_split.items())
     alignment = stats["alignment"]
+    evidence = stats["evidence"]
+    evidence_note = ""
+    if evidence["mode"]:
+        evidence_note = (
+            "\n### Evidence-aware alignment (UNCALIBRATED)\n\n"
+            "This build additionally required each summary sentence to have "
+            "evidence in the candidate chunk it was attached to. The decision "
+            "layer is rule-based (dates, years, amounts, provisions, citations, "
+            "content-word overlap) and uses lexicographic ranking - no weights. "
+            f"Settings applied: `{evidence['settings']}`. Outcomes: "
+            f"supported `{evidence['supported']}`, ambiguous `{evidence['ambiguous']}`, "
+            f"unsupported `{evidence['unsupported']}`, "
+            f"not-summary-content `{evidence['not_summary_content']}`. Only "
+            "supported sentences were written to a record; ambiguous and "
+            "unsupported sentences are reported in `ambiguous.jsonl` and "
+            "`unassigned.jsonl` instead. The thresholds are placeholders pending "
+            "the calibration sweep, so the figures above are NOT a quality claim.\n"
+        )
     card = f"""---
 language:
 - en
@@ -865,6 +969,7 @@ BART summarizer that produces structured, section-aware judgments summaries.
 * Sentences clearing no threshold are **left unassigned** rather than pushed
   into a nearest neighbour.
 * Chunks with no aligned target are **excluded** from the supervised dataset.
+{evidence_note}
 
 | Setting | Value |
 | --- | --- |
@@ -934,12 +1039,25 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
         alignment_kwargs["relative_margin"] = args.relative_margin
     if args.no_multi_label:
         alignment_kwargs["allow_multi_label"] = False
+    if getattr(args, "evidence_mode", False):
+        # Evidence mode is opt-in and, until calibrated, must be recorded as such
+        # in build_stats.json / build_manifest.json.
+        alignment_kwargs["evidence_mode"] = True
+        alignment_kwargs["evidence_settings"] = EvidenceSettings(
+            coverage_bound=args.evidence_coverage_bound,
+            ambiguity_margin=args.evidence_ambiguity_margin,
+            min_common_span=args.evidence_min_span,
+            max_rare_df=args.evidence_max_rare_df,
+            contradiction_mode=args.evidence_contradiction_mode,
+        )
+        logger.info("Evidence-aware alignment ENABLED (uncalibrated): %s", alignment_kwargs["evidence_settings"].as_dict())
 
     builds: list[DocumentBuild] = []
     records_by_split: dict[str, list[dict]] = {}
     doc_ids_by_split: dict[str, set[str]] = {}
     content_hash_by_split: dict[str, dict] = {}
     all_unassigned: list[dict] = []
+    all_ambiguous: list[dict] = []
     references: list[dict] = []
 
     for split in splits:
@@ -980,6 +1098,7 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
             builds.append(build)
             records_by_split[split].extend(build.records)
             all_unassigned.extend(build.unassigned)
+            all_ambiguous.extend(build.ambiguous)
             if build.reference is not None:
                 references.append(build.reference)
 
@@ -1016,6 +1135,7 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
     stats = build_stats(
         mode=args.mode,
         backend=backend,
+        alignment_kwargs_settings=alignment_kwargs.get("evidence_settings"),
         builds=builds,
         records_by_split=records_by_split,
         doc_ids_by_split=doc_ids_by_split,
@@ -1038,6 +1158,9 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
 
     write_jsonl(output_dir / "reference_summaries.jsonl", references)
     write_jsonl(output_dir / "unassigned.jsonl", all_unassigned)
+    # Written even when empty, so a consumer can tell "no ambiguous sentences"
+    # apart from "evidence mode was never run".
+    write_jsonl(output_dir / "ambiguous.jsonl", all_ambiguous)
 
     stats["outputs"] = {
         "directory": str(output_dir),
@@ -1045,6 +1168,7 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
         "parquet_splits": parquet_written,
         "reference_summaries": "reference_summaries.jsonl",
         "unassigned_report": "unassigned.jsonl",
+        "ambiguous_report": "ambiguous.jsonl",
         "inspection_sample": "inspect_sample.txt" if args.sample else None,
         "dataset_card": "README.md",
         "manifest": "build_manifest.json",
@@ -1071,6 +1195,7 @@ def report(stats: dict, output_dir: Path) -> None:
     chunks = stats["chunks"]
     sentences = stats["summary_sentences"]
     target = stats["lengths_estimated_with_approximate_tokens"]["aligned_target"]
+    evidence_mode = stats["evidence"]["mode"]
 
     lines = [
         "",
@@ -1107,6 +1232,13 @@ def report(stats: dict, output_dir: Path) -> None:
         f"  split isolation        : {'VERIFIED' if stats['split_isolation']['verified'] else 'FAILED'}"
         f"  (cross-split duplicate text: {stats['split_isolation']['cross_split_content_duplicates']})",
         f"  alignment backend      : {stats['alignment']['backend']}",
+        f"  evidence mode          : {'ON (UNCALIBRATED)' if evidence_mode else 'off'}"
+        f"   decisions: {stats['evidence']['decision_counts']}",
+        f"  evidence rates         : supported {stats['evidence']['supported_rate']:.1%}"
+        f" / ambiguous {stats['evidence']['ambiguous_rate']:.1%}"
+        f" / unsupported {stats['evidence']['unsupported_rate']:.1%}"
+        f" / not-summary-content {stats['evidence']['not_summary_content_rate']:.1%}",
+        f"  evidence settings      : {stats['evidence']['settings']}",
         f"  output                 : {output_dir}",
         "=" * 72,
     ]
@@ -1270,6 +1402,30 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--relative-margin", type=float, default=None, help="Override the relative margin.")
     parser.add_argument("--no-multi-label", action="store_true", help="Force a single label per sentence.")
     parser.add_argument(
+        "--evidence-mode", action="store_true",
+        help=(
+            "Enable the evidence-aware alignment layer (OFF by default and NOT "
+            "calibrated yet; run scripts/audit_alignment_evidence.py to choose the "
+            "settings, then pass them below). Without this flag the build is "
+            "byte-identical to the pure Cross-Encoder behaviour."
+        ),
+    )
+    parser.add_argument("--evidence-coverage-bound", type=float, default=None,
+                        help="Tier-3 coverage bound C (calibrated value).")
+    parser.add_argument("--evidence-ambiguity-margin", type=float, default=None,
+                        help="Ambiguity margin M applied to the continuous rank keys.")
+    parser.add_argument("--evidence-min-span", type=int, default=None,
+                        help="Minimum longest-common content-word span that counts as evidence.")
+    parser.add_argument("--evidence-max-rare-df", type=int, default=None,
+                        help="Max document-local chunk frequency still counted as 'rare'.")
+    parser.add_argument(
+        "--evidence-contradiction-mode", choices=["high_confidence", "off"], default=None,
+        help=(
+            "high_confidence applies the strong date/year/amount mismatch rules; "
+            "off records absence only (never a contradiction)."
+        ),
+    )
+    parser.add_argument(
         "--allow-stub-encoder", action="store_true",
         help="Allow the meaningless mock encoder (plumbing tests only; blocks --push-to-hub).",
     )
@@ -1303,6 +1459,20 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         args.threshold = cfg_threshold
     if args.relative_margin is None:
         args.relative_margin = cfg_margin
+
+    # Resolve the evidence knobs from the module's own defaults so the reported
+    # settings cannot drift from the values the aligner applies.
+    evidence_defaults = evidence_settings_from_config()
+    if args.evidence_coverage_bound is None:
+        args.evidence_coverage_bound = evidence_defaults.coverage_bound
+    if args.evidence_ambiguity_margin is None:
+        args.evidence_ambiguity_margin = evidence_defaults.ambiguity_margin
+    if args.evidence_min_span is None:
+        args.evidence_min_span = evidence_defaults.min_common_span
+    if args.evidence_max_rare_df is None:
+        args.evidence_max_rare_df = evidence_defaults.max_rare_df
+    if args.evidence_contradiction_mode is None:
+        args.evidence_contradiction_mode = evidence_defaults.contradiction_mode
 
     return args
 

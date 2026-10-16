@@ -165,7 +165,7 @@ N records.
 | `--evidence-contradiction-mode {high_confidence,off}` | Contradiction policy |
 | `--allow-stub-encoder` | Allow the meaningless mock encoder (plumbing only; blocks upload) |
 | `--push-to-hub` | Upload to the Hub (see §4) |
-| `--append` | With `--push-to-hub`: merge this build INTO the existing Hub dataset instead of replacing it. Upsets by `doc_id` + `chunk_id`; remote-only rows/splits are kept. Use to accumulate runs into one repo. |
+| `--append` | With `--push-to-hub`: merge this build INTO the existing Hub dataset instead of replacing it. Upserts by `doc_id` + `chunk_id`; remote-only rows/splits are kept. Use to accumulate runs into one repo. |
 | `--repo-id USER/NAME` | Target Hub repo (required with `--push-to-hub`) |
 | `--private` | Create the Hub repo as private |
 
@@ -517,6 +517,14 @@ python scripts/build_and_push_datasets.py --namespace Phyboc --private
 python scripts/build_dataset.py --push-to-hub \
     --repo-id Phyboc/legalLens-in-abs-full \
     --output_dir artifacts/training_data/full --private
+
+# --- append / accumulate (see §4.1) -------------------------------------
+# Reuse ONE Hub repo and grow it every run, instead of a new dataset per run.
+# Upserts by (doc_id, chunk_id); remote-only rows are kept.
+python scripts/build_and_push_datasets.py --namespace Phyboc --append --private
+python scripts/build_dataset.py --push-to-hub \
+    --repo-id Phyboc/legalLens-in-abs-sample10 \
+    --output_dir artifacts/training_data/sample10 --private --append
 
 # --- validate / audit ----------------------------------------------------
 python scripts/validate_section_alignment.py --sample-size 15

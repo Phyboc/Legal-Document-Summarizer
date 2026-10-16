@@ -165,6 +165,7 @@ N records.
 | `--evidence-contradiction-mode {high_confidence,off}` | Contradiction policy |
 | `--allow-stub-encoder` | Allow the meaningless mock encoder (plumbing only; blocks upload) |
 | `--push-to-hub` | Upload to the Hub (see §4) |
+| `--append` | With `--push-to-hub`: merge this build INTO the existing Hub dataset instead of replacing it. Upsets by `doc_id` + `chunk_id`; remote-only rows/splits are kept. Use to accumulate runs into one repo. |
 | `--repo-id USER/NAME` | Target Hub repo (required with `--push-to-hub`) |
 | `--private` | Create the Hub repo as private |
 
@@ -257,6 +258,7 @@ Each targets repo `<namespace>/legalLens-in-abs-<name>`.
 | `--fast` | Replace every `--full` with `--sample <fast-n>` |
 | `--fast-n N` | Documents per split used by `--fast` (default 50) |
 | `--private` | Create Hub repos as private |
+| `--append` | Merge each build INTO the existing Hub dataset (upsert, see §2.2) |
 | `--overwrite` | Allow writing into dirs that already hold a build |
 | `--skip-push` | Build only; never upload |
 | `--dry-run` | Print the builder commands without running them |
@@ -313,6 +315,27 @@ Behaviour and guards:
 
 **Licensing:** `percins/IN-ABS` declares no licence. Keep derived repos **private** until the
 terms are resolved, and state provenance in the card.
+
+### 4.1 Appending instead of replacing
+
+HF datasets are snapshot-replace on every push; there is no native `append_rows`. `--append`
+implements upsert semantics in that gap: it loads the existing repo, keeps all its rows, drops
+from them only the `(doc_id, chunk_id)` pairs the fresh build produces, concatenates the rest,
+then pushes the combined DatasetDict. Rows already on the Hub are updated to the new values;
+anything else on the Hub is kept. If the repo does not exist yet it behaves like a normal push.
+
+```bash
+# accumulate every run into ONE repo (one per configuration)
+python scripts/build_and_push_datasets.py --namespace Phyboc --append --private
+
+# or append a single fresh build into an existing repo
+python scripts/build_dataset.py --sample 10 --output_dir artifacts/training_data/sample10 \
+    --push-to-hub --repo-id Phyboc/legalLens-in-abs-sample10 --append --private
+```
+
+Credentials/provenance caveats: the local `artifacts/training_data/<name>/` output is still
+per-run (not accumulated) — the accumulated dataset lives only on the Hub. The dataset card is
+overwritten each push, so it reflects the most recent run's settings.
 
 ---
 

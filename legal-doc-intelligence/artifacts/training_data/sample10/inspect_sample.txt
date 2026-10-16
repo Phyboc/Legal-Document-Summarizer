@@ -1,0 +1,184 @@
+INSPECTION SAMPLE
+Check that each aligned_target is semantically about the chunk_text above it.
+A non-empty target is not evidence by itself.
+====================================================================================================
+
+doc_id           : train_00000
+chunk_id         : 0  (index 0)
+split            : train
+section          : facts
+para_range       : [0, 13]
+alignment_scores : [0.9994, 0.9982, 0.9968, 0.9953, 0.9961, 0.9972]
+matched_labels   : ['facts', 'judgement', 'reasoning']
+chunk tokens~    : 771
+target tokens~   : 242
+
+--- CHUNK_TEXT (source input) ----------------------------------------------------------------------
+SEN, J.
+This appeal by special leave directed against the judgment and order of the High Court of Delhi dated July 24, 1985 raises two questions, namely: (1) Was the Union of India justified in passing an order dated September 17, 1982 in terms of FR 25 declaring the appellant to be unfit to cross the efficiency bar as Assistant Engineer, Central Public Works Department at the stage of Rs.590 in the prerevised scale of pay of Rs.350 590 EB 900 as from October 5, 1966? And (2) Is the appellant entitled to interest on the delayed payment of his pension? This litigation has had a chequered career.
+The appellant who was as Assistant Engineer in the Central Public Works Department was placed under suspension pending a departmental enquiry under r.12(2) of the Central Civil Services (Classification, Control & Appeal) Rules, 1965 on September 3, 1959.
+He remained on suspension till May 25, 1970 when on repeated representations the Chief Engineer, Central Public Works Department revoked the order of suspension and he was reinstated in service.
+During the aforesaid period of suspension, adverse remarks in his confidential reports for the period between April 1, 1957 and August 31, 1957 and between April 1, 1958 and March 31, 1959 were communicated to him on December 16, 1959.
+After a period of nearly five years, the departmental proceedings culminated in an order of dismissal from service dated March 12, 1964 but the same on appeal by him, was set aside by the President of India by order dated October 4, 1966 with a direction for the holding of a fresh departmental inquiry under r. 29(1)(c) of the Rules, with a further direction that he shall continue to remain under suspension.
+The order of suspension was revoked by the Chief F Engineer on May 8, 1970 but the departmental proceedings were kept alive.
+As a result of this, the appellant was reinstated in service on May 25, 1970.
+Immediately thereafter, he made representation to the Department to pass an order under FR 54 for payment of full pay and allowances for the period of suspension i.e. the period between September 3, 1959 and May 25, 1970 but the same was rejected on the G ground that departmental inquiry was still pending.
+There was little or no progress in the departmental inquiry.
+on April 25, 1972 the Chief Engineer passed an order of compulsory retirement of the appellant under FR 56(j).
+The appellanrmade representations to various authorities, including the President of India, H against his compulsory retirement but the same was rejected Eventu 33 ally, on July 20, 1972 the appellant filed a petition under article 226 of the Constitution in the High Court challenging the validity of the order of compulsory retirement and prayed for a direction in terms of FR 54 for payment of full pay and allowances for the period of suspension and also for payment of all increments to which he was entitled.
+He also prayed for quashing of the departmental proceedings.
+A learned Single Judge (Wad, J.) by his judgment and order dated January 5, 1981 held that the order of compulsory retirement of the appellant was bad in law, not being relatable to FR 56(j) inasmuch as the action was not based on an overall assessment of the appellant 's record of service and was in breach of the instructions issued by the Government of India, Ministry of Home Affairs dated June 23, 1969 laying down the procedure to be followed under FR 56(j).
+
+--- ALIGNED_TARGET (pseudo-target) ------------------------------------------------------------------
+The appellant, an Assistant Engineer in the Central Public Works Department was placed under suspension on September 3, 1959 pending a departmental enquiry. That order was revoked by the Chief Engineer on May 8, 1970, and he was reinstated in service on May 25, 1970 but the departmental proceedings were kept alive. Immediately thereafter, the appellant made a representation to the department to pass an order under FR. Thereafter, the appellant was compulsorily retired by an order of the Chief Engineer dated April 25, 1972 under FR. Thereafter the Director General of Works on September 17, 1982 passed an order on the recommendation of the departmental promotion board declaring the appellant unfit to cross the efficiency bar at the stage of Rs.590 in the grade Rs.350 900 with effect from October 5, 1966. In this appeal by special leave, on the questions: (i) was the Union of India justified in passing the oder in terms of FR 25 declaring the appellant unfit to cross the efficiency bar, and (ii) was the appellant entitled to interest on the delayed payment of his pension?
+
+    [1] The appellant, an Assistant Engineer in the Central Public Works Department was placed under suspension on September 3, 1959 pending a departmental enquiry.
+    [2] That order was revoked by the Chief Engineer on May 8, 1970, and he was reinstated in service on May 25, 1970 but the departmental proceedings were kept alive.
+    [3] Immediately thereafter, the appellant made a representation to the department to pass an order under FR.
+    [4] Thereafter, the appellant was compulsorily retired by an order of the Chief Engineer dated April 25, 1972 under FR.
+    [5] Thereafter the Director General of Works on September 17, 1982 passed an order on the recommendation of the departmental promotion board declaring the appellant unfit to cross the efficiency bar at the stage of Rs.590 in the grade Rs.350 900 with effect from October 5, 1966.
+    [6] In this appeal by special leave, on the questions: (i) was the Union of India justified in passing the oder in terms of FR 25 declaring the appellant unfit to cross the efficiency bar, and (ii) was the appellant entitled to interest on the delayed payment of his pension?
+====================================================================================================
+
+doc_id           : train_00000
+chunk_id         : 1  (index 1)
+split            : train
+section          : facts
+para_range       : [14, 30]
+alignment_scores : [0.8771, 0.7641]
+matched_labels   : ['facts']
+chunk tokens~    : 834
+target tokens~   : 134
+
+--- CHUNK_TEXT (source input) ----------------------------------------------------------------------
+January 5, 1981 held that the order of compulsory retirement of the appellant was bad in law, not being relatable to FR 56(j) inasmuch as the action was not based on an overall assessment of the appellant 's record of service and was in breach of the instructions issued by the Government of India, Ministry of Home Affairs dated June 23, 1969 laying down the procedure to be followed under FR 56(j).
+He further held that the action to compulsorily retire the appellant in 1972 under FR 56(j) could not obviously be taken on the basis of adverse remarks for the years 1950 51 when he was an Overseer, nor on the adverse remarks for the years 1957 59 communicated to him on December 16, 1959, after a lapse of 20 years and 13 years respectively.
+Further he observed that the adverse remarks of 1957 59 were not serious enough to cut short the career of the appellant as a Government servant, particularly in view of the fact that the general confidential reports for two years immediately preceding his retirement on July 28, 1972 did not reveal anything blameworthy against him.
+He accordingly quashed the order of compulsory retirement of the appellant and held that he shall be deemed to have continued in service till March 31, 1978, the date when he attained the normal age of superannuation.
+During the course of his judgment, the learned Judge also adversely commented on the failure of the Department to pass an order in terms of FR 54 consequent upon the reinstatement of the appellant on May 25, 1970 within a reasonable time.
+He observed that ordinarily he would have left it to the Department to pass an order under FR 54 as to whether the suspension of the appellant for the period from September 3, 1959 to May 25, 1970 was justified or not but due to the inactivity or refusal on the part of the Government to pass an order under FR 54, the Court was left with no other option but to deal with the question.
+After referring to the various stages of the departmental proceedings, the learned Judge held that the suspension of the appellant was not justified and the period of suspension must be regarded as spent on duty and therefore the appellant under FR 54(2) was entitled to full pay and allowances and the increments for that period.
+He further held that r. 9(2)(b) of the Central Civil Services 34 (Pension) Rules, 1972 was not attracted and accordingly quashed the departmental proceedings.
+The operative part of the judgment of the learned Judge reads as follows: "The petition, for the reasons stated above, succeeds.
+The order of compulsory retirement dated 25.4.1972 is set aside.
+The petitioner would be entitled to continuation in service upto March 31, 1978 (the date when he reached his normal age of superannuation) and consequential benefits.
+The continuation of suspension of the petitioner was without any justification.
+The petitioner would be entitled to full pay and allowances from 3.9.1959 to 24.5.1970 with increments and other service benefits according to Rules.
+The pending departmental proceedings are quashed.
+" Aggrieved, the Union of India went up in appeal but a Division Bench by its judgment dated March 24, 1982 declined to interfere.
+The appellant had in the meanwhile submitted his bill of arrears and the respondents having failed to comply with the direction of the learned Single Judge, he moved the High Court for contempt.
+In response to the notice issued by the High Court, respondent No. 4 Director General of Works entered appearance on September 6, 1982 and tendered a written apology, upon which the High Court dropped the proceedings.
+It appears that the Department paid the appellant about Rs.86,000 in compliance with the judgment of the learned Single Judge.
+
+--- ALIGNED_TARGET (pseudo-target) ------------------------------------------------------------------
+56(j). In the writ petition filed by the appellant under Article 226 of the Constitution challenging the validity of the order of compulsory retirement, and seeking directions in terms of FR 54 for payment of full pay and allowances for the period of suspension and also for payment of all increments to which he was entitled, a Single Judge of the High Court found the order of compulsory retirement bad in law, quashed it, and held that the appellant shall be deemed to have continued in service till March 31, 1978, the date when he attained the normal age of superannuation.
+
+    [1] 56(j).
+    [2] In the writ petition filed by the appellant under Article 226 of the Constitution challenging the validity of the order of compulsory retirement, and seeking directions in terms of FR 54 for payment of full pay and allowances for the period of suspension and also for payment of all increments to which he was entitled, a Single Judge of the High Court found the order of compulsory retirement bad in law, quashed it, and held that the appellant shall be deemed to have continued in service till March 31, 1978, the date when he attained the normal age of superannuation.
+====================================================================================================
+
+doc_id           : train_00000
+chunk_id         : 2  (index 2)
+split            : train
+section          : facts
+para_range       : [32, 49]
+alignment_scores : [0.9974, 0.6779]
+matched_labels   : ['facts']
+chunk tokens~    : 807
+target tokens~   : 79
+
+--- CHUNK_TEXT (source input) ----------------------------------------------------------------------
+ned Single Judge, he moved the High Court for contempt.
+In response to the notice issued by the High Court, respondent No. 4 Director General of Works entered appearance on September 6, 1982 and tendered a written apology, upon which the High Court dropped the proceedings.
+It appears that the Department paid the appellant about Rs.86,000 in compliance with the judgment of the learned Single Judge.
+While it is true that the charge levelled against the appellant was serious enough to merit the imposition of a major punishment, there was little or no progress for keeping the departmental proceedings pending for over 20 years.
+There was persistent effort on behalf of the Department to visit the appellant with civil consequences, first by placing him under suspension under r. 12(2) of the Rules for a period of 11 years and secondly by directing his compulsory retirement when it was realised that the charge levelled could not be substantiated.
+Despite repeated representations made by the appellant, the Government failed in its duty to pass an order in terms of FR 54 within a reasonable time.
+The Government also failed to comply with the judgment of the learned Single Judge and pay to the appellant the arrears of pay and allowances amounting to about Rs.86,000 till the High Court issued a notice for contempt.
+It is regrettable that respondent No. 4 Director General of Works had to enter personal appearance and tender a written apology.
+The payment of Rs.86,000 to the appellant was therefore under threat of contempt and does not redound to the credit of the Government.
+The miseries of the appellant did not end with this.
+It was expected that the Government would act with good grace but just within a fortnight of the termination of the contempt proceedings, the Director General rejected the appellant 's case for crossing of the efficiency bar at the stage of Rs.590 w.e.f. October 5, 1966 as indicated hereinafter.
+In the counter affidavit to the contempt proceedings, the Government stated that there were two conditions for an Assistant Engineer to cross the efficiency bar, namely: (1) that he should have passed the departmental examination in Accounts prescribed for Assistant Engineers, and (2) he should have obtained good reports over the last five years.
+The increments above the stage of efficiency bar are to be allowed in accordance with the provisions contained in FR 25 and the Government of India 's decisions thereunder.
+The appellant 's case for crossing of efficiency bar at the stage of Rs.590 w.e.f. October 5, 1966 was said to have been considered by the Departmental Promotion Committee on the basis of his performance reports.
+Evidently, the Departmental Promotion Committee recommended on the basis of such reports that he was not fit to cross the efficiency bar at the stage of Rs.590 from October 5, 1966 or on any subsequent date upto October 5, 1971.
+The report of the Departmental Promotion Committee was accepted by the competent authority.
+Accordingly, the Director General of Works on September 17, 1982 passed an order to the following effect: "No.32/426/66.EC.III New Delhi, dated 17.9.82 36 OFFICE MEMORANDUM Sub: Crossing of Efficiency Bar by Shri O.P. Gupta, Assistant Engineer (Civil), Retired.
+The Executive Engineer, Central Stores Division No. 1, C.P.W.D. New Delhi is informed that the case of crossing of efficiency bar by Shri O.P. Gupta, Assistant Engineer (Retired) at the stage of Rs.590 in the pre revised scale of pay of Rs.350 25 500 30 590 EB 30 800 EB 30 830 35 900 has been considered by the competent authority, who has found him unfit to cross the efficiency bar w.e.f.5.
+10.1966 or from any subsequent date upto 5.
+
+--- ALIGNED_TARGET (pseudo-target) ------------------------------------------------------------------
+In the contempt proceedings taken by the appellant, the government stated that there were two conditions for an Assistant Engineer to 29 cross efficiency bar namely, (i) that he should have passed the departmental examination in Accounts, and (ii) he should have obtained good reports for the preceding five years. The Single Judge declined to interfere with the governmental order.
+
+    [1] In the contempt proceedings taken by the appellant, the government stated that there were two conditions for an Assistant Engineer to 29 cross efficiency bar namely, (i) that he should have passed the departmental examination in Accounts, and (ii) he should have obtained good reports for the preceding five years.
+    [2] The Single Judge declined to interfere with the governmental order.
+====================================================================================================
+
+doc_id           : train_00000
+chunk_id         : 3  (index 3)
+split            : train
+section          : facts
+para_range       : [53, 87]
+alignment_scores : [0.9968, 0.9182]
+matched_labels   : ['facts', 'reasoning']
+chunk tokens~    : 831
+target tokens~   : 94
+
+--- CHUNK_TEXT (source input) ----------------------------------------------------------------------
+s Division No. 1, C.P.W.D. New Delhi is informed that the case of crossing of efficiency bar by Shri O.P. Gupta, Assistant Engineer (Retired) at the stage of Rs.590 in the pre revised scale of pay of Rs.350 25 500 30 590 EB 30 800 EB 30 830 35 900 has been considered by the competent authority, who has found him unfit to cross the efficiency bar w.e.f.5.
+10.1966 or from any subsequent date upto 5.
+But when the High Court quashed the departmental proceedings which were pending for over 20 years with little or no progress as being wholly invalid and unfair, there was no occasion for the Department to have passed an order under FR 24 for withholding increments to the appellant at the stage of Rs.590 w.e.f. October 5, 1966 unless it was with a view to penalise him financially.
+Looking to the long lapse of time, the High Court was entitled to go into the question as to whether the appellant upon his reinstatement was entitled to the full pay and allowances to which he would have been entitled had he not been suspended.
+The Government was justified in withholding increments under FR 25 pending the departmental inquiry but after the High Court had quashed the departmental inquiry, the question whether the appellant could be deprived of his increments under FR 25 was a live issue till the controversy was settled by the Government of India, Ministry of Finance decision dated September 21, 1967.
+The sealed cover should be opened after conclusion of the proceedings.
+at p. 53 is in the following terms: "2.636.
+" It is somewhat strange that when the appellant applied to the learned Judge (Wad, J.) for review, he by his order dated February 2, 1983 declined to interfere saying that there was no ground for review inasmuch as the appellant had not been allowed to cross the efficiency G bar under FR 25 for two valid reasons, namely: (1) his failure to pass the departmental examination, and (2) his confidential reports for the preceding five years were not satisfactory.
+The appellant was thus constrained to move another application for review.
+This time the learned Judge by his order dated November 30, 1983 dismissed the application observing that no ground for review had been made out and that the earlier order declining to review had been passed after fully hearing the parties and no further relief could be granted.
+But he added a rider that if the appellant was not satisfied with the Government decision, his remedy was to file a separate writ petition.
+Thereupon, the appellant went up in appeal but a Division Bench by its order dated April 30, 1984 dismissed the same and reiterated that he should file a writ petition.
+Again, a Division Bench by its order dated October 30, 1984 declined to interfere saying that the appellant should make a representation to the competent authority with the direction that the same should be considered sympathetically.
+In accordance therewith, on December 10, 1984 the appellant made a representation to the Director General of Works, Central Public Works Department.
+Eventually, the Deputy Director of Administration by her letter dated April 9, 1985 informed the appellant that his representation had been rejected.
+"I am further to inform you that your case for crossing the E.B. at the stage of Rs.590 w.e.f. 5.10.1972 in the prerevised scale of Rs.350 25 500 30 590 EB 30 800 EB 30 830 35 900 and also at the stage of Rs.810 in the revised scale of Rs.650 30 740 35 810 EB 35 880 40 1000 EB 40 1200, w.e.f. 5 10.1973 or from any subsequent date upto the date of your superannuation viz. 31.3.1978 has also 40 been considered carefully by the competent authority.
+
+--- ALIGNED_TARGET (pseudo-target) ------------------------------------------------------------------
+The High Court held that the crossing of the efficiency bar depends on the satisfaction of the competent authority under FR 25 and also on the passing of the departmental examination under r. [44AB] 1.2 The stoppage of increment at the efficiency bar during the pendency of a departmental proceeding is not by way of punishment, and therefore the government servant facing a departmental inquiry is not entitled to a hearing.
+
+    [1] The High Court held that the crossing of the efficiency bar depends on the satisfaction of the competent authority under FR 25 and also on the passing of the departmental examination under r.
+    [2] [44AB] 1.2 The stoppage of increment at the efficiency bar during the pendency of a departmental proceeding is not by way of punishment, and therefore the government servant facing a departmental inquiry is not entitled to a hearing.
+====================================================================================================
+
+doc_id           : train_00000
+chunk_id         : 5  (index 5)
+split            : train
+section          : reasoning
+para_range       : [31, 65]
+alignment_scores : [0.9989, 0.9934]
+matched_labels   : ['reasoning']
+chunk tokens~    : 801
+target tokens~   : 143
+
+--- CHUNK_TEXT (source input) ----------------------------------------------------------------------
+Although there is a healthy trend and the Government of India has set up an independent Ministry Ministry of Personnel, Public Grievances & Pension for settlement of claims in regard to pension, this case is an instance where a civil servant had been subjected to endless harassment for no fault of his own.
+Under FR 54 when a Government servant who had been dismissed, removed or suspended is reinstated, the authority competent to order reinstatement has to make a specific order (a) regarding the pay and allowances to be paid 35 to the Government servant for the period of his absence from duty, and (b) directing whether or not the period of suspension shall be treated as a period spent on duty.
+The Department apparently never forgave the appellant for having dragged the Government to litigation and compel the personal appearance of the Head of the Department.
+Just as suspension of a government servant pending a departmental inquiry is not by way of punishment, so also the withholding of increments at the efficiency bar pending such inquiry.
+As already stated, the authority competent to order reinstatement failed to make an order in terms of FR 54 after the appellant had been reinstated in service on May 25, 1970 within a reasonable time.
+Undoubtedly, the High Court gave a direction in terms in FR 54(2) that the appellant would be entitled to his full pay and allowances as also to his increments etc.
+but this would be the normal increment prior to the crossing of the efficiency bar for purposes of FR 54(2).
+There has to be a specific order in terms of FR 25 before a government servant can be allowed to draw his increments above the efficiency bar.
+We shall first reproduce FR 25 and it is in the following terms: 37 "Where an efficiency bar is prescribed in a time scale, the increment next above the bar shall not be given to a Government servant without the specific sanction of the authority empowered to withhold increment under Rule 24 or the relevant disciplinary rules applicable to the Government servant or of any other authority whom the President may,by general or special order, authorise in this behalf.
+" The Government of India, Ministry of Finance 's decision dated September 21, 1967 as clarified by Ministry of Home Affairs, Department of Personnel & Administrative Reforms Memorandum dated April 6, 1979, insofar as relevant is reproduced below: "(7) Procedure for consideration of cases (a) When disciplinary proceedings are pending A Government servant against whom proceedings are pending but who is due to cross the efficiency bar prescribed in his time scale of pay, may not be allowed to cross the bar until after the conclusion of the proceedings.
+A question was raised as to the date from which a Government servant whose case for crossing the efficiency bar has not been considered on account of the pendency of a disciplinary/vigilance case against him, should be considered for being allowed to cross the efficiency bar, after the enquiry is over.
+It has been decided, in consultation with the Ministry of Home Affairs, that if after the conclusion of the proceedings, the Government servant is completely exonerated, he may be allowed to cross the efficiency bar with effect from the due date retrospectively, unless the competent authority decides otherwise.
+If however, the Government servant is not completely exonerated, his case for crossing the efficiency bar cannot be considered with retrospective effect from the due date.
+Such cases can be considered only with effect from a date following the conclusion of the disciplinary/vigilance case, taking into account the outcome of the disciplinary/vigilance case.
+
+--- ALIGNED_TARGET (pseudo-target) ------------------------------------------------------------------
+Fundamental Rule 54 requires that when a Government servant who had been dismissed, removed or suspended is reinstated, the authority competent to order reinstatement has to make a specific order (a) regarding the pay and allowances to be paid to the Government servant for the period of his absence from duty, and (b) directing whether or not the period of suspension shall be treated as a period spent on duty. Fundamental Rule 25 lays down that the increment next above the efficiency bar in a time scale shall not be given to a Government servant without the specific sanction of the authority empowered to withhold increment under R.24.
+
+    [1] Fundamental Rule 54 requires that when a Government servant who had been dismissed, removed or suspended is reinstated, the authority competent to order reinstatement has to make a specific order (a) regarding the pay and allowances to be paid to the Government servant for the period of his absence from duty, and (b) directing whether or not the period of suspension shall be treated as a period spent on duty.
+    [2] Fundamental Rule 25 lays down that the increment next above the efficiency bar in a time scale shall not be given to a Government servant without the specific sanction of the authority empowered to withhold increment under R.24.
+====================================================================================================

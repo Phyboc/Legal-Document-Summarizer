@@ -99,6 +99,10 @@ logger = logging.getLogger("build_dataset")
 DATASET_ID = "percins/IN-ABS"
 OFFICIAL_SPLITS = ("train", "validation", "test")
 
+# Suffix used to stage the incoming build beside the remote registry during
+# ``--append`` so both schemas can be unified in one DatasetDict.
+APPEND_SUFFIX = "__append_overlay"
+
 # Column resolution: prefer the documented IN-ABS names, then common aliases, so
 # a schema drift produces a clear error instead of a silently wrong dataset.
 TEXT_COLUMN_CANDIDATES = ("text", "judgment", "judgement", "document", "content")
@@ -1282,6 +1286,128 @@ def require_hf_auth(token: str | None) -> str:
     return name or "unknown"
 
 
+def _unify_dataset_features(dataset_dict):
+    """Cast every split to one shared feature schema.
+
+    ``Dataset.from_json`` infers features independently for each file. A list
+    column that is empty in one split (inferred ``List(null)``) and populated in
+    another (inferred ``List(string)``) therefore yields incompatible splits, and
+    ``DatasetDict.push_to_hub`` fails with "All datasets in `DatasetDict` should
+    have the same features". This merges the inferred features across splits and
+    casts every split to the merged schema, so the DatasetDict is internally
+    consistent regardless of which splits happened to exercise each column.
+    """
+    from datasets import Features, Sequence, Value
+
+    splits = list(dataset_dict)
+    columns: list[str] = []
+    for split in splits:
+        for name in dataset_dict[split].column_names:
+            if name not in columns:
+                columns.append(name)
+
+    # A column present in only some splits cannot be reconciled by casting, and
+    # silently dropping it would change the schema; fail loudly instead.
+    missing = {
+        name: [split for split in splits if name not in dataset_dict[split].column_names]
+        for name in columns
+        if any(name not in dataset_dict[split].column_names for split in splits)
+    }
+    if missing:
+        raise SystemExit(
+            "Refusing to upload: the splits do not share a column set and this cannot "
+            f"be reconciled by casting: {missing}. Rebuild all splits together."
+        )
+
+    def _merge(left, right):
+        """Combine two inferred features, preferring the more specific type."""
+        if left is None:
+            return right
+        if right is None:
+            return left
+        if isinstance(left, Sequence) and isinstance(right, Sequence):
+            return Sequence(_merge(left.feature, right.feature))
+        if isinstance(left, Value) and isinstance(right, Value):
+            if left.dtype == right.dtype:
+                return left
+            if left.dtype == "null":
+                return right
+            if right.dtype == "null":
+                return left
+            # Genuinely different scalar types: widen to string so the cast is lossless.
+            return Value("string")
+        return left
+
+    merged: dict = {name: None for name in columns}
+    for name in columns:
+        for split in splits:
+            merged[name] = _merge(merged[name], dataset_dict[split].features[name])
+
+    features = Features(merged)
+    return dataset_dict.__class__(
+        {split: dataset_dict[split].cast(features) for split in splits}
+    )
+
+
+def _append_dataset_dicts(dataset_dict, repo_id: str, token: str | None):
+    """Merge a fresh build into an existing Hub dataset instead of replacing it.
+
+    Hugging Face datasets are snapshot-replace on every ``push_to_hub``; there is
+    no native ``append_rows``. So an append is: **load the existing repo**, keep
+    its rows, drop from them the ``(doc_id, chunk_id)`` pairs the fresh build
+    produces (**upsert** semantics - the new build wins), concatenate the rest,
+    then push that combined DatasetDict.
+
+    Remote-only rows and remote-only splits are preserved. When the repo does
+    not exist yet, the fresh build is returned unchanged.
+    """
+    from datasets import DatasetDict, concatenate_datasets, load_dataset
+
+    try:
+        remote = load_dataset(repo_id, token=token)
+    except Exception as exc:  # pragma: no cover - network dependent
+        # Expected when the repo is genuinely new. Any other failure surfaces
+        # here and in the subsequent push, so it is logged loudly, never silently.
+        logger.warning(
+            "Could not load the existing Hub dataset %s (%s); uploading a fresh "
+            "dataset instead. If the repo DOES exist, investigate before trusting "
+            "this as an append.", repo_id, exc,
+        )
+        return dataset_dict
+
+    # The remote registry and the fresh build each inferred their own schema, so
+    # unify ALL of them together before anything can be concatenated or pushed.
+    scratch: dict = {split: remote[split] for split in remote}
+    for split, split_data in dataset_dict.items():
+        scratch[f"{split}{APPEND_SUFFIX}"] = split_data
+    scratch = _unify_dataset_features(DatasetDict(scratch))
+
+    appended: dict = {}
+    for split in OFFICIAL_SPLITS:
+        base = scratch.get(split)
+        overlay = scratch.get(f"{split}{APPEND_SUFFIX}")
+        if base is None and overlay is None:
+            continue
+        if base is not None and overlay is not None:
+            new_keys = {(row["doc_id"], row["chunk_id"]) for row in overlay}
+
+            def _keep_remote(row, _keys=new_keys):
+                return (row["doc_id"], row["chunk_id"]) not in _keys
+
+            base = concatenate_datasets([base.filter(_keep_remote), overlay])
+        appended[split] = base if base is not None else overlay
+
+    # Any remote split outside the official set is carried over untouched, so an
+    # append can never silently delete part of an existing dataset.
+    for split in scratch:
+        if split not in OFFICIAL_SPLITS and not split.endswith(APPEND_SUFFIX):
+            appended[split] = scratch[split]
+
+    merged = DatasetDict(appended)
+    logger.info("Append merged rows per split: %s", {s: len(ds) for s, ds in merged.items()})
+    return merged
+
+
 def push_to_hub(args: argparse.Namespace, stats: dict | None) -> None:
     """Validate locally, then upload the splits and the dataset card."""
     output_dir = Path(args.output_dir)
@@ -1322,6 +1448,17 @@ def push_to_hub(args: argparse.Namespace, stats: dict | None) -> None:
     dataset_dict = datasets.DatasetDict({
         split: datasets.Dataset.from_json(str(path)) for split, path in split_files.items()
     })
+    # Normalise the per-split inferred schemas before they are combined, so an
+    # all-empty list column in one split cannot make the DatasetDict inconsistent.
+    dataset_dict = _unify_dataset_features(dataset_dict)
+
+    # ``--append``: fold this build into the repo that already exists on the Hub
+    # instead of replacing it (upsert by doc_id + chunk_id).
+    if getattr(args, "append", False):
+        dataset_dict = _append_dataset_dicts(dataset_dict, args.repo_id, resolve_hf_token())
+    else:
+        logger.info("Overwriting the Hub dataset (no --append).")
+
     logger.info("Loaded %s locally", {s: len(d) for s, d in dataset_dict.items()})
 
     dataset_dict.push_to_hub(
@@ -1398,6 +1535,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--repo-id", default=None, help="Target Hub repo, e.g. <user>/in-abs-section-aligned.")
     parser.add_argument(
+        "--append", action="store_true",
+        help=(
+            "With --push-to-hub: merge this build INTO the existing Hub dataset "
+            "instead of replacing it. Rows whose (doc_id, chunk_id) already exist "
+            "are updated to the new values; anything else on the Hub is kept. "
+            "Use this to accumulate runs into one dataset instead of a new repo per run."
+        ),
+    )
+    parser.add_argument(
         "--private", action="store_true",
         help=(
             "Create the Hub repo as private. Recommended until the licensing of the "
@@ -1451,6 +1597,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("Choose one of --sample N, --full, or --push-to-hub.")
     if args.push_to_hub and not args.repo_id:
         parser.error("--push-to-hub requires --repo-id, e.g. --repo-id <user>/in-abs-section-aligned.")
+    if args.append and not args.push_to_hub:
+        parser.error("--append only applies together with --push-to-hub.")
 
     if args.sample:
         args.mode = f"sample{args.sample}"

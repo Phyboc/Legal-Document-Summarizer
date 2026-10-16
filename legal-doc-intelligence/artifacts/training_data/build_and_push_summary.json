@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-10-16T18:36:13+00:00",
+  "namespace": "Phyboc",
+  "repo_prefix": "legalLens-in-abs",
+  "fast": false,
+  "pushed": true,
+  "datasets": [
+    {
+      "name": "sample10",
+      "output_dir": "artifacts\\training_data\\sample10",
+      "repo_id": "Phyboc/legalLens-in-abs-sample10",
+      "built": true,
+      "pushed": false,
+      "records": 192,
+      "error": "ValueError: All datasets in `DatasetDict` should have the same features but features for 'train' and 'validation' don't match: {'doc_id': Value('string'), 'chunk_id': Value('int64'), 'section': Value('string'), 'chunk_text': Value('string'), 'aligned_target': Value('string'), 'split': Value('string'), 'para_range': List(Value('int64')), 'matched_sentences': List(Value('string')), 'alignment_scores': List(Value('float64')), 'matched_labels': List(Value('string')), 'structure_fallback': Value('bool'), 'overflow_sentences': List(Value('null')), 'n_overflow_sentences': Value('int64'), 'chunk_index': Value('int64'), 'n_chunk_tokens_est': Value('int64'), 'n_target_tokens_est': Value('int64')} != {'doc_id': Value('string'), 'chunk_id': Value('int64'), 'section': Value('string'), 'chunk_text': Value('string'), 'aligned_target': Value('string'), 'split': Value('string'), 'para_range': List(Value('int64')), 'matched_sentences': List(Value('string')), 'alignment_scores': List(Value('float64')), 'matched_labels': List(Value('string')), 'structure_fallback': Value('bool'), 'overflow_sentences': List(Value('string')), 'n_overflow_sentences': Value('int64'), 'chunk_index': Value('int64'), 'n_chunk_tokens_est': Value('int64'), 'n_target_tokens_est': Value('int64')}"
+    }
+  ],
+  "built": 1,
+  "uploaded": 0,
+  "failed": 1
+}

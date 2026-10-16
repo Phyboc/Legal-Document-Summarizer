@@ -149,6 +149,7 @@ def run_one(
     overwrite: bool,
     push: bool,
     dry_run: bool,
+    append: bool = False,
 ) -> RunResult:
     """Build one dataset, and upload it unless ``push`` is False."""
     output_dir = output_root / spec.name
@@ -164,6 +165,8 @@ def run_one(
         argv += ["--push-to-hub", "--repo-id", repo_id]
         if private:
             argv.append("--private")
+        if append:
+            argv.append("--append")
 
     if dry_run:
         logger.info("[dry-run] %s", " ".join(["python", "scripts/build_dataset.py", *argv]))
@@ -220,6 +223,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
                         help="Documents per split used by --fast (default 50).")
     parser.add_argument("--private", action="store_true",
                         help="Create Hub repos as private (recommended; default is off).")
+    parser.add_argument("--append", action="store_true",
+                        help=(
+                            "Merge each build INTO the existing Hub dataset instead of "
+                            "replacing it, so repeated runs accumulate into one repo per "
+                            "system instead of creating a new one. Rows already on the "
+                            "Hub are updated to the fresh values (upsert by doc_id + "
+                            "chunk_id); remote-only rows are kept."
+                        ))
     parser.add_argument("--overwrite", action="store_true",
                         help="Allow writing into output dirs that already hold a build.")
     parser.add_argument("--skip-push", action="store_true",
@@ -257,7 +268,8 @@ def main(argv: list[str] | None = None) -> int:
         for spec in specs:
             run_one(spec, namespace=args.namespace, prefix=args.repo_prefix,
                     output_root=output_root, fast=args.fast, fast_n=args.fast_n,
-                    private=args.private, overwrite=args.overwrite, push=push, dry_run=True)
+                    private=args.private, overwrite=args.overwrite, push=push, dry_run=True,
+                    append=args.append)
         return 0
 
     results: list[RunResult] = []
@@ -268,7 +280,7 @@ def main(argv: list[str] | None = None) -> int:
         results.append(run_one(
             spec, namespace=args.namespace, prefix=args.repo_prefix, output_root=output_root,
             fast=args.fast, fast_n=args.fast_n, private=args.private,
-            overwrite=args.overwrite, push=push, dry_run=False,
+            overwrite=args.overwrite, push=push, dry_run=False, append=args.append,
         ))
 
     summary = {

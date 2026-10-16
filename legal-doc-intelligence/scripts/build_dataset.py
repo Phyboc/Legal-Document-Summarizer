@@ -1327,6 +1327,7 @@ def push_to_hub(args: argparse.Namespace, stats: dict | None) -> None:
     dataset_dict.push_to_hub(
         args.repo_id,
         token=resolve_hf_token(),
+        private=getattr(args, "private", False),
         commit_message="Upload section-aligned IN-ABS chunk-level training dataset",
     )
     logger.info("Pushed splits to https://huggingface.co/datasets/%s", args.repo_id)
@@ -1396,6 +1397,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Upload to the Hub. Without --sample/--full, uploads an existing build from --output_dir.",
     )
     parser.add_argument("--repo-id", default=None, help="Target Hub repo, e.g. <user>/in-abs-section-aligned.")
+    parser.add_argument(
+        "--private", action="store_true",
+        help=(
+            "Create the Hub repo as private. Recommended until the licensing of the "
+            "source dataset (percins/IN-ABS, which declares no licence) is resolved. "
+            "Only takes effect when the repo does not already exist."
+        ),
+    )
     parser.add_argument("--redact-names", action="store_true", help="Also redact PERSON entities (spaCy).")
     parser.add_argument("--no-strip-preamble", action="store_true", help="Keep the case-caption preamble.")
     parser.add_argument("--threshold", type=float, default=None, help="Override the alignment threshold.")

@@ -3,7 +3,10 @@ import sys
 sys.path.insert(0, ".")
 from src.data.cleaning import preprocess, split_paragraphs
 from src.data.pii_redaction import redact
-from src.data.section_detector import detect_sections, group_by_section, fallback_to_single_section
+from src.data.section_detector import (
+    detect_sections, group_by_section, fallback_to_single_section,
+    promote_trailing_judgement,
+)
 from src.data.chunker import chunk_document
 from src.model.summarizer import get_summarizer
 from src.postprocess.aggregation import aggregate_by_section
@@ -23,12 +26,23 @@ def process_document(text: str, redact_names: bool = False,
     # Split into paragraphs
     paragraphs = split_paragraphs(redacted)
 
-    # Detect sections
+    # Detect sections, then make sure the operative order is tagged as judgement
+    # (civil money decrees are routinely mislabelled reasoning).
     para_objects = detect_sections(paragraphs)
+    para_objects = promote_trailing_judgement(para_objects)
 
     # Group by section (or fallback to single section)
     if fallback_to_single_section(para_objects):
-        section_groups = {"reasoning": para_objects}
+        # Even when one section dominates, keep any operative-order paragraphs in
+        # their own judgement slot so the final order is never folded into - and
+        # then trimmed out of - the reasoning block.
+        judgement = [p for p in para_objects if p.section == "judgement"]
+        rest = [p for p in para_objects if p.section != "judgement"]
+        section_groups = {}
+        if rest:
+            section_groups["reasoning"] = rest
+        if judgement:
+            section_groups["judgement"] = judgement
     else:
         section_groups = group_by_section(para_objects)
 

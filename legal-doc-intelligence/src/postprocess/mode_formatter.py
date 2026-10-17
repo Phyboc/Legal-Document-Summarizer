@@ -51,19 +51,47 @@ def trim_to_budget(text: str, max_words: int) -> str:
     return " ".join(out)
 
 
+def allocate_budget(section_summaries: dict[str, str], budget: int,
+                    protect: tuple[str, ...] = ("judgement",)) -> dict[str, str]:
+    """Fit sections into ``budget`` words, reserving the protected sections first.
+
+    The old scheme scaled every section by the same factor and trimmed each from
+    its front, so the final order - at the tail of its block, or folded into the
+    much larger reasoning block - was the first thing cut when a document ran over
+    budget. Here the protected sections (the judgement by default) are given their
+    words up front, and only the remaining budget is shared proportionally among
+    the rest. If the protected sections alone exceed the budget they are trimmed
+    to fit and the others are dropped: the operative order matters more than the
+    recital of facts.
+    """
+    present = {s: t for s, t in section_summaries.items() if t and t.strip()}
+    if sum(word_count(t) for t in present.values()) <= budget:
+        return dict(section_summaries)
+
+    protected = {s: present[s] for s in protect if s in present}
+    others = {s: t for s, t in present.items() if s not in protected}
+    protected_words = sum(word_count(t) for t in protected.values())
+    others_words = sum(word_count(t) for t in others.values())
+
+    remaining = budget - protected_words
+    adjusted: dict[str, str] = {}
+    if remaining <= 0 or others_words == 0:
+        # Judgement alone fills (or overflows) the budget: keep it, trim to fit.
+        for s, t in protected.items():
+            adjusted[s] = trim_to_budget(t, budget) if word_count(t) > budget else t
+        return adjusted
+
+    scale = remaining / others_words
+    for s, t in others.items():
+        adjusted[s] = trim_to_budget(t, int(word_count(t) * scale))
+    adjusted.update(protected)
+    return adjusted
+
+
 def format_lawyer_mode(section_summaries: dict[str, str]) -> dict:
     """Build Lawyer Mode: structured, technical, 500-700 words."""
     section_order = ["facts", "arguments_appellant", "arguments_respondent", "reasoning", "judgement"]
-    total_words = sum(word_count(s) for s in section_summaries.values())
-    budget = LAWYER_MODE_MAX_WORDS
-
-    # Trim proportionally if we're over budget
-    if total_words > budget:
-        scale = budget / total_words
-        adjusted = {sec: trim_to_budget(text, int(word_count(text) * scale))
-                    for sec, text in section_summaries.items()}
-    else:
-        adjusted = dict(section_summaries)
+    adjusted = allocate_budget(section_summaries, LAWYER_MODE_MAX_WORDS)
 
     sections_output = []
     for section in section_order:
@@ -97,14 +125,8 @@ def format_citizen_mode(section_summaries: dict[str, str]) -> dict:
             simplified = simplify_inline(section_summaries[section])
             combined[section] = simplified
 
-    # Fit word budget
-    total = sum(word_count(t) for t in combined.values())
-    budget = CITIZEN_MODE_MAX_WORDS
-
-    if total > budget:
-        scale = budget / total
-        combined = {sec: trim_to_budget(text, int(word_count(text) * scale))
-                    for sec, text in combined.items()}
+    # Fit word budget, reserving the court's decision first.
+    combined = allocate_budget(combined, CITIZEN_MODE_MAX_WORDS)
 
     sections_output = []
     for section in section_order:

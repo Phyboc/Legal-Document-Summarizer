@@ -10,6 +10,48 @@ _model = None
 _model_missing = False
 
 
+# Disposition / operative-order cues. The original judgement set recognised only
+# appeal and criminal dispositions ("appeal is allowed", "conviction is set
+# aside"). Civil money decrees - "held the defendant liable", "ordered to refund
+# and pay compensation", "the suit is decreed" - matched nothing, so the final
+# order was filed under reasoning and then trimmed out of the summary. These
+# cover civil decrees and generic operative orders as well, and are shared by the
+# rule classifier, the trailing-judgement promotion, and the eval outcome metric.
+_DISPOSITION_PATTERNS = [
+    # appeals / petitions / revisions / writs / suits being disposed of
+    r"\b(?:appeal|petition|revision|application|suit)s?\s+(?:is|are|stands?|be|hereby)?\s*(?:partly\s+)?(?:allowed|dismissed|decreed|set aside|disposed)\b",
+    r"\bwrit\s+petitions?\s+(?:is|are)\s+(?:allowed|dismissed)\b",
+    r"\b(?:we|court|i)\s+(?:allow|dismiss|decree|set aside|quash|remit|remand|acquit|convict)\b",
+    # criminal dispositions
+    r"\bconviction\s+(?:and\s+sentence\s+)?(?:is|are)\s+(?:set aside|upheld|maintained|confirmed)\b",
+    r"\b(?:is|are|stands?|be)\s+acquitted\b",
+    # civil money decrees / liability / refund / compensation
+    r"\bheld\s+(?:the\s+\w+\s+)?liable\b",
+    r"\bliable\s+(?:to\s+(?:pay|refund|compensate)|for\s+(?:breach|damages))\b",
+    r"\b(?:ordered|directed|is\s+directed|are\s+directed)\s+to\s+(?:pay|refund|return|deposit|compensate)\b",
+    r"\bthe\s+(?:suit|claim)\s+is\s+(?:decreed|dismissed)\b",
+    r"\bdecree(?:d)?\s+(?:for|in\s+favour|with\s+costs|against)\b",
+    r"\bentitled\s+to\s+(?:a\s+)?(?:refund|compensation|damages|the\s+amount|interest)\b",
+    r"\baward(?:ed|s)?\s+(?:of\s+)?(?:compensation|damages|costs|interest)\b",
+    # generic operative markers
+    r"\bin\s+the\s+result\b",
+    r"\border(?:s|ed)?\s+accordingly\b",
+    r"\bit\s+is\s+(?:hereby\s+)?(?:ordered|directed|declared)\b",
+]
+_DISPOSITION_RE = [re.compile(p) for p in _DISPOSITION_PATTERNS]
+
+
+def is_disposition(text: str) -> bool:
+    """True when the text states the court's operative order (the disposition).
+
+    Covers appeal, criminal and civil-decree forms, so a money decree such as
+    "held the defendant liable ... ordered to refund and pay compensation" is
+    recognised, not only "the appeal is allowed".
+    """
+    low = text.lower()
+    return any(r.search(low) for r in _DISPOSITION_RE)
+
+
 SECTION_PATTERNS = {
     "facts": [
         r"\b(?:appellant|petitioner|respondent)\s+was\b",
@@ -45,14 +87,7 @@ SECTION_PATTERNS = {
         r"\breliance\s+is\s+placed",
         r"\barticle\s+\d+\s+of\s+the\s+constitution",
     ],
-    "judgement": [
-        r"\bappeal\s+(?:is\s+)?(?:allowed|dismissed|set aside)",
-        r"\b(?:we|court)\s+(?:allow|dismiss|set aside|quash|remit|remand)",
-        r"\bin\s+the\s+result\b",
-        r"\border(?:s)?\s+accordingly\b",
-        r"\bconviction\s+is\s+(?:set aside|upheld|maintained)",
-        r"\bthe\s+petition\s+(?:is\s+)?(?:allowed|dismissed)",
-    ],
+    "judgement": _DISPOSITION_PATTERNS,
 }
 
 
@@ -148,6 +183,24 @@ def group_by_section(paragraphs: list[Paragraph]) -> dict[str, list[Paragraph]]:
     for para in paragraphs:
         groups.setdefault(para.section, []).append(para)
     return groups
+
+
+def promote_trailing_judgement(paragraphs: list[Paragraph]) -> list[Paragraph]:
+    """Relabel operative-order paragraphs in the document's tail as ``judgement``.
+
+    Both the learned classifier and the rule patterns tend to file a civil money
+    decree under ``reasoning`` because its vocabulary differs from the
+    appeal/criminal disposition it was tuned on. Any paragraph in the final
+    stretch of the document (position >= 0.6) that states a disposition is moved
+    to ``judgement`` so the formatter keeps the final order instead of trimming
+    it off the end of the reasoning block. A disposition cue earlier than that -
+    e.g. the history of a lower court's decree recited in the facts - is left
+    alone. Paragraphs are mutated in place and the list is returned for chaining.
+    """
+    for para in paragraphs:
+        if para.position >= 0.6 and para.section != "judgement" and is_disposition(para.text):
+            para.section = "judgement"
+    return paragraphs
 
 
 def fallback_to_single_section(paragraphs: list[Paragraph]) -> bool:

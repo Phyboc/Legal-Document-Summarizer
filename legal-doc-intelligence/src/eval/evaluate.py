@@ -38,8 +38,40 @@ for _p in (_PKG_ROOT, _PKG_ROOT / "scripts"):
 
 from src.pipeline import process_document  # noqa: E402
 from src.postprocess.aggregation import aggregate_document  # noqa: E402
+from src.data.section_detector import is_disposition  # noqa: E402
+from src.data.section_summary_alignment import summary_sentences  # noqa: E402
 
 logger = logging.getLogger("evaluate")
+
+_WORD = __import__("re").compile(r"[a-z]{3,}")
+
+
+def _disposition_text(text: str) -> str:
+    """The disposition (operative-order) sentences of a summary, joined."""
+    return " ".join(s for s in summary_sentences(text) if is_disposition(s))
+
+
+def outcome_scores(predictions: list[str], references: list[str]) -> list[dict]:
+    """Per-document outcome signals: does the summary carry the court's order?
+
+    A legal summary that omits the final order is missing its most important
+    part (ROUGE/BERTScore barely notice - the order is a sentence or two of a
+    long summary). For each document this reports:
+
+      ``present``  1.0 if the prediction states any disposition, else 0.0.
+      ``recall``   token recall of the reference's disposition against the
+                   prediction's disposition, or ``None`` when the reference has
+                   no detectable disposition (excluded from the mean).
+    """
+    out = []
+    for pred, ref in zip(predictions, references):
+        pred_disp = _disposition_text(pred)
+        ref_disp = _disposition_text(ref)
+        ref_tokens = set(_WORD.findall(ref_disp.lower()))
+        pred_tokens = set(_WORD.findall(pred_disp.lower()))
+        recall = len(ref_tokens & pred_tokens) / len(ref_tokens) if ref_tokens else None
+        out.append({"present": 1.0 if pred_disp.strip() else 0.0, "recall": recall})
+    return out
 
 
 def lawyer_body(result: dict) -> str:
@@ -107,6 +139,16 @@ def evaluate_model(model: str, docs: list[dict], use_bertscore: bool) -> dict:
             for rec, b in zip(per_doc, bs):
                 rec[f"{kind}_bertscore_f1"] = round(b, 4)
             scores[kind]["bertscore_f1"] = mean(bs)
+
+        # Outcome preservation: does the summary keep the court's final order?
+        oc = outcome_scores(preds, references)
+        for rec, o in zip(per_doc, oc):
+            rec[f"{kind}_outcome"] = {"present": o["present"],
+                                      "recall": None if o["recall"] is None else round(o["recall"], 4)}
+        scores[kind]["outcome_present"] = mean([o["present"] for o in oc])
+        recalls = [o["recall"] for o in oc if o["recall"] is not None]
+        if recalls:
+            scores[kind]["outcome_recall"] = mean(recalls)
 
     from src.model.summarizer import get_summarizer
 

@@ -269,6 +269,11 @@ class SentenceAlignment:
     # is never copied into one chunk per assigned section.
     primary_chunk: int | None = None
     primary_chunk_score: float = 0.0
+    # The window inside the primary chunk that produced the score. This is what
+    # makes a match auditable: a reviewer can read the exact span the decision
+    # rests on instead of re-reading a 600-word chunk.
+    evidence_span: str | None = None
+    evidence_location: dict | None = None
     # --- evidence layer (only populated when evidence mode is enabled) -------- #
     # One of SUPPORTED / AMBIGUOUS / UNSUPPORTED / NOT_SUMMARY_CONTENT, or None
     # when the sentence never reached the evidence layer (below the CE threshold).
@@ -320,6 +325,9 @@ class AlignmentResult:
     decision_counts: dict = field(default_factory=dict)
     evidence_mode: bool = False
     evidence_settings: dict = field(default_factory=dict)
+    # Real (sentence x window) comparison count, so throughput is measured rather
+    # than assumed: it is the number that decides how long a build takes.
+    pairs_scored: int = 0
 
     @property
     def total_sentences(self) -> int:
@@ -356,7 +364,7 @@ class AlignmentResult:
 
 
 def _score_pairs(pairs: list[list[str]]) -> list[float]:
-    """Score (sentence, chunk) pairs with the shared Cross-Encoder.
+    """Score (sentence, window) pairs with the shared Cross-Encoder.
 
     ``CrossEncoderSingleton`` exposes ``score`` (this replaced the older
     ``predict`` delegate). ``normalize=True`` applies the singleton's sigmoid,
@@ -364,50 +372,256 @@ def _score_pairs(pairs: list[list[str]]) -> list[float]:
     unassigned scores in
     ``artifacts/training_data/validation_unassigned_log.jsonl`` (0.03, 0.0086,
     ...) are all in [0, 1], and a 0.40 / 0.90 threshold pair is only meaningful
-    there.
+    there. The batch size comes from ``config`` so a CPU/GPU benchmark is
+    reproducible.
     """
-    return get_cross_encoder().score(pairs, normalize=True)
+    return get_cross_encoder().score(
+        pairs, normalize=True, batch_size=config.CROSS_ENCODER_BATCH_SIZE
+    )
+
+
+# --------------------------------------------------------------------------- #
+# Windows and candidate selection
+# --------------------------------------------------------------------------- #
+
+# A character span covering one sentence (period-terminated, or the tail).
+_SENTENCE_SPAN = re.compile(r"\S(?:.*?)(?:[.!?](?=\s|$)|$)", re.DOTALL)
+_CONTENT_WORD = re.compile(r"[a-z]{4,}")
+
+
+def _content_words(text: str) -> list[str]:
+    return _CONTENT_WORD.findall(text.lower())
+
+
+def _sentence_spans(text: str) -> list[tuple[int, int]]:
+    """Character spans of the sentences in ``text``, whitespace-trimmed."""
+    spans: list[tuple[int, int]] = []
+    for match in _SENTENCE_SPAN.finditer(text):
+        start, end = match.span()
+        while start < end and text[start].isspace():
+            start += 1
+        while end > start and text[end - 1].isspace():
+            end -= 1
+        if end > start:
+            spans.append((start, end))
+    return spans
+
+
+def chunk_windows(
+    text: str, max_tokens: int | None = None, overlap_tokens: int | None = None
+) -> list[tuple[int, int, str]]:
+    """Split one chunk into overlapping windows that fit the Cross-Encoder.
+
+    Returns ``(char_start, char_end, window_text)`` triples relative to the chunk,
+    which is the location a reviewer needs to audit a match: chunk id and
+    ``para_range`` give the document position, the character range gives the exact
+    evidence inside it.
+
+    The encoder truncates at 512 sub-word tokens. Windows are bounded in
+    *estimated* tokens well below that (350 by default) because the chunker's
+    estimate under-counts dense legal text - the same reason the builder measures
+    chunks with the real tokenizer before scoring them. Building windows costs
+    nothing next to the encoder pass and makes the whole chunk visible to it.
+    """
+    max_tokens = max_tokens or config.ALIGNMENT_WINDOW_TOKENS
+    overlap_tokens = overlap_tokens if overlap_tokens is not None else config.ALIGNMENT_WINDOW_OVERLAP
+    spans = _sentence_spans(text)
+    if not spans:
+        return [(0, len(text), text)] if text else []
+
+    windows: list[tuple[int, int, str]] = []
+    current: list[tuple[int, int]] = [spans[0]]
+    for span in spans[1:]:
+        candidate = text[current[0][0]:span[1]]
+        if approximate_tokens(candidate) > max_tokens:
+            windows.append((current[0][0], current[-1][1], text[current[0][0]:current[-1][1]]))
+            # Carry the trailing sentences over as overlap so a sentence split
+            # across the boundary is still fully visible in one window.
+            carry: list[tuple[int, int]] = []
+            carried = 0
+            for previous in reversed(current):
+                carried += approximate_tokens(text[previous[0]:previous[1]])
+                if carried > overlap_tokens:
+                    break
+                carry.append(previous)
+            current = list(reversed(carry))
+        current.append(span)
+
+    if current:
+        windows.append((current[0][0], current[-1][1], text[current[0][0]:current[-1][1]]))
+    return windows
+
+
+def rank_candidate_chunks(
+    sentence: str,
+    chunk_texts: list[str],
+    top_k: int | None = None,
+    document_df: dict | None = None,
+    section_labels: list[str] | None = None,
+) -> list[int]:
+    """Cheap IDF-weighted lexical prefilter: the chunks worth the encoder's time.
+
+    Deliberately not a hard rule: it only decides *which* chunks are scored, never
+    what is assigned - the Cross-Encoder still makes that decision, and a sentence
+    sharing no content word with any chunk still gets its ``top_k`` candidates.
+
+    With ``section_labels``, the best-ranked chunk of every section present is added
+    to the selection whatever its rank. Without that, a section whose chunks happen
+    to rank below ``top_k`` would be unscoreable for this sentence and could never
+    be assigned - the prefilter would be silently editing the label set, which is
+    exactly the kind of quiet bias this pipeline is supposed to avoid.
+
+    Returns chunk indices ascending, so the result is deterministic and stable.
+    """
+    top_k = config.ALIGNMENT_TOP_K_CANDIDATES if top_k is None else top_k
+    # ``top_k <= 0`` means "do not prefilter at all": every chunk is a candidate.
+    if top_k <= 0 or len(chunk_texts) <= top_k:
+        return list(range(len(chunk_texts)))
+
+    if document_df is None:
+        document_df = evidence_layer.document_frequency(chunk_texts)
+    total = max(1, len(chunk_texts))
+    import math
+
+    sentence_words = set(_content_words(sentence))
+    scored: list[tuple[float, int]] = []
+    for index, text in enumerate(chunk_texts):
+        words = set(_content_words(text))
+        overlap = sentence_words & words
+        score = sum(
+            math.log((1 + total) / (1 + document_df.get(word, 0)))
+            for word in overlap
+        )
+        scored.append((score, index))
+    scored.sort(key=lambda item: (-item[0], item[1]))
+    ordered = [index for _, index in scored]
+
+    selected = set(ordered[:top_k])
+    if section_labels is not None:
+        covered: set[str] = set()
+        for index in ordered:
+            label = section_labels[index]
+            if label not in covered:
+                covered.add(label)
+                selected.add(index)
+    return sorted(selected)
 
 
 def score_summary_sentences(
-    section_chunks: list[tuple[str, str]], full_summary: str
-) -> tuple[list[str], list[dict[str, float]], list[list[float]]]:
-    """Score every summary sentence against every chunk.
+    section_chunks: list[tuple[str, str]],
+    full_summary: str,
+    *,
+    window_tokens: int | None = None,
+    overlap_tokens: int | None = None,
+    top_k_candidates: int | None = None,
+    use_prefilter: bool | None = None,
+) -> tuple[
+    list[str],
+    list[dict[str, float]],
+    list[list[float]],
+    list[dict[int, dict]],
+    int,
+]:
+    """Score every summary sentence against the evidence windows of its candidates.
 
-    Returns ``(sentences, per_label_scores, per_chunk_scores)`` where
-    ``per_label_scores[i][label]`` is the best score sentence *i* achieved
-    against any chunk carrying that label, and ``per_chunk_scores[i][j]`` is the
-    raw score for sentence *i* against ``section_chunks[j]``.
+    Returns ``(sentences, per_label_scores, per_chunk_scores, window_hits)``:
 
-    All sentence x chunk pairs are scored in a single batch: the per-pair
-    call was the dominant cost of the alignment pass.
+    * ``per_label_scores[i][label]`` - best score sentence *i* reached against any
+      chunk carrying that label;
+    * ``per_chunk_scores[i][j]`` - best score for sentence *i* against chunk *j*
+      (the best of that chunk's windows);
+    * ``window_hits[i][j]`` - which window produced that score, as
+      ``{"window_index", "char_start", "char_end"}``, so the matched evidence span
+      can be recorded and audited.
+
+    Two changes from scoring whole chunks, both forced by the encoder's 512-token
+    input limit:
+
+    1. a chunk is scored as overlapping windows that fit the encoder, with the
+       chunk taking its best window. A whole-chunk call silently discarded
+       everything past ~512 tokens, which is most of an 850-token chunk - the
+       alignment comment claimed this was handled, but only at *section* level,
+       so a sentence could win a chunk whose relevant text the encoder never saw;
+    2. a cheap lexical prefilter picks the ``top_k_candidates`` chunks per
+       sentence. This bounds the cost as sentences x candidates rather than
+       sentences x chunks, which is what made a handful of long judgments take
+       tens of minutes each on CPU.
     """
     sentences = summary_sentences(full_summary or "")
     if not sentences or not section_chunks:
-        return sentences, [], []
+        return sentences, [], [], [], 0
 
-    pairs = [[sentence, chunk] for sentence in sentences for _, chunk in section_chunks]
-    flat_scores = _score_pairs(pairs)
+    chunk_texts = [text for _, text in section_chunks]
+    windows = [
+        chunk_windows(text, max_tokens=window_tokens, overlap_tokens=overlap_tokens)
+        for text in chunk_texts
+    ]
+    if use_prefilter is None:
+        use_prefilter = config.ALIGNMENT_USE_LEXICAL_PREFILTER
+    document_df = evidence_layer.document_frequency(chunk_texts)
 
-    n_chunks = len(section_chunks)
-    per_label_scores: list[dict[str, float]] = []
-    per_chunk_scores: list[list[float]] = []
+    # One flat pair list keeps the encoder call batched; ``slots`` remembers which
+    # (sentence, chunk, window) each row of the result belongs to.
+    pairs: list[list[str]] = []
+    slots: list[tuple[int, int, int]] = []
+    section_labels = [label for label, _ in section_chunks]
+    for i, sentence in enumerate(sentences):
+        candidates = (
+            rank_candidate_chunks(
+                sentence, chunk_texts, top_k_candidates, document_df, section_labels
+            )
+            if use_prefilter
+            else list(range(len(chunk_texts)))
+        )
+        for j in candidates:
+            for window_index, (_, _, window_text) in enumerate(windows[j]):
+                pairs.append([sentence, window_text])
+                slots.append((i, j, window_index))
 
+    flat_scores = [float(value) for value in _score_pairs(pairs)] if pairs else []
+
+    per_chunk_scores: list[list[float]] = [[] for _ in sentences]
     for i in range(len(sentences)):
-        row = [float(s) for s in flat_scores[i * n_chunks:(i + 1) * n_chunks]]
+        per_chunk_scores[i] = [0.0] * len(chunk_texts)
+    window_hits: list[dict[int, dict]] = [{} for _ in sentences]
 
-        # A section is represented by several chunks; score it by its best one
-        # so that long sections are not penalised for having no single chunk
-        # that covers the whole sentence.
+    for (i, j, window_index), score in zip(slots, flat_scores):
+        previous = window_hits[i].get(j)
+        if previous is None or score > previous["score"]:
+            window_hits[i][j] = {
+                "window_index": window_index,
+                "char_start": windows[j][window_index][0],
+                "char_end": windows[j][window_index][1],
+                "score": round(score, 4),
+            }
+        if score > per_chunk_scores[i][j]:
+            per_chunk_scores[i][j] = score
+
+    per_label_scores: list[dict[str, float]] = []
+    for i in range(len(sentences)):
         best: dict[str, float] = {}
-        for (label, _), score in zip(section_chunks, row):
+        for j, (label, _) in enumerate(section_chunks):
+            if j not in window_hits[i]:
+                continue
+            score = per_chunk_scores[i][j]
             if score > best.get(label, -1.0):
                 best[label] = score
-
         per_label_scores.append(best)
-        per_chunk_scores.append(row)
 
-    return sentences, per_label_scores, per_chunk_scores
+    return sentences, per_label_scores, per_chunk_scores, window_hits, len(pairs)
+
+
+def _unpack_precomputed(precomputed):
+    """Accept the 3-, 4- or 5-tuple forms of precomputed scores.
+
+    Three elements is the original ``(sentences, per_label, per_chunk)`` shape that
+    callers and tests already use; window hits and the pair count are optional
+    additions, so an older caller keeps working unchanged.
+    """
+    sentences, per_label, per_chunk = precomputed[0], precomputed[1], precomputed[2]
+    window_hits = precomputed[3] if len(precomputed) > 3 else [{} for _ in sentences]
+    pair_count = precomputed[4] if len(precomputed) > 4 else 0
+    return sentences, per_label, per_chunk, window_hits, pair_count
 
 
 def align_summary_to_sections(
@@ -416,10 +630,14 @@ def align_summary_to_sections(
     threshold: float | None = None,
     allow_multi_label: bool | None = None,
     relative_margin: float | None = None,
-    precomputed: tuple[list[str], list[dict[str, float]], list[list[float]]] | None = None,
+    precomputed: tuple | None = None,
     evidence_mode: bool | None = None,
     evidence_settings=None,
     chunk_positions: list[float] | None = None,
+    window_tokens: int | None = None,
+    overlap_tokens: int | None = None,
+    top_k_candidates: int | None = None,
+    use_prefilter: bool | None = None,
 ) -> AlignmentResult:
     """Align each sentence of ``full_summary`` to section label(s) and to a chunk.
 
@@ -444,6 +662,11 @@ def align_summary_to_sections(
     ``chunk_positions`` are optional document positions (0..1) derived from
     ``Chunk.para_range`` midpoints, used only as the evidence layer's soft final
     tie-break - never as a hard rule.
+
+    ``window_tokens`` / ``overlap_tokens`` / ``top_k_candidates`` / ``use_prefilter``
+    are forwarded to ``score_summary_sentences`` and control how chunks are windowed
+    for the 512-token Cross-Encoder and how many candidate chunks each sentence is
+    compared against. They are ignored when ``precomputed`` scores are supplied.
     """
     if evidence_mode is None:
         evidence_mode = bool(_config_value("ALIGNMENT_EVIDENCE_MODE", False))
@@ -459,9 +682,20 @@ def align_summary_to_sections(
             relative_margin = cfg_margin
 
     if precomputed is not None:
-        sentences, all_scores, chunk_scores = precomputed
+        (
+            sentences, all_scores, chunk_scores, window_hits, pair_count
+        ) = _unpack_precomputed(precomputed)
     else:
-        sentences, all_scores, chunk_scores = score_summary_sentences(section_chunks, full_summary)
+        (
+            sentences, all_scores, chunk_scores, window_hits, pair_count
+        ) = score_summary_sentences(
+            section_chunks,
+            full_summary,
+            window_tokens=window_tokens,
+            overlap_tokens=overlap_tokens,
+            top_k_candidates=top_k_candidates,
+            use_prefilter=use_prefilter,
+        )
 
     labels = sorted({label for label, _ in section_chunks})
 
@@ -488,7 +722,9 @@ def align_summary_to_sections(
         if evidence_mode else None
     )
 
-    for sentence, per_label, row in zip(sentences, all_scores, chunk_scores):
+    for sentence_index, (sentence, per_label, row) in enumerate(
+        zip(sentences, all_scores, chunk_scores)
+    ):
         record = SentenceAlignment(sentence=sentence, scores=per_label)
         above = [label for label, score in per_label.items() if score >= threshold]
 
@@ -583,6 +819,22 @@ def align_summary_to_sections(
                 aligned_sentences[label].append(sentence)
             record.primary_chunk = attach_index
             record.primary_chunk_score = float(row[attach_index])
+            # Record which window of the winning chunk the evidence came from.
+            hit = (
+                window_hits[sentence_index].get(attach_index)
+                if sentence_index < len(window_hits) else None
+            )
+            if hit:
+                chunk_text = section_chunks[attach_index][1]
+                record.evidence_span = chunk_text[hit["char_start"]:hit["char_end"]]
+                record.evidence_location = {
+                    "chunk_index": attach_index,
+                    "section": section_chunks[attach_index][0],
+                    "window_index": hit["window_index"],
+                    "char_start": hit["char_start"],
+                    "char_end": hit["char_end"],
+                    "score": hit["score"],
+                }
             chunk_sentences.setdefault(attach_index, []).append(sentence)
             chunk_pair_scores.setdefault(attach_index, []).append(float(row[attach_index]))
 
@@ -610,6 +862,7 @@ def align_summary_to_sections(
         per_sentence=per_sentence,
         threshold=threshold,
         multi_label=allow_multi_label,
+        pairs_scored=pair_count,
     )
 
     warn_rate = _config_value("ALIGNMENT_UNASSIGNED_WARN_RATE", _UNASSIGNED_WARN_RATE_DEFAULT)

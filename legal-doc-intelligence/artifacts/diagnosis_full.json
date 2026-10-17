@@ -138,6 +138,64 @@
         "test_00003"
       ]
     },
+    "section_coverage": {
+      "documents": 60,
+      "documents_without_any_record": 0,
+      "documents_without_any_record_examples": [],
+      "documents_per_section": {
+        "arguments_appellant": {
+          "documents": 10,
+          "share_of_documents": 0.1667
+        },
+        "arguments_respondent": {
+          "documents": 1,
+          "share_of_documents": 0.0167
+        },
+        "facts": {
+          "documents": 56,
+          "share_of_documents": 0.9333
+        },
+        "full_document": {
+          "documents": 2,
+          "share_of_documents": 0.0333
+        },
+        "judgement": {
+          "documents": 30,
+          "share_of_documents": 0.5
+        },
+        "reasoning": {
+          "documents": 58,
+          "share_of_documents": 0.9667
+        },
+        "test": {
+          "documents": 0,
+          "share_of_documents": 0.0
+        },
+        "train": {
+          "documents": 0,
+          "share_of_documents": 0.0
+        },
+        "validation": {
+          "documents": 0,
+          "share_of_documents": 0.0
+        }
+      },
+      "records_per_document": {
+        "n": 60,
+        "mean": 6.4167,
+        "median": 6.5,
+        "p10": 3.0,
+        "p90": 10.0,
+        "max": 12
+      },
+      "structure_fallback_documents": 2,
+      "judgement_outcomes": {
+        "retained": 30,
+        "no_judgement_sentence": 26,
+        "no_judgement_section": 2,
+        "sentences_assigned_elsewhere": 2
+      }
+    },
     "duplication": {
       "exact_duplicate_chunks": 0,
       "identical_chunk_text_across_splits": 0,
@@ -151,6 +209,24 @@
     }
   },
   "gates": {
+    "no_duplicate_record_keys": {
+      "value": 0,
+      "limit": 0,
+      "passed": true,
+      "why": "(doc_id, chunk_id) must identify exactly one training record"
+    },
+    "no_cross_split_duplicate_text": {
+      "value": 0,
+      "limit": 0,
+      "passed": true,
+      "why": "identical chunk text in two splits is leakage"
+    },
+    "no_target_over_model_window": {
+      "value": 0,
+      "limit": 0,
+      "passed": true,
+      "why": "a target estimated over 1024 tokens is untrainable"
+    },
     "unassigned_rate_within_band": {
       "value": 0.2621,
       "limit": 0.2,

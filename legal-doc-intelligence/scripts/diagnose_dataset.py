@@ -47,6 +47,10 @@ GATE_DEGENERATE_TARGETS = 0      # a target longer than its chunk cannot exist
 GATE_JUDGEMENT_SHARE = 0.10      # share of docs whose summary keeps judgement signal
 
 _CONTENT_WORD = re.compile(r"[a-z]{4,}")
+
+# Mirrors config.MAX_INPUT_LENGTH. Kept local so this script stays importable
+# without the project's dependency set.
+MAX_TARGET_LENGTH_HINT = 1024
 _SENTENCE_END = re.compile(r"[.!?]\s*$")
 
 
@@ -101,6 +105,7 @@ def _read_jsonl(path: Path) -> list[dict]:
 def diagnose(build_dir: Path, examples: int = 3) -> dict:
     """Compute the full diagnosis for one build directory."""
     records_by_split = {split: _read_jsonl(build_dir / f"{split}.jsonl") for split in SPLITS}
+    per_document_records: dict[str, list[dict]] = defaultdict(list)
     records = [row for rows in records_by_split.values() for row in rows]
     references = _read_jsonl(build_dir / "reference_summaries.jsonl")
     unassigned = _read_jsonl(build_dir / "unassigned.jsonl")
@@ -108,6 +113,9 @@ def diagnose(build_dir: Path, examples: int = 3) -> dict:
     stats_path = build_dir / "build_stats.json"
     if stats_path.exists():
         build_stats = json.loads(stats_path.read_text(encoding="utf-8"))
+
+    for row in (row for rows in records_by_split.values() for row in rows):
+        per_document_records[row["doc_id"]].append(row)
 
     report: dict = {
         "build_dir": str(build_dir),
@@ -251,6 +259,38 @@ def diagnose(build_dir: Path, examples: int = 3) -> dict:
         "documented_but_lost": sorted(docs - docs_with_judgement)[:examples],
     }
 
+    # --- section coverage, per document and per section ---------------------- #
+    # "Judgement is missing" has several distinct causes (the detector found no
+    # judgement section, the summary has no judgement sentence, the sentence was
+    # attached to another chunk). This separates them instead of reporting a single
+    # coverage number that hides the cause.
+    docs_by_section: dict[str, set[str]] = defaultdict(set)
+    for record in records:
+        docs_by_section[record["section"]].add(record["doc_id"])
+    docs_with_any_record = {record["doc_id"] for record in records}
+    documents_without_records = sorted(docs - docs_with_any_record)
+    report["findings"]["section_coverage"] = {
+        "documents": len(docs),
+        "documents_without_any_record": len(documents_without_records),
+        "documents_without_any_record_examples": documents_without_records[:examples],
+        "documents_per_section": {
+            section: {
+                "documents": len(docs_by_section.get(section, set())),
+                "share_of_documents": (
+                    round(len(docs_by_section.get(section, set())) / len(docs), 4) if docs else 0.0
+                ),
+            }
+            for section in sorted(set(docs_by_section) | set(SPLITS))
+        },
+        "records_per_document": _stats(
+            [len(rows) for rows in per_document_records.values()]
+        ),
+        "structure_fallback_documents": (
+            build_stats.get("dataset", {}).get("documents_structure_fallback")
+        ),
+        "judgement_outcomes": build_stats.get("judgement", {}).get("documents_by_outcome"),
+    }
+
     # --- duplicate / overlapping supervision --------------------------------- #
     chunk_hashes = Counter(
         hashlib.sha1(r["chunk_text"].encode("utf-8")).hexdigest() for r in records
@@ -299,7 +339,29 @@ def diagnose(build_dir: Path, examples: int = 3) -> dict:
     if unassigned_rate is None:
         total_sentences = len(matched_sentences) + len(unassigned)
         unassigned_rate = len(unassigned) / total_sentences if total_sentences else 0.0
+    over_window = sum(
+        1 for record in records
+        if record.get("n_target_tokens_est", 0) > MAX_TARGET_LENGTH_HINT
+    )
     report["gates"] = {
+        "no_duplicate_record_keys": {
+            "value": report["findings"]["duplication"]["duplicate_doc_id_chunk_id"],
+            "limit": 0,
+            "passed": report["findings"]["duplication"]["duplicate_doc_id_chunk_id"] == 0,
+            "why": "(doc_id, chunk_id) must identify exactly one training record",
+        },
+        "no_cross_split_duplicate_text": {
+            "value": report["findings"]["duplication"]["identical_chunk_text_across_splits"],
+            "limit": 0,
+            "passed": report["findings"]["duplication"]["identical_chunk_text_across_splits"] == 0,
+            "why": "identical chunk text in two splits is leakage",
+        },
+        "no_target_over_model_window": {
+            "value": over_window,
+            "limit": 0,
+            "passed": over_window == 0,
+            "why": f"a target estimated over {MAX_TARGET_LENGTH_HINT} tokens is untrainable",
+        },
         "unassigned_rate_within_band": {
             "value": round(unassigned_rate, 4),
             "limit": GATE_UNASSIGNED_RATE,
@@ -381,6 +443,30 @@ def render_markdown(report: dict) -> str:
         f"{findings['duplication']['same_document_chunks_over_10pct_overlap_pairs']}",
         "",
     ]
+    coverage = findings.get("section_coverage")
+    if coverage:
+        lines += [
+            "## Section coverage (documents, not records)",
+            "",
+            "| Section | Documents | Share of documents |",
+            "| --- | --- | --- |",
+        ]
+        for section, data in coverage["documents_per_section"].items():
+            if data["documents"] == 0 and section in ("train", "validation", "test"):
+                continue
+            lines.append(
+                f"| `{section}` | {data['documents']} | {data['share_of_documents']:.1%} |"
+            )
+        lines += [
+            "",
+            f"* documents with no records at all: "
+            f"**{coverage['documents_without_any_record']}**",
+            f"* structure-fallback documents (no section signal): "
+            f"{coverage.get('structure_fallback_documents')}",
+            f"* judgement outcomes recorded by the builder: {coverage.get('judgement_outcomes')}",
+            "",
+        ]
+
     timings = report.get("builder_stats", {}).get("timings")
     if timings:
         lines += [

@@ -7,6 +7,9 @@
 
 | Gate | Value | Limit | Result |
 | --- | --- | --- | --- |
+| `no_duplicate_record_keys` | 0 | 0 | PASS |
+| `no_cross_split_duplicate_text` | 0 | 0 | PASS |
+| `no_target_over_model_window` | 0 | 0 | PASS |
 | `unassigned_rate_within_band` | 0.2621 | 0.2 | **FAIL** |
 | `no_impossible_targets` | 13 | 0 | **FAIL** |
 | `judgement_signal_present` | 0.5 | 0.1 | PASS |
@@ -37,6 +40,21 @@
 * documents keeping judgement signal: 30/60 (50.0%)
 * identical chunk text across splits: 0
 * same-document chunk pairs over 10% overlap: 4
+
+## Section coverage (documents, not records)
+
+| Section | Documents | Share of documents |
+| --- | --- | --- |
+| `arguments_appellant` | 10 | 16.7% |
+| `arguments_respondent` | 1 | 1.7% |
+| `facts` | 56 | 93.3% |
+| `full_document` | 2 | 3.3% |
+| `judgement` | 30 | 50.0% |
+| `reasoning` | 58 | 96.7% |
+
+* documents with no records at all: **0**
+* structure-fallback documents (no section signal): 2
+* judgement outcomes recorded by the builder: {'retained': 30, 'no_judgement_sentence': 26, 'no_judgement_section': 2, 'sentences_assigned_elsewhere': 2}
 
 ## Impossible targets (first examples)
 

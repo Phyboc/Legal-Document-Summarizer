@@ -15,6 +15,22 @@ MAX_CHUNKS_PER_DOC = 15
 ALIGNMENT_THRESHOLD = 0.40
 ALIGNMENT_RELATIVE_MARGIN = 0.90
 
+# Evidence matching. The Cross-Encoder truncates its input (ms-marco MiniLM:
+# 512 sub-word tokens), while a chunk is budgeted at CHUNK_SIZE (850 estimated
+# tokens). Scoring a whole chunk therefore makes the chunk's tail invisible and
+# can hand a summary sentence to the wrong chunk. Chunks are scored as
+# overlapping windows that fit the encoder instead, and each sentence is only
+# compared against the few chunks a cheap lexical prefilter ranks highest.
+ALIGNMENT_WINDOW_TOKENS = int(os.getenv("LEGAL_ALIGNMENT_WINDOW_TOKENS", "350"))
+ALIGNMENT_WINDOW_OVERLAP = int(os.getenv("LEGAL_ALIGNMENT_WINDOW_OVERLAP", "50"))
+ALIGNMENT_TOP_K_CANDIDATES = int(os.getenv("LEGAL_ALIGNMENT_TOP_K", "5"))
+ALIGNMENT_USE_LEXICAL_PREFILTER = os.getenv("LEGAL_ALIGNMENT_PREFILTER", "1") == "1"
+
+# Cross-Encoder inference batch size. The sentence-transformers default (32) is
+# tuned for short web passages; 512-token pairs on a CPU/GPU benefit from larger
+# batches. Recorded per build, so a benchmark is reproducible.
+CROSS_ENCODER_BATCH_SIZE = int(os.getenv("LEGAL_CE_BATCH_SIZE", "64"))
+
 # Evidence-aware alignment layer (src/data/evidence_alignment.py).
 #
 # OFF by default, deliberately: the layer is implemented but NOT calibrated yet,

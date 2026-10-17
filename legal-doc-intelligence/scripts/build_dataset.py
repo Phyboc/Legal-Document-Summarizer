@@ -69,7 +69,12 @@ if str(_PKG_ROOT) not in sys.path:
     sys.path.insert(0, str(_PKG_ROOT))
 
 from config import (  # noqa: E402
+    ALIGNMENT_TOP_K_CANDIDATES,
+    ALIGNMENT_USE_LEXICAL_PREFILTER,
+    ALIGNMENT_WINDOW_OVERLAP,
+    ALIGNMENT_WINDOW_TOKENS,
     BART_MODEL,
+    CROSS_ENCODER_BATCH_SIZE,
     FALLBACK_SECTION_LABEL,
     MAX_CHUNKS_PER_DOC,
     MAX_INPUT_LENGTH,
@@ -106,6 +111,11 @@ logger = logging.getLogger("build_dataset")
 
 DATASET_ID = "percins/IN-ABS"
 OFFICIAL_SPLITS = ("train", "validation", "test")
+
+# Document counts of the official IN-ABS splits, used to extrapolate a sample's
+# measured throughput to the full corpus. Verified against the Hub's dataset
+# statistics (7128 documents in total).
+IN_ABS_SPLIT_SIZES = {"train": 5346, "validation": 712, "test": 1070}
 
 # Suffix used to stage the incoming build beside the remote registry during
 # ``--append`` so both schemas can be unified in one DatasetDict.
@@ -466,7 +476,11 @@ def build_document(
             **(alignment_kwargs or {}),
         )
         result.alignment_seconds = time.perf_counter() - _alignment_started
-        result.pairs_scored = alignment.total_sentences * len(section_chunks)
+        # The real comparison count (sentences x candidate windows), not an
+        # assumption: this is what the encoder actually paid for.
+        result.pairs_scored = alignment.pairs_scored or (
+            alignment.total_sentences * len(section_chunks)
+        )
 
         result.evidence_decision_counts = dict(alignment.decision_counts)
         result.ambiguous = [{"doc_id": doc_id, **entry} for entry in alignment.ambiguous]
@@ -504,6 +518,18 @@ def build_document(
         # primary chunk, so it appears in at most one record. Chunks with no
         # target are dropped.
         assigned_by_sentence = {r.sentence: r.assigned for r in alignment.per_sentence}
+        # Which window of THIS chunk each sentence's match rests on. Written into
+        # the record so a reviewer can audit the alignment without re-reading the
+        # whole chunk: the span is the evidence, not the chunk.
+        span_by_sentence = {
+            r.sentence: {
+                "sentence": r.sentence,
+                "span": r.evidence_span,
+                "location": r.evidence_location,
+            }
+            for r in alignment.per_sentence
+            if r.evidence_span is not None
+        }
         # Evidence provenance, only attached when the layer actually ran, so the
         # default record schema stays identical to the pure Cross-Encoder build.
         evidence_provenance: dict = {}
@@ -562,6 +588,11 @@ def build_document(
                 round(s, 4)
                 for s in alignment.chunk_pair_scores.get(index, [])[:len(matched)]
             ]
+            matched_evidence_spans = [
+                span_by_sentence[sentence]
+                for sentence in matched
+                if sentence in span_by_sentence
+            ]
             if alignment.evidence_mode:
                 reason_by_sentence = {r.sentence: r.evidence_reason for r in alignment.per_sentence}
                 evidence_provenance = {
@@ -585,6 +616,9 @@ def build_document(
                 "matched_sentences": matched,
                 "alignment_scores": alignment_scores,
                 "matched_labels": matched_labels,
+                # Auditable evidence window inside chunk_text (chunk-relative
+                # character range + the text), for the same sentences.
+                "matched_evidence_spans": matched_evidence_spans,
                 "structure_fallback": result.structure_fallback,
                 # --- target-budget provenance ------------------------------- #
                 "overflow_sentences": overflow,
@@ -792,12 +826,34 @@ def build_stats(
     alignment_seconds = sum(b.alignment_seconds for b in builds)
     pairs_scored = sum(b.pairs_scored for b in builds)
     documents = len(builds)
+    # Extrapolation, not a guess: the sample's own measured rate applied to the
+    # full corpus. This is what answers "how long is --full going to take?" before
+    # five hours are spent finding out.
+    selected_splits = list(getattr(args, "split", None) or OFFICIAL_SPLITS)
+    target_documents = getattr(args, "total_documents", 0) or sum(
+        IN_ABS_SPLIT_SIZES.get(split, 0) for split in selected_splits
+    )
+    seconds_per_document = elapsed_seconds / documents if documents else 0.0
+    projection = {
+        "measured_documents": documents,
+        "full_corpus_documents": target_documents,
+        "full_corpus_hours": round(seconds_per_document * target_documents / 3600, 2),
+        "device": "see alignment.backend / sentence-transformers device log line",
+        "basis": (
+            "seconds_per_document from this build, scaled to the full corpus; "
+            "alignment dominates, so this moves with the encoder's throughput"
+        ),
+    }
+
     timings = {
         "total_seconds": round(elapsed_seconds, 2),
         "preprocessing_seconds": round(sum(b.preprocessing_seconds for b in builds), 2),
         "alignment_seconds": round(alignment_seconds, 2),
+        # Clamped to 1: with a very fast stub the summed per-document timers can
+        # round above the wall clock, and a share over 100% is just noise.
         "alignment_share": (
-            round(alignment_seconds / elapsed_seconds, 4) if elapsed_seconds else 0.0
+            min(1.0, round(alignment_seconds / elapsed_seconds, 4))
+            if elapsed_seconds else 0.0
         ),
         "seconds_per_document": (
             round(elapsed_seconds / documents, 2) if documents else 0.0
@@ -875,6 +931,15 @@ def build_stats(
             "threshold": args.threshold,
             "relative_margin": args.relative_margin,
             "allow_multi_label": not args.no_multi_label,
+            # Evidence matching: the encoder truncates at 512 sub-word tokens, so
+            # chunks are scored as windows and each sentence is compared with the
+            # top-k chunks a lexical prefilter ranks highest. Recorded so the pair
+            # count in build_stats.json is explainable.
+            "window_tokens": args.window_tokens,
+            "window_overlap_tokens": args.window_overlap_tokens,
+            "top_k_candidates": args.top_k_candidates,
+            "lexical_prefilter": not args.no_prefilter,
+            "encoder_batch_size": CROSS_ENCODER_BATCH_SIZE,
             "score_stats": {
                 "count": len(pair_scores),
                 "mean": round(sum(pair_scores) / len(pair_scores), 4) if pair_scores else 0.0,
@@ -918,6 +983,7 @@ def build_stats(
             "chunk_text": _length_stats(chunk_tokens),
         },
         "timings": timings,
+        "projection": projection,
         "length_validation": length_validation,
         "quality_flags": quality_flags(builds),
         "split_isolation": split_isolation,
@@ -1173,6 +1239,12 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
         alignment_kwargs["relative_margin"] = args.relative_margin
     if args.no_multi_label:
         alignment_kwargs["allow_multi_label"] = False
+    # Evidence matching: chunks are scored as encoder-sized windows and each
+    # sentence only against its top-k lexically ranked candidates.
+    alignment_kwargs["window_tokens"] = args.window_tokens
+    alignment_kwargs["overlap_tokens"] = args.window_overlap_tokens
+    alignment_kwargs["top_k_candidates"] = args.top_k_candidates
+    alignment_kwargs["use_prefilter"] = not args.no_prefilter
     if getattr(args, "evidence_mode", False):
         # Evidence mode is opt-in and, until calibrated, must be recorded as such
         # in build_stats.json / build_manifest.json.
@@ -1314,6 +1386,23 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
             f"{length_validation['target_violations']}\n"
             f"  examples: {length_validation['violation_examples']}"
         )
+    # Quality gate: a handful of impossible targets is dropped and reported, but a
+    # systematic rate means the alignment itself is broken and the dataset must not
+    # be written - a large low-quality dataset is worse than a failed build.
+    attempted = len(all_records) + sum(b.degenerate_targets_dropped for b in builds)
+    degenerate_rate = (
+        sum(b.degenerate_targets_dropped for b in builds) / attempted if attempted else 0.0
+    )
+    if degenerate_rate > args.max_degenerate_rate:
+        raise SystemExit(
+            "Refusing to write the dataset: "
+            f"{degenerate_rate:.2%} of would-be records carry an impossible target "
+            f"(limit {args.max_degenerate_rate:.2%}). An alignment target longer than its "
+            "own chunk is not supervision; at this rate the alignment - not the individual "
+            "document - is at fault. Inspect build_stats.json / the per-document warnings, "
+            "or raise --max-degenerate-rate to accept the loss deliberately."
+        )
+
     logger.info(
         "Tokenizer validation passed: max input %d <= %d, max target %d <= %d",
         length_validation["max_input_tokens"], MAX_INPUT_LENGTH,
@@ -1435,6 +1524,9 @@ def report(stats: dict, output_dir: Path) -> None:
         f" alignment {timings.get('alignment_share', 0):.0%} of it)",
         f"  alignment throughput    : {timings.get('pairs_per_second', 0)} pairs/s"
         f" ({timings.get('pairs_scored', 0)} pairs scored)",
+        f"  full-corpus projection  : "
+        f"{stats.get('projection', {}).get('full_corpus_hours', 0)}h for "
+        f"{stats.get('projection', {}).get('full_corpus_documents', 0)} documents",
         f"  judgement outcomes      : {stats['judgement']['documents_by_outcome']}",
         f"  judgement sentences     : "
         f"{stats['judgement']['judgement_sentences_assigned']} assigned / "
@@ -1929,6 +2021,46 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--window-tokens", type=int, default=None,
+        help=(
+            "Estimated tokens per Cross-Encoder window (default from config: "
+            f"{ALIGNMENT_WINDOW_TOKENS}). The encoder truncates at 512 sub-word tokens, "
+            "so each chunk is scored as overlapping windows that fit instead of whole."
+        ),
+    )
+    parser.add_argument(
+        "--window-overlap-tokens", type=int, default=None,
+        help=f"Overlap between adjacent windows (default {ALIGNMENT_WINDOW_OVERLAP}).",
+    )
+    parser.add_argument(
+        "--top-k-candidates", type=int, default=None,
+        help=(
+            "Chunks per summary sentence scored by the Cross-Encoder, chosen by a cheap "
+            f"lexical prefilter (default {ALIGNMENT_TOP_K_CANDIDATES}). 0 means score every "
+            "chunk (slowest, highest recall)."
+        ),
+    )
+    parser.add_argument(
+        "--no-prefilter", action="store_true",
+        help="Score every sentence against every chunk (disables the lexical prefilter).",
+    )
+    parser.add_argument(
+        "--max-degenerate-rate", type=float, default=0.02,
+        help=(
+            "Fail the build when more than this share of would-be records carries an "
+            "impossible target (longer than its chunk, or no prose). Default 0.02: a few "
+            "such rows are dropped and reported, a systematic rate means the alignment "
+            "must be fixed before the dataset is used."
+        ),
+    )
+    parser.add_argument(
+        "--total-documents", type=int, default=0,
+        help=(
+            "Document count of the full corpus, used to extrapolate the printed runtime "
+            "estimate (default: the sizes of the selected IN-ABS splits, 7128 for all)."
+        ),
+    )
+    parser.add_argument(
         "--upload-jsonl", action="store_true",
         help=(
             "With --push-to-hub: also upload the splits as raw JSONL under raw/ and "
@@ -1979,6 +2111,23 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         args.evidence_max_rare_df = evidence_defaults.max_rare_df
     if args.evidence_contradiction_mode is None:
         args.evidence_contradiction_mode = evidence_defaults.contradiction_mode
+
+    # Evidence-matching knobs, resolved from config so the values reported in
+    # build_stats.json cannot drift from the values the aligner applies.
+    if args.window_tokens is None:
+        args.window_tokens = ALIGNMENT_WINDOW_TOKENS
+    if args.window_overlap_tokens is None:
+        args.window_overlap_tokens = ALIGNMENT_WINDOW_OVERLAP
+    if args.top_k_candidates is None:
+        args.top_k_candidates = ALIGNMENT_TOP_K_CANDIDATES
+    if args.no_prefilter:
+        args.top_k_candidates = 0
+    if args.window_tokens < 50:
+        parser.error("--window-tokens must be at least 50.")
+    if args.top_k_candidates < 0:
+        parser.error("--top-k-candidates must be >= 0 (0 = score every chunk).")
+    if not 0.0 <= args.max_degenerate_rate <= 1.0:
+        parser.error("--max-degenerate-rate must be between 0 and 1.")
 
     return args
 

@@ -153,6 +153,14 @@ class DocumentBuild:
     pii_counts: dict = field(default_factory=dict)
     error: str | None = None
 
+    target_overflow_sentences: int = 0
+    # NEW: chunks whose real-tokenizer length exceeds MAX_INPUT_LENGTH are
+    # dropped here, before alignment ever runs on them - never silently kept,
+    # never silently truncated.
+    oversized_chunks_dropped: int = 0
+    oversized_chunk_details: list = field(default_factory=list)
+    evidence_decision_counts: dict = field(default_factory=dict)
+
 
 # --------------------------------------------------------------------------- #
 # IN-ABS loading
@@ -351,6 +359,8 @@ def build_document(
     alignment_kwargs: dict | None = None,
     token_measure=None,
     max_target_tokens: int = MAX_TARGET_LENGTH,
+    max_input_tokens: int = MAX_INPUT_LENGTH,   # NEW
+
 ) -> DocumentBuild:
     """Run one source document through the existing pipeline and align its summary.
 
@@ -384,6 +394,35 @@ def build_document(
 
         # 7. Section-aware chunking (existing implementation).
         chunks = chunk_document(section_groups)
+
+        # NEW: real-tokenizer validation BEFORE the expensive Cross-Encoder pass.
+        # chunk_document() bounds chunk size with approximate_tokens, which can
+        # under-count dense legal/technical text relative to BART's real subword
+        # tokenizer. Catching this here costs milliseconds; catching it only at
+        # the end of the whole split (the previous behaviour) meant discovering
+        # it after every document - including this one - had already paid for
+        # full Cross-Encoder alignment scoring.
+        if token_measure is not None:
+            kept_chunks = []
+            for chunk in chunks:
+                n_tokens = token_measure(chunk.text)
+                if n_tokens > max_input_tokens:
+                    result.oversized_chunk_details.append({
+                        "chunk_id": chunk.chunk_id,
+                        "section": chunk.section,
+                        "tokens": n_tokens,
+                        "limit": max_input_tokens,
+                    })
+                else:
+                    kept_chunks.append(chunk)
+            if result.oversized_chunk_details:
+                result.oversized_chunks_dropped = len(result.oversized_chunk_details)
+                logger.warning(
+                    "%s: dropping %d oversized chunk(s) (real tokenizer > %d tokens): %s",
+                    doc_id, result.oversized_chunks_dropped, max_input_tokens,
+                    result.oversized_chunk_details[:3],
+                )
+            chunks = kept_chunks
         result.chunks_created = len(chunks)
         result.at_chunk_cap = len(chunks) >= MAX_CHUNKS_PER_DOC
 
@@ -702,6 +741,8 @@ def build_stats(
             "documents_structure_fallback": sum(1 for b in builds if b.structure_fallback),
             "documents_at_chunk_cap": sum(1 for b in builds if b.at_chunk_cap),
             "documents_without_records": sum(1 for b in builds if not b.records),
+            "documents_with_oversized_chunks_dropped": sum(1 for b in builds if b.oversized_chunks_dropped),
+            "oversized_chunks_dropped_total": sum(b.oversized_chunks_dropped for b in builds),
         },
         "chunks": {
             "created": chunks_created,
@@ -1098,6 +1139,7 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
                 alignment_kwargs=alignment_kwargs,
                 token_measure=token_measure,
                 max_target_tokens=MAX_TARGET_LENGTH,
+                max_input_tokens=MAX_INPUT_LENGTH,
             )
             builds.append(build)
             records_by_split[split].extend(build.records)
@@ -1214,6 +1256,9 @@ def report(stats: dict, output_dir: Path) -> None:
         f"  chunks created         : {chunks['created']}",
         f"  chunks retained        : {chunks['retained']}"
         f"   ({chunks['dropped_no_aligned_target']} dropped: no aligned target)",
+        # in report(), add a line:
+        f"  oversized chunks dropped: {dataset.get('oversized_chunks_dropped_total', 0)}",
+        f"  ({dataset.get('documents_with_oversized_chunks_dropped', 0)} documents affected)",
         f"  records per split      : {chunks['retained_per_split']}",
         f"  records by section     : {chunks['retained_by_section']}",
         f"  summary sentences      : {sentences['total']}"

@@ -1,0 +1,930 @@
+{"doc_id": "validation_00000", "sentence": "Ltd.", "best_score": 0.023033111037480073, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00000", "sentence": "This order was confirmed by the higher income tax authorities.", "best_score": 0.04805161172742819, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00000", "sentence": "On appeal by the Commissioner of Income tax by special leave, 142 Held, that the liability to pay income tax finder s, 4(1)(a) arose on the receipt of the income and the question whether the income was received in the taxable territory was determined by the place where the price was received.", "best_score": 0.15748891355719083, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00002", "sentence": "The permis sion was granted in December, 1974 and three eviction suits were filed in April, 1975 on the grounds contained in Sec tion 14(1)(a), (h) and (j) of the Delhi Rent Control Act.", "best_score": 0.11865335765306961, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00002", "sentence": "The Rent Control Act is a beneficial legisla tion to both the landlord and the tenant.", "best_score": 0.10539400870711112, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00002", "sentence": "He cannot, there fore, claim that he should he protected.", "best_score": 0.0019022848839301135, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00002", "sentence": "Time begins to run from the date of the knowledge.", "best_score": 0.057734647956086634, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00002", "sentence": "Knowledge in this case is indisputably in 1973 looked at from any point of view.", "best_score": 0.0468295345353582, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00002", "sentence": "There is, therefore, no question of limitation in this case.", "best_score": 0.11432615147507945, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00002", "sentence": "A.I.R.", "best_score": 0.00024197638503788176, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00002", "sentence": "LXIII, 1961, 915; Govindji Khera vs Padma Bhatia Attorney, [1972] Rent Control Repor 542 ter Vol.", "best_score": 0.012869622427984942, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00002", "sentence": "4, 195: Harbans Singh and another vs Custodian of Evacuee Property 'P ' Block and others, A.I.R.", "best_score": 0.0003351315217584442, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00002", "sentence": "1970 Delhi 82; Ujagar Singh vs Likha Singh and another, A.I.R.", "best_score": 0.12068877610822076, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00002", "sentence": "1941 Allaha bad 28, 30; Somdass (deceased) vs Rikhu Dev Chela Bawa Har Jagdass Narokari, Punjab Law Reporter Vol.", "best_score": 0.0002774150771163018, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00002", "sentence": "85, 184 and K.V.", "best_score": 0.0003148633386856025, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00002", "sentence": "Ayyaswami Pathar and another vs M.R.", "best_score": 0.00119398768729746, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00002", "sentence": "Manavikrama Zamorin Rajah and others, A.I.R.", "best_score": 8.706992372157287e-05, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00002", "sentence": "1930 Madras 430, referred to.", "best_score": 0.00019087813697393996, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00003", "sentence": ", PunJab; Tarsem Kumar & Anr.", "best_score": 0.0024148835486057655, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00003", "sentence": ", ; Laxmipat Chororia vs K.K.", "best_score": 0.00376142345061893, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00003", "sentence": "Ganguli Motilal and ors.", "best_score": 0.00013102230146846494, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00003", "sentence": "vs Preventive Intelligence officer, Central Excise and Customs, Agra & Ors., Allahabad, distinguished and partly overruled.", "best_score": 0.12799657302645243, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00003", "sentence": "Noor Mohd.", "best_score": 0.0033301801910609963, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00003", "sentence": ", 93 ITR p.", "best_score": 0.017667372283998915, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00003", "sentence": "480 Madhya Pradesh; Gulab and Company and Anr.", "best_score": 0.016188853934913035, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00003", "sentence": "vs Superintendent of Central Excise (Preventive) Trichy, and ors.", "best_score": 0.05613929410015882, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00003", "sentence": ", Madras; Assainar and Anr.", "best_score": 0.00015939023261279136, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00003", "sentence": ", Kerala, overruled.", "best_score": 0.0009415482955403423, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00003", "sentence": "This is so because if the location was certain then there was nothing to search or look for.", "best_score": 0.08941371253427237, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00003", "sentence": "[304G H; 305A B]", "best_score": 0.014637902890744002, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00004", "sentence": "Ltd.", "best_score": 0.0021390538682609815, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00004", "sentence": "; Raja of Bohbili vs Inuganti China Sitaramaswami Garu, 23 Madras 49.", "best_score": 0.09771333934331093, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00004", "sentence": "4 Rangoon 363 and Satyavati vs Pallayya, A.I.R.", "best_score": 0.25967417236644424, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00005", "sentence": "On a separate sheet the Minister indicated the first set of seven names and second set of eight names.", "best_score": 0.21231519172998714, "best_label": "arguments_appellant", "reason": "below_threshold"}
+{"doc_id": "validation_00005", "sentence": "Being aggrieved, the appellant assailed the order by a writ petition in the High Court, which was dismissed.", "best_score": 0.01105174319708524, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00005", "sentence": "Under the Cabinet system of Government, the Chief Minister occupies a position of pre eminence and he virtually carries on the governance of the State.", "best_score": 0.08435295376763222, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00005", "sentence": "[655 A, 654 C D] 2.", "best_score": 0.015531197574371654, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00005", "sentence": "[655 C D] 3.", "best_score": 0.017456251973749545, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00006", "sentence": "Javatri Devi A.I.R.", "best_score": 0.04399674322382502, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00006", "sentence": "(56) 1969 Allahabad 142 approved.", "best_score": 0.011592421672963725, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00007", "sentence": "Tenancy Act.", "best_score": 0.17128684003839292, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00007", "sentence": "After the U.P.", "best_score": 0.020553076068371545, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00007", "sentence": "Zamindari Abolition and Land Reforms Act came into force in 1952 i.e., at the beginning of 1360 F, on the strength of the Khasra and Khatauni of 1356F, the respondents claimed Adhivasi rights under section 20(b)(i) of the Act and.", "best_score": 0.025926836456165798, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00007", "sentence": "they could not be quashed by certiorari as being mere errors of law.", "best_score": 0.0026930086175954242, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00007", "sentence": "; applied.", "best_score": 0.0006413876624006163, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00008", "sentence": "I and 2.", "best_score": 0.0001459024975559865, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00008", "sentence": "She died on October 1, 1960.", "best_score": 0.1303091421752144, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00008", "sentence": "[814E] 2.", "best_score": 0.0015177549492630814, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00008", "sentence": "[813H; 814A C] There could conceivably be a deemed resignation or a deemed removal but for inferring the same some additional facts would be required to be proved.", "best_score": 0.3766502881126121, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00008", "sentence": "120, referred to.", "best_score": 0.0001666732777403113, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": "Does the rule in Rylands vs Fletcher, (1866 Law Report 1 Excheq uer 265) apply or is there any other principle on which the liability can be determined.", "best_score": 0.015064779866654849, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": "Disposing of the applications, HELD: 1.", "best_score": 0.0038732268233489728, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": "vs State of West Bengal, ; ; Rasbehari Panda vs St.ate, ; ; Kas turi Lal Reddy vs State of Jammu & Kashmir, ; , referred to.", "best_score": 0.00020060171829116934, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": "821 2.", "best_score": 0.007571341432225014, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": "[830D; E F] 4.", "best_score": 0.019710788091071824, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": "The Court must look at the substance and not the form.", "best_score": 0.24229720796188578, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": ", ; ; S.P.", "best_score": 0.0025750678802716038, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": "[842D G] Halsburry Laws of England, Vol.", "best_score": 0.0355618351352184, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": "45 Para 1305, relied upon.", "best_score": 0.00032722191066559213, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": "The Court cannot allow judicial thinking to be constricted by reference to the law as it prevails in England or in any other foreign country.", "best_score": 0.2912345466307501, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": "Although this Court should be prepared to receive light from whatever source it comes, but it has to build up its own jurisprudence, evolve new principles and lay down new norms which would adequately deal with the new problems which arise in a highly indus trialised economy.", "best_score": 0.0030630426086379536, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": "[843E G] 7.(ii) If the enterprise is permitted to carry on an hazardous or inherently dangerous activity for its profit, the law must presume that such permission is conditional on the enterprise absorbing the cost of any accident arising on account of such activity as an appropriate item of its overheads.", "best_score": 0.25823482279154597, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": "The enterprise alone has the resource to discover and guard against hazards or dangers and to provide warning against potential hazards.", "best_score": 0.00039126370125527394, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": "[844A B] 7.(iii) The measure of compensation in such kind of cases must be co related to the magnitude and capacity of the enterprise because such compensation must have a deter rent effect.", "best_score": 0.0025931194734146153, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": "The larger and more prosperous the enterprise, the greater must be the amount of compensation payable by it for the harm caused on account of an accident in carrying on of the hazardous or inherently dangerous activity by the enterprise.", "best_score": 0.0013049210699464008, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": "[844E F] 8.", "best_score": 0.006400475619649457, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00009", "sentence": "Maratha vs Gilbert, ; , relied upon.", "best_score": 0.029448414706600156, "best_label": "full_document", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "Since, as work expanded, it was found that the number of persons brought on deputation to fill up all the new posts in the BRO were not enough, some persons were directly recruited into the BRO.", "best_score": 0.19835915028235632, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "candidates.", "best_score": 0.014336922609774188, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "[92 D E] The government resolution in regard to the position of non P.S.C.", "best_score": 0.28156448174409826, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "candidates vis a vis the P.S.C.", "best_score": 0.005346409487258621, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "[93 E F] 72 There is no substance in the contention of the petitioners that they stood on a separate and superior footing for the purpose of seniority in the new organisation.", "best_score": 0.27156454737527524, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "It is open to the rule making authority to take a note of the relevant circumstances obtaining in relation to each department and determine objectively the rules that should govern the inter se seniority and ranking.", "best_score": 0.13282969879586112, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "Such rules should be reasonable, just and equitable.", "best_score": 0.017191655840699028, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "S.G.", "best_score": 0.000668807503695359, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "Jaisinghani vs Union of India & Ors., ; ; Bishan Sarup Gupta vs Union of India & Ors.", "best_score": 0.003087928562187382, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": ", ; at p.", "best_score": 0.005959879225250031, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "114, referred to.", "best_score": 0.0003620971340753314, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "[105 E H] The object of clause (b) of rule 7 is limited to the preservation and maintenance of the pre existing inter se seniority as between CFD personnel even after their absorption in the BRO and this provision does not in any way hamper the operation of the principle laid down in rule 4 for the fixation of seniority of all the personnel including the merged government servants in the respective categories of BRO.", "best_score": 0.03054164460233626, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "at pp.", "best_score": 0.006871798003015839, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "805, 836, 853 855, Rabindra Nath Bose and Ors.", "best_score": 0.04932895872190007, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "vs Union of India and Ors.", "best_score": 0.21165183382092673, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "; at pp.", "best_score": 0.004404014597993584, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "711 712; Malcom Lawrence Cecil D 'Souza vs Union of India and Ors.", "best_score": 0.008911013155828552, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "at p.", "best_score": 0.008258734851856304, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "602; S.S.", "best_score": 0.001520138583348084, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "Moghe and Ors.", "best_score": 0.014667416970650127, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "vs Union of India and Ors.", "best_score": 0.21165183382092673, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "; at p.", "best_score": 0.008374368954219742, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "292, referred to.", "best_score": 0.00013643645297108648, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00010", "sentence": "[99 B F]", "best_score": 0.0005171073120888503, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00011", "sentence": "1) and was being assessed to wealth tax as a HUF.", "best_score": 0.08099777463172772, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00011", "sentence": "[48 H;", "best_score": 0.0007609015401651397, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00012", "sentence": "Main conal of Kallada Irrigation Project.", "best_score": 0.00042746982852220563, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00012", "sentence": "two years From the date of selection notice which was dated March 30, 1978.", "best_score": 0.26549618949587867, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00012", "sentence": "He also claimed interest on delayed payment and costs.", "best_score": 0.2203837562880332, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00012", "sentence": "Respondent, No.", "best_score": 0.07073700148268933, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00012", "sentence": "2, therefore, filed a counter claim for Rs.28,84,000.", "best_score": 0.2308270889915126, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00012", "sentence": "1 thereby directing the Respondents to pay 35 per cent increase in the agreed rate for the item of earth work.", "best_score": 0.23657378127211237, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00012", "sentence": "vs Mirza Muhammad Zakaria & Ors., AIR 1922 (PC) 23; Darvao & Ors.", "best_score": 0.0004156114196350234, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00012", "sentence": "vs The State of U.", "best_score": 0.00017577708000814264, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00012", "sentence": "P.", "best_score": 0.026625775312476903, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00012", "sentence": "& Ors., ; at 582 83; Satish Kumar & Ors.", "best_score": 0.007592506628577221, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00012", "sentence": "V.", "best_score": 0.010522034230171845, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00013", "sentence": "He was, however, not its director.", "best_score": 0.3145789543979552, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00013", "sentence": "He had a similar interest in another company.", "best_score": 0.13261673471752095, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00013", "sentence": "even if he had the majority of voting power.", "best_score": 0.01852482576572614, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00013", "sentence": "[657 B] 1.", "best_score": 0.008718935490508095, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00013", "sentence": "It has several nuances, and is used to convey diverse shades of meaning.", "best_score": 8.13193987962516e-05, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00013", "sentence": "It may mean \"to have a relation to.", "best_score": 0.005587375641961842, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00013", "sentence": "or bearing on, be of interest 0r importance\" or \"to have an anxiety, worry\".", "best_score": 0.0001892070815699372, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00013", "sentence": "In one context, it may mean one thing and in a different context another.", "best_score": 0.04438128128254838, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00013", "sentence": "to guide.", "best_score": 0.02757445045266028, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00013", "sentence": "[658 A B]", "best_score": 0.01901447394899571, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00014", "sentence": "The respondent filed an appeal.", "best_score": 0.1250422697395147, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00014", "sentence": "The Division Bench held following Joginder Singh vs Smt.", "best_score": 0.08036039365264008, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00014", "sentence": "Such a right is inherent in the very institution of marriage itself.", "best_score": 0.017242341230819604, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00014", "sentence": "There are sufficient safeguards in Section 9 of the to prevent it from being a tyranny.", "best_score": 0.024140889633276697, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00014", "sentence": "[314 D E] 305 2.", "best_score": 0.004068817762765177, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00014", "sentence": "[314 H] 3.", "best_score": 0.013617933692634249, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00014", "sentence": "[315 G] T.", "best_score": 0.002816227439310138, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00014", "sentence": "1983 Andhra Pradesh page 356, over ruled.", "best_score": 0.004066648400469457, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00014", "sentence": "Harvinder kaur vs Harmander Singh Choudhry, A.I.R.", "best_score": 0.001922142453890846, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00014", "sentence": "1984 Delhi, page 66, approved.", "best_score": 0.00023648865204882192, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00014", "sentence": "It serves a social purpose, as an aid to the prevention of break up of marriage.[315 C F] 5.", "best_score": 0.000624740256772367, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00014", "sentence": "[316 D]", "best_score": 0.002356708056877467, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00015", "sentence": "was of minor.", "best_score": 0.003444967581602819, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00015", "sentence": "[665 G H]", "best_score": 0.008451450982721037, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00016", "sentence": "P.C.", "best_score": 0.008136879913991766, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00016", "sentence": "P.C.", "best_score": 0.008136879913991766, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00016", "sentence": "had been registered.", "best_score": 0.0005743743465946199, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00016", "sentence": "P.C.", "best_score": 0.008136879913991766, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00016", "sentence": "P.C.", "best_score": 0.008136879913991766, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00016", "sentence": "[1011 D F, H] (ii) Section 403 Cr.", "best_score": 0.18486510518284974, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00016", "sentence": "P.C.", "best_score": 0.008136879913991766, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00016", "sentence": "1956 S.C.", "best_score": 0.0003669857240471377, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00016", "sentence": "A.", "best_score": 0.004708397056778471, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00016", "sentence": "No.", "best_score": 0.025323572075037274, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00016", "sentence": "A.", "best_score": 0.004708397056778471, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00016", "sentence": "No.", "best_score": 0.025323572075037274, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00016", "sentence": ",As.", "best_score": 0.0058882125081025855, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00016", "sentence": "Rep.", "best_score": 0.002708130673105859, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "One M/s.", "best_score": 0.001821514285371625, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "By a notification No.", "best_score": 0.008187352304771084, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "S.O.", "best_score": 0.00013196809230217498, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "[786 F H] Barium Chemicals Ltd.", "best_score": 0.27497805779265394, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "vs Company Law Board [1966] Supp.", "best_score": 0.032027599003338736, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "SCR 311; Smt.", "best_score": 0.00033454958036404736, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "; referred to.", "best_score": 0.0031978410714600743, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "[789 H, 790 A E] 2:2.", "best_score": 0.1207023890817808, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "[790 F H] Moreover, since the expression is occurring in a taxing statute in the P context of amalgamation of companies it will have to be understood in its popular sense, that is to say, the sense or meaning that is attributed to it by men of business, trade or commerce and by persons or institutions interested in or dealing with companies.", "best_score": 0.1981349985255363, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "[790 H, 791 A] 2:3.", "best_score": 0.009096351327080768, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "[791 B F, 792 A B] 3:1.", "best_score": 0.004584984614047508, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "the companies Act, 1956 have been completed ignored.", "best_score": 0.0185992104489638, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "4 crores and by making investment of Rs.", "best_score": 0.01041458293219872, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "0.7 crore on maintenance, replacement of machinery etc.", "best_score": 0.0007834985161899299, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "thereby enabling the undertaking to earn a cash profit of Rs.", "best_score": 0.0015602138602104794, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "253 lakhs and Rs.", "best_score": 0.012438876984000907, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "433 lakhs respectively and the nominal profits of Rs.", "best_score": 0.003972367911973973, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "70 lakhs (or for that matter even Rs.", "best_score": 0.3621886139832133, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "Further, the excess of liabilities (including loans) over the assets (share capital plus free reserves) was to the tune of Rs.", "best_score": 0.0033315510605119885, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "61 lakhs and odd as on 31st October, 1977 and as such the entire share capital plus free reserves had been eroded (and not merely 50% as per the test of Government of India) and the 'current ratio was extremely strained at 40:60 (being less than 1:1 as required by the test adopted by commercial Banks).", "best_score": 0.019445979681019788, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "[792 G H, 793 A H, 794 A H 79; A H, 796 A E] 3:2.", "best_score": 0.0008444737686403397, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "There is a specific averments made to it in the writ petition itself.", "best_score": 0.003391035166727438, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00017", "sentence": "[796 H, 797 A G]", "best_score": 0.00457668311663838, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00018", "sentence": "A notice dt.", "best_score": 0.019064636468215605, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00018", "sentence": "[742B C D E.", "best_score": 0.09882621151832884, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00018", "sentence": "F] (2) Section 3(27) of the Bengal General Clauses Act (Act 1), 1899 defines \"a month\" to mean a month reckoned according to the British calender.", "best_score": 0.10620728553855659, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00018", "sentence": "[743D E]", "best_score": 0.0026504944136052423, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00019", "sentence": "On 16.12.1974, he, alongwith respondents No.", "best_score": 0.1797695585048618, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00019", "sentence": "[605 F, 604 G, 607 H, 608 A] 2.", "best_score": 0.001176265645205596, "best_label": "arguments_respondent", "reason": "below_threshold"}
+{"doc_id": "validation_00019", "sentence": "[606 B C] 3.", "best_score": 0.004837070448806035, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00019", "sentence": "; , fol lowed.", "best_score": 0.0003266449798515967, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00019", "sentence": "[608 B]", "best_score": 0.08201352671615371, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "The State adopted the contentions of Respondents No.", "best_score": 0.013569544818492747, "best_label": "arguments_respondent", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "3.", "best_score": 0.010653747159934874, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "1.", "best_score": 0.002249912186416955, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": ", ; , relied on.", "best_score": 0.0007340655152920299, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "section P.", "best_score": 0.18313061778670792, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "1.2.", "best_score": 0.0005218083512068457, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "The first appellant Association represents the interests of the slum dwellers and the second appellant himself is one of the residents in the area.", "best_score": 0.06338152827110151, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "1982F] 2.2.", "best_score": 0.1121038929802944, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "[982E] 2.3.", "best_score": 0.10086136723292564, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "[983D E] 2.4.", "best_score": 0.0016064032874130467, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "[980B] State of Kerala vs K.", "best_score": 0.0008455349931325699, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "G.", "best_score": 0.0012684568178531433, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "Madhavan Pillai, ; ; State of M.P.", "best_score": 6.252061657867395e-05, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "vs V.P.", "best_score": 0.04311520587739538, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "Sharma, [1966]3 SCR557; Lt.", "best_score": 0.0008415009150834393, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "Governor of H.P.", "best_score": 0.00028371966489487113, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "N.", "best_score": 0.0016025901196821217, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00020", "sentence": "[983F G]", "best_score": 0.017866459871021954, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00021", "sentence": "The State of Bombay vs R.", "best_score": 0.13832982035062952, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00021", "sentence": "section Phadtare, [1956] 7 section T.", "best_score": 0.0022750987457519443, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00021", "sentence": "C.", "best_score": 0.0010332931583313027, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00021", "sentence": "495, disapproved.", "best_score": 0.00011216006574604931, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00021", "sentence": "The amended was not a temporary amendment for only one year; the amended section was applicable to the present case.", "best_score": 0.0015319510084623438, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00021", "sentence": "The amending Act did not require the assent of the President as the matter fell entirely within entry 54 of the State List.", "best_score": 0.21953178726361897, "best_label": "arguments_appellant", "reason": "below_threshold"}
+{"doc_id": "validation_00023", "sentence": "After the introduction of r.", "best_score": 0.0024445121235650725, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00023", "sentence": "the date of induction of r.", "best_score": 0.0023771532765906552, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00023", "sentence": "A note appended to r.", "best_score": 0.0005717672920683275, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00023", "sentence": "^ HELD: 1.", "best_score": 0.0005644452225906057, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00023", "sentence": "There is a historical reason for this state of affairs.", "best_score": 0.32920468119331586, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00023", "sentence": "execution of certain urgent works.", "best_score": 0.0006552362451430183, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00023", "sentence": "[224D E] 2.", "best_score": 0.004154803336681434, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00023", "sentence": "There is to be no fresh recruitment to the Pool pos(s and.", "best_score": 0.04195843267693421, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00023", "sentence": "therefore, allocations to the Pool would always be shared by I definite and predictable number of officers.", "best_score": 0.2614186101830029, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00023", "sentence": "On the other hand, the other wing was a living and growing service to which recruitment continued to be made in subsequent years.", "best_score": 0.006463189771440058, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00023", "sentence": "Allocations to that wing would have to be in proportion to the total number of officers working therein but in the very nature of things there were budgetary constraints on the creation of additional posts.", "best_score": 0.007979776728781987, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00023", "sentence": "1224 F G] 3.", "best_score": 0.00025863100252454904, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00023", "sentence": "[224H 225C] 4.", "best_score": 0.001852124742557095, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00023", "sentence": "[225G 226B] 5.", "best_score": 0.001205271030120564, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00023", "sentence": "[226 C E]", "best_score": 0.0008498835230992669, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00024", "sentence": "Craddock (H.", "best_score": 0.0008040223419233621, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00024", "sentence": "M.", "best_score": 0.001360076147497264, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00024", "sentence": "Inspector of Taxes) vs Zevo Finance Co.", "best_score": 0.0007786753333328363, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00024", "sentence": "[195S] , referred to.", "best_score": 0.005127386013454242, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00024", "sentence": "Commissioner of Income tax, Bihar & Orissa vs Visweshwar Singh, and Sir Sunder Singh Majithia vs Commissioner of Income tax, C.", "best_score": 0.10313384833279692, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00024", "sentence": "P.", "best_score": 0.004523797599714729, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00024", "sentence": "and U.", "best_score": 0.0008945073817652879, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00024", "sentence": "P.", "best_score": 0.004523797599714729, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00024", "sentence": "[1942] 10 I.T.R.", "best_score": 0.0005448459491105991, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00024", "sentence": "457, considered.", "best_score": 0.028321710684135384, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "The Board of Revenue published a Notification calling upon interested parties to prefer the claim, if any, to the properties comprised in the estate.", "best_score": 0.005598269850769543, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "Since there were several claimants taking inconsistent pleas, the Board of Revenue declined to release the estate in favour of any of the claimants and as per its order dated January 18, 1955 directed that the properties would be retained by the Court of Wards until the dispute as to its succession was determined by competent Civil Court.", "best_score": 0.06640085391519268, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "The title suit having been lost.", "best_score": 0.01649334901788624, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "The 2 commentators tried to interpret the texts so as to bring them in conformity with the prevailing conditions in the contemporary society.", "best_score": 0.013513536384335138, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "That such was the role of a commentator is clear even from the Mitakshara itself at least in two places first, on the point of allotment of a larger share at a partition to the eldest son and secondly on the question of right of inheritance of all agnates.", "best_score": 0.04445003095966038, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "[34A] Thakoor Jeebnath Singh vs The Court of Wards, (1875) 2 I.A.", "best_score": 0.09981501191677196, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "163 (PC), quoted with approval.", "best_score": 0.0001676584963926095, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "Sri Raja Venkata Narasimha Appa Row Bahadur vs Sri Rajesh Sraneni Venkata Purushotama Jaganadha Gopala Row Bahadur & Ors., I.L.R.", "best_score": 0.04826194247028267, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "Babui Rita Kuer vs Puran Mal, A.I.R.", "best_score": 0.004154051716816839, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "1916 Patna 8 approved.", "best_score": 0.0028912796287981334, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "Tribhawan Nath Singh vs Deputy Commissioner, Fyzabad & Ors,.", "best_score": 0.010970177847167438, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": ", overruled.", "best_score": 0.00017660464202310232, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "[46C, 49F] In ancient times, the daughter and daughter 's son were given preference over even the widow of a person in the matter of succession.", "best_score": 0.2165621290639268, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "Vijnanesvara, however, interpreted the word \"cha\", which meant \"also\" in \"Duhitaraschaiva\" in the text of Yajnavalkya laying down the compact series of heirs as referring to daughter 's son.", "best_score": 0.19731120374109742, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "As a result of this interpretation, the daughter 's son was promoted in rank next only to his maternal grand mother and his mother whose interest in the estate was only a limited one.", "best_score": 0.0110677961435771, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "[48H, 49A C, E F] 3 When a person had two or more daughters, the appointment of one of them would give her primacy over the wife and the other daughters (not so appointed) and her son (appointed daughter 's son) would succeed to the exclusion of the wife and other daughters and their sons and also to the exclusion of his own uterine brothers (i.e.", "best_score": 0.03659522183119111, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "Whereas in the case of plurality of sons all sons would succeed equally, in the case of appointment of a daughter, other daughters and their sons alongwith the wife would get excluded.", "best_score": 0.33104159315658876, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "162, followed.", "best_score": 0.0003652454776322452, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "(4) It is incorrect to suggest that the theory of \"a practice once recognised by law becoming obsolete\" was unknown and that it would continue to be in existence until it was taken away by a competent legislature.", "best_score": 0.01995709763284941, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "The court can declare it to be so.", "best_score": 0.001260228230629393, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "[53G] Shiromani & Ors.", "best_score": 5.80644657179157e-05, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "vs Hem Kumar & Ors., [1968] 3 S.C.R.", "best_score": 0.00021705876529423275, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "639, applied.", "best_score": 0.000122411548823024, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "Where there is predominant opinion of commentators supporting its non existence in the last few centuries extending to a period, in the instant case, prior to the life of Raja Dhrub Singh and there are good reasons for the Hindu Society abandoning it, it would be inappropriate to resurrect the practice.", "best_score": 0.0008074778385762502, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00025", "sentence": "[58E F, 61A C] Sri Balusu Gurulingaswami vs Sri Balusu Ramalakshmamma", "best_score": 0.0016157935671770986, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "2, 3 and 4 as been quilty of corrupt practices under sections 123.", "best_score": 0.0010504098264647857, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "5.", "best_score": 0.01391732391583344, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "5.", "best_score": 0.013917330459772647, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "19 had no locus standi to ask for restoration.", "best_score": 0.03295493301540088, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "[694 H, 697 A] N.P.", "best_score": 0.2761763828852302, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "; at 895; Charan Lal Sahu vs Nand kishore Bhatt & Ors.", "best_score": 0.0007431615964362259, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "; at 296; Jyoti Basu & Ors vs Debi Ghosal & Ors ; at 326 327; Arun Kumar Bose vs Mohl.", "best_score": 0.014478873664447016, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "; referred to.", "best_score": 0.0010443909167234479, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "[701 H 702 A] (ii) The Act is a self contained statute strictly laying down its own procedure and nothing can be read in it which is not there nor can its provisions be enlarged or extended by analogy.", "best_score": 0.28559801645127914, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "The terms of sec.", "best_score": 0.0004210788639597739, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "Baldev Parkash.", "best_score": 0.003312483955850042, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "AIR 1968 Punjab & Haryana 152 at 158 159; Duryodhan vs Sitaram & Ors.", "best_score": 0.0002304324491069051, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "AIR 1970 All.", "best_score": 0.00012424988222766792, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "1.", "best_score": 0.0030584636813091393, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "approved.", "best_score": 0.0018004263270500918, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "A.I.R.", "best_score": 0.00036880281227216684, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "1958 M.P.", "best_score": 0.00035827163057788983, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "260 Rajendra Kumari Bajpai vs Ram Adhar Yadav & Ors at 260; referred to.", "best_score": 0.001611948936641389, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "[704 G] 3.", "best_score": 0.028797813525627932, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "[707 B C; F G] Dhoom Singh vs Prakash Chandra Sethi & Ors.", "best_score": 0.017346818655648157, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "; at 599; Sheodhan Singh vs Monan Lal Gautam.[1969] 3 S.C.R 416 at 421.", "best_score": 0.19282772831217526, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "referred to.", "best_score": 0.0011082106513443306, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00026", "sentence": "691", "best_score": 0.24442922312401985, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00027", "sentence": "The appellant also alleged mala fides and pressure by Respondent No.", "best_score": 0.24908054786619077, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00027", "sentence": "1, the then sitting member of the Parliament on the Collector.", "best_score": 0.06596502575054652, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00027", "sentence": "In the meanwhile on 28.11.84, i.e.", "best_score": 0.05600833017204145, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00027", "sentence": "[656B C] 1.3.", "best_score": 0.0034102028153772316, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00027", "sentence": "In the case of an ordinary resignation which is 638 governed by the Memorandum No.", "best_score": 0.016133901099358396, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00027", "sentence": "39/6/57 Ests.", "best_score": 0.0010191381702079692, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00027", "sentence": "6 of the letter of appointment or any evidence adduced as to what practice had been in vogue as regards relieving such a person, it must be held that it is implicit in such a condition that the nature of his employment is such that he can be relieved forthwith without the need for waiting for a month and that he would be so relieved as was indeed done in the case of others governed by such a condition.", "best_score": 0.08945231066087492, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00027", "sentence": "At 10.00 A.M.", "best_score": 0.0003450860346287675, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00027", "sentence": "on 24.11.84.", "best_score": 0.2750616394299086, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00027", "sentence": "[657C F] 3.", "best_score": 0.013725643538462298, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00027", "sentence": "[657G H]", "best_score": 0.01018740409572089, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00028", "sentence": "The appellant contended that the trial was vitiated for want of a valid sanction because at the relevant time the Health Officer of the municipality did not have any power to sanction the prosecution.", "best_score": 0.2733481564409413, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00028", "sentence": "The respondent contended that the third order did not affect the second and that in any case the Health Officer could file the complaint as a private citizen.", "best_score": 0.36778150699837775, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00028", "sentence": "Held, (per section K.", "best_score": 0.10073734754253402, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00028", "sentence": "Das and A.", "best_score": 0.0003173018067066243, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00028", "sentence": "K.", "best_score": 0.0064786649738120695, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00028", "sentence": "Nazir Ahmed vs King Emperor, (1936) L.R.", "best_score": 0.00020172877643092252, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00028", "sentence": "63 I.A.", "best_score": 0.0028895549142060766, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00028", "sentence": "372.", "best_score": 0.09441718115931495, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00028", "sentence": "referred to.", "best_score": 0.004059736543433876, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00028", "sentence": "Sisir Kumar Mitter vs Corporation of Calcutta.", "best_score": 0.2074864705395841, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00028", "sentence": "631, explained.", "best_score": 0.019070888581623584, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00028", "sentence": "and State vs Manilal Jethalal A.I.R ,referred to.", "best_score": 0.00019137619377870664, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00028", "sentence": "The Queen vs Cubitt.", "best_score": 0.0026873846639656526, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00028", "sentence": ", relied on.", "best_score": 0.04651467507848841, "best_label": "arguments_respondent", "reason": "below_threshold"}
+{"doc_id": "validation_00028", "sentence": "Per Hidayatullah, 1.", "best_score": 0.19039940736056035, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00030", "sentence": "All the other grounds were rejected.", "best_score": 0.21513359641133786, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00030", "sentence": "The Tribunal found that there was no infirmity in the order.", "best_score": 0.16042434651986454, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00030", "sentence": "The landlord died during the pendency of the appeal and his widow and divorced daughter respondent succeeded to him as landlords.", "best_score": 0.22780170696022642, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00030", "sentence": "It was contended for them that the tenant was a rich and well connected industrialist deserving no protection of the rent laws.", "best_score": 0.19665567199317713, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00030", "sentence": "Dismissing the appeal, the Court, HELD: 1.", "best_score": 0.3193346228020298, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00030", "sentence": "[51 lB C] 2.", "best_score": 4.181034366659294e-05, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00030", "sentence": "]51 IC E] 3.", "best_score": 0.00011526164465920546, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00030", "sentence": "[511E F]", "best_score": 0.0003155569225280282, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "Therefore, they hatched a conspiracy to entice boys from affluent families to bring cash and jewellery and murder them after taking away the cash and jewellary.", "best_score": 0.002785815362041245, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "Likewise, they killed 4 boys, in a span of about 5 years.", "best_score": 0.13233830172208372, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "2 of all the charges.", "best_score": 0.0019959698022617004, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "[717E] 2.", "best_score": 0.013246017862189667, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "But the court, to satisfy its conscience, insists as caution and prudence to seek, as a rule, corroboration to the evidence 713 of the approver, a particips criminis from independent evidence occular or circumstantial, of general particulars regarding the story spoken of by the approver of the commission of the crime and the part played by the accused therein to find whether it is true and worthy of acceptance.", "best_score": 0.07063119439772249, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "Patil vs State of Maharashtra, ; Md.", "best_score": 0.08060695657286424, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "Hussan Umar Kochra etc.", "best_score": 0.2186530018368833, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "vs K.S.", "best_score": 0.03933974600570876, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "King vs Baskervilli, and Mahadeo vs The King, AIR 1936 P.C.", "best_score": 0.10856171581058578, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "242, referred to.", "best_score": 0.00015856165899563618, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "In the instant case, it is clear from the evidence that the accused indulged in illegal business of purchase and sale of ganja.", "best_score": 0.10358331601461389, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "They conspired to entice innocent boys from affluent families, took them to far flung places where the dead body could not be identified.", "best_score": 0.18938130891735355, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "One of the deceased is no other than the nephew of appellants No.", "best_score": 0.17880964497718238, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "1.", "best_score": 0.0024314020362158164, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "[721D G] 4.", "best_score": 0.0018315746491794993, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "[720C] 5.1.", "best_score": 0.0002514949617518374, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "[721C] 5.2.", "best_score": 0.00039327105283921266, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "[722D] 6.", "best_score": 0.0007778502682431675, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "To make that right meaningful the procedure adopted would be suitably moulded and the accused given an opportunity to adduce evidence on the nature of the sentence.", "best_score": 0.051231320483434276, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "The hearing may be on the same day if the parties are ready or to a next date but once the court after giving opportunity, proposes to impose appropriate sentence again there is no need to adjourn the case under section 235(2) to next date.", "best_score": 0.012143176887883815, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00031", "sentence": "[722B C]", "best_score": 0.0033811646414779314, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00032", "sentence": "M/S.", "best_score": 0.00499359138299846, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00032", "sentence": "Mohan Lai Hargobind vs The State of Madhya Pradesh, ; , followed.", "best_score": 0.29093038922591424, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00032", "sentence": "Endapuri Narasimhan & son vs The State of Orissa; , , Bengal Immunity Co.", "best_score": 0.06525517457292133, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00032", "sentence": "Ltd.", "best_score": 0.07454108722485236, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00032", "sentence": "Ram Narain & Sons vs Assistant Commissioner of Sales Tax, ; and Tata Iron and Steel Co.", "best_score": 0.2415955714538043, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00032", "sentence": "Ltd.", "best_score": 0.07454108722485236, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00032", "sentence": "Bombay vs section R Sarkar, [1961] 1 S.C.R.", "best_score": 0.14528819550597846, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00032", "sentence": "379, relied on.", "best_score": 0.0001951126172419115, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00032", "sentence": "615, distinguished.", "best_score": 0.0027500311380879764, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00033", "sentence": "13.", "best_score": 0.045458462483419976, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00033", "sentence": "[367 H, 368 A] Giani Ram vs Ramji Lal ; , relied on to; Chand Singh vs bid Kaur approved.", "best_score": 0.059612651195480745, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00033", "sentence": "[367 B D] 366", "best_score": 0.00764548689965498, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00034", "sentence": "The accused (A.1 and A.2) entered his room.", "best_score": 0.2815704862590012, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00034", "sentence": "The other two accused (A1 and A2) preferred a separate special leave petition, which was dismissed by this Court.", "best_score": 0.03386656509537726, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00034", "sentence": "[430 H] 2.", "best_score": 0.0013667080152377227, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00034", "sentence": "3.01 The deceased was a petition writer and so in that capacity he was very well conversant as to how to draft a complaint.", "best_score": 0.00124921728906526, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00034", "sentence": "[431 E F] 3.02.", "best_score": 0.0010378506369325947, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00034", "sentence": "[431 F G] 3.03.", "best_score": 0.0009308782273710067, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00034", "sentence": "The Courts below have not approached this signifi cant aspect of this salient feature in the proper perspec tive.", "best_score": 0.0003080883040018801, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00034", "sentence": "[432 G] 3.05.", "best_score": 0.001065957390849973, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00034", "sentence": "P.", "best_score": 0.12070112387970601, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00034", "sentence": "50.", "best_score": 0.0005699410281081312, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00034", "sentence": "P.", "best_score": 0.12070112387970601, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00034", "sentence": "24, the inquest report.", "best_score": 0.004344877286221199, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00034", "sentence": "[433 B C] 428 3.06.", "best_score": 0.0038090620097180946, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00035", "sentence": "Shunmugayoya Mudaliay vs Manikka Mudaliar, (1909) L.R.", "best_score": 0.10822282052235194, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00035", "sentence": "36 I.A.", "best_score": 0.0016953471464138696, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00035", "sentence": "582; Bonmax vs Austin Motor Co.", "best_score": 0.000800996354924604, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00035", "sentence": "Ltd.", "best_score": 0.0003441962888226483, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00035", "sentence": "(1955) i All E.R.", "best_score": 0.044850640605985745, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00035", "sentence": "and Laljee Mohomet vs Girlder, , referred to.", "best_score": 0.1635139599169454, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "% In exercise of the powers conferred by Section 239(2)(E)(a) of the Uttar Pradesh Kshetra Samiti and Zila Parishads Adhiniyam, 1961, various Zila Parishads framed a bye law, providing that right to trade in carcass utilisation in the rural area of the respective Zila Parishads shall be put to public auction.", "best_score": 0.0004964403688719601, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "Such activities comprised of taking of the carcass of dead animals to a specified place, skinning of the carcass, storage of bones and skins, curing and dyeing of such skins and preparation of leather goods.", "best_score": 6.052585170715146e-05, "best_label": "arguments_respondent", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "In a writ petition challenging the validity of the said bye law, a Single Judge of the High Court struck down the latter part of the bye law framed by one of the Zila Parishads, providing for farming out of the privilege of utilisation and disposal of carcass of dead animals, on the ground that it created a monopoly in favour of an individual or group of individuals.", "best_score": 0.0016366925945089763, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "A Division Bench reiterated that view in two writ petitions filed before it, and distinguished the decision of this Court in State of Maharashtra vs Mumbai Upnagar Gramodyog Sangh, ; taking a contrary view on the ground that the restrictions were reason able within the meaning of article 19(6), in the context of the thickly populated metropolitan city.", "best_score": 0.003721910213203509, "best_label": "arguments_respondent", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "The correctness of the said decision of the Division Bench was open to question.", "best_score": 1.8017749077561095e-05, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "Another Division Bench referred the matter to a Full Bench, which expressly repelled the aforesaid view, and held that it was competent for the Zila Parishads to frame such bye laws in exercise of the powers conferred by section 239(2)(E)(a) of the Act.", "best_score": 2.90350554077432e-05, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "In SLP(C) No.", "best_score": 0.0010009358171262652, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "1900 of 1981, this Court, in order to protect the interests of persons traditionally engaged in the work of skinning, tanning etc., directed the State Government to frame a Model Scheme for carcass utilisation in the Etawa district at the village panchayat level on an experimental basis, and passed certain incidental directions as to the price payable for skins, bones and horns.", "best_score": 0.21506355707956107, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "As nothing further was done, in partial modification of its earlier orders, this Court directed the Zila Parishad, Etawa to issue licence to any person who applied for the same.", "best_score": 0.0015682358999429774, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "In the meantime, the Government of Uttar Pradesh issued a Circular dated June 7, 1986 stating that in future the licences for disposal of carcass of animals should be granted only to registered industrial cooperative societies formed by the persons engaged in this work.", "best_score": 0.00024750292180246235, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "Disposing of the Special Leave Petitions and civil appeals, ^ HELD: It is plain upon the reading of the Circular dated June 7, 1986 issued by the State Government that the contract system envisaged by the impugned bye law framed by the different Zila Parishads in the State has been virtually abandoned, and the State Government proposes to replace the system of auction by a system of licensing, giving preferential right to cooperative societies consisting of members of the traditional occupation, for the disposal of carcass of dead animals.", "best_score": 0.09879096956864421, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "[544E F] In view of the subsequent policy decision taken by the State Government, the present controversy no longer survives.", "best_score": 3.4620549368047585e-05, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "It would be open to different Zila Parishads, in view of the directive of the State Government, to frame the appropriate Bye laws consistent with and for the implementations of the policy declared by the State Government.", "best_score": 2.6811181282371155e-05, "best_label": "arguments_respondent", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "The Zila Parishads, while considering the question, shall keep in view the directions issued by this Court on April 15, 1983, and also the order passed introducing the licence system in the Zila Parishad, Etawa on an experimental basis.[544F G] For a meaningful effectuation of the policy decision of the Government, which is taken in the larger interests of a sizeable segment of the weaker sections of the society, it is of utmost importance that the 540 work of formation of cooperative society of the members of the traditional occupation, who lack the will and the ability to organise themselves, should be taken up by the social welfare department of the State Government and every effort should be made to bring the members of the traditional occupation within the fold of these cooperative societies.", "best_score": 0.0012848788875848055, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "The social welfare department shall take effective steps to organise such cooperative societies.", "best_score": 1.3768409298494309e-05, "best_label": "arguments_respondent", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "[544H; 545A B] Wherever it is not possible to implement the policy decision and there is likely to be a loss of revenue or other compelling reason, it would be open to the Zila Parishads, as a purely transitory measure and with the prior concurrence of the State Government, to arrange for carcass utilisation by auction if the Bye laws permit such auction.", "best_score": 5.548009063885733e-05, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "It is only where, for any compelling reason, the said policy decision cannot be implemented effectively in any area, that the concerned Zila Parishad could, with the prior sanction of the State Government, continue the present contract system subject to such variation as may be necessary till the cooperative societies are formed.", "best_score": 3.2301257798921e-05, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00036", "sentence": "[545C D1]", "best_score": 1.3925643959092467e-05, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00038", "sentence": "Act No.", "best_score": 0.03303826462814314, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00038", "sentence": "Act No.", "best_score": 0.03303826462814314, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00038", "sentence": "[895 G] Smt.", "best_score": 0.006876791764697205, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00038", "sentence": "Shiva Devi 1981 ARC (S.N.", "best_score": 0.009303519149421877, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00038", "sentence": "Tej Kaur, AIR 1961 Punjab 288, approved.", "best_score": 0.0028326939624961473, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00038", "sentence": "(3) It is clear from a survey of ss 3(g), 11, 12,13 and 15 of the Act that there are restrictions placed by the Act on the right of the tenant to transfer or sublet the tenancy rights and he can keep possession of the building or premises for himself and for the purpose of his family, for his business and for the business of his family members.", "best_score": 0.043398390890263296, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00038", "sentence": "[898 A B]", "best_score": 0.012620420723428089, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00039", "sentence": "75 only.", "best_score": 0.005164334508500313, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00039", "sentence": "[1100G; E; 1101B] Madamsetty Satyanarayana vs G.", "best_score": 0.0002456517806292767, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00039", "sentence": "Yellogi Rao & Ors.", "best_score": 3.253007477334473e-05, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00039", "sentence": ", ; ; Dr.", "best_score": 7.903449608500585e-05, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00039", "sentence": "Jiwan Lal & Ors.", "best_score": 0.0010773332328781748, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00040", "sentence": "No.", "best_score": 0.004821587854410256, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00040", "sentence": "Mrs.", "best_score": 0.0008621956548869839, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00040", "sentence": "P.D.", "best_score": 0.02145017868212629, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00041", "sentence": "In case of doubt it should be interpreted in favour of the tax payer.", "best_score": 0.22982931300315954, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00041", "sentence": "Commissioner of Income tax, Bombay Presidency and Aden vs Khemchand Ramdas, , referred to.", "best_score": 0.02040398301558296, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00042", "sentence": "1 10 nP.", "best_score": 0.025737777477217116, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00042", "sentence": "2 20 nP.", "best_score": 0.056494672208176576, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00043", "sentence": "874", "best_score": 0.2415198301774923, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00044", "sentence": "Respondent No.", "best_score": 0.00022712672673344813, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00044", "sentence": "On appellant 's non compliance, Respondent No.", "best_score": 0.0002861870040097237, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00044", "sentence": "Against the aforesaid order, the appellant filed writ petition before the High Court, which dismissed the same.", "best_score": 0.13713126181655205, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00044", "sentence": "Hence the appeal, by spe cial leave, by the appellant Corporation.", "best_score": 0.0008263024813805886, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00044", "sentence": "He has the power requiring the discovery and pro duction of documents.", "best_score": 0.0367728776779336, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00044", "sentence": "It would be failure to exercise the jurisdiction particularly when a party to the proceedings requests for summoning evidence from a particular person.", "best_score": 0.005914521868493878, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00044", "sentence": "[757H; 758A; F H] In the instant case, the appellant Corporation had some problems in collating the lists of all workers engaged in depots scattered at different places.", "best_score": 0.36696596922150254, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00044", "sentence": "[757F; 759A]", "best_score": 0.13650364631945078, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00045", "sentence": "therefore.", "best_score": 0.005429582054404961, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00045", "sentence": "correct.", "best_score": 0.09095134250818862, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00045", "sentence": "[1164D]", "best_score": 0.006368547491391314, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00046", "sentence": "The word \"calculated\" means designed it denotes more than mere likelihood and imports a design to affect voters.", "best_score": 0.00047338660197212754, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00046", "sentence": "[178A E; 18OC E; 183H].", "best_score": 0.00018203148664900536, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00046", "sentence": "T.", "best_score": 0.006264758935288944, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00046", "sentence": "K.", "best_score": 0.007581642229808015, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00046", "sentence": "M.", "best_score": 0.003076513299572261, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00046", "sentence": "C.", "best_score": 0.006671727254326609, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00046", "sentence": "3 S.C.R.", "best_score": 0.000300844008461644, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00046", "sentence": "114, referred to.", "best_score": 0.0016879531039901887, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00046", "sentence": "[184E H; 185A].", "best_score": 0.002787067464831101, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00047", "sentence": "[255 E F; 262 G H] Arsene A.", "best_score": 0.009935611890782804, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00047", "sentence": "358, referred?", "best_score": 0.0008028356714176971, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00047", "sentence": "to.", "best_score": 0.0014559084223057285, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00047", "sentence": "[260 B; 262 A C; 263 G H] up./ 65 17 250", "best_score": 0.017140964211762106, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00048", "sentence": "The respondents sent a reply denying the existence of any such oral agreement.", "best_score": 0.10989318363291464, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00048", "sentence": "HELD: 1.", "best_score": 0.000192786609523476, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00048", "sentence": "vs V.R.", "best_score": 0.003785151888102141, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00048", "sentence": "2.", "best_score": 0.003704599688685871, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00048", "sentence": "[119G] 3.", "best_score": 0.0006307190614562978, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00048", "sentence": "[118H; 119A] 4.", "best_score": 0.004136285171978703, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00048", "sentence": "[119E F] 5.", "best_score": 0.00042814476103024055, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00048", "sentence": "[119H; 120A] 6.", "best_score": 0.0005808103724213687, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00048", "sentence": "Failure to do so has resulted in miscarriage of justice.", "best_score": 0.38370291541789425, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00048", "sentence": "[120A B]", "best_score": 0.00021222462490075368, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00049", "sentence": "[856A B] More than sufficient time has passed and it is desira ble to ascertain what action has been taken by the State Government pursuant to the requests made to it by the Cen tral Government to provide some of the facilities required by the settlers, and it is considered necessary to make the following supplementary directions: [857C D] The Central Government and State Government should decide between them as to which of them will give loans to the settlers and to what extent.", "best_score": 0.014790444380850646, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00049", "sentence": "[857E] The State Government should upgrade the existing middle school to the status of High School and make adequate provi sion for additional seats in the students ' hostel to absorb the increasing number of seats resulting from such upgrada tion and the grant of domicile certificates in relation to settlers, atleast in respect of members of petitioner socie ty should be considered.", "best_score": 0.005444276543806695, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00049", "sentence": "[857E F] Respondents No.", "best_score": 0.0011736746467430979, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00049", "sentence": "[857G]", "best_score": 0.0002516345547367746, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00050", "sentence": "HELD: (i) Per Shelat and Dua, JJ.", "best_score": 0.07795756843656095, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00050", "sentence": "[1958] S.C.R.", "best_score": 0.0015589597623628028, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00050", "sentence": "Lall, L.R.", "best_score": 0.016662461289628193, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00050", "sentence": "225, referred to.", "best_score": 0.009281990827159274, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00050", "sentence": "[489C E] Case law referred to.", "best_score": 0.060347416091395475, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00050", "sentence": "[492C 493D] State of U.P.", "best_score": 0.006635364777079868, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00050", "sentence": "A.", "best_score": 0.0060498098588618555, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00050", "sentence": "Korgaonkar, C.A.", "best_score": 0.09780654083219534, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00050", "sentence": "No.", "best_score": 0.027357576970690193, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00050", "sentence": "289/1968 dt.", "best_score": 0.0012268072266588786, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00050", "sentence": "6 5 1960, relied on.", "best_score": 0.0020609068549308457, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00050", "sentence": "[493E F] The appeals.", "best_score": 0.028374687782269554, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "1, Rs.", "best_score": 0.0022227808160279984, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "1963/ instead of Rs.", "best_score": 0.2655952092369503, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "I cleared the consignment.", "best_score": 0.34180916588853794, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "1.", "best_score": 0.009317716900309593, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "3 Lacs.", "best_score": 0.0010801500430060302, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "[732 C, 731 F] 2.", "best_score": 0.0012850116747363592, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "[732 D H] 3.", "best_score": 0.012864704473199123, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "Kruse vs Johnson , relied on.", "best_score": 0.015624796681529194, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "[731 F.", "best_score": 0.005246722403290968, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "733 B] 4.", "best_score": 0.010086877004150677, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "section or a variety of interests.", "best_score": 0.1306971617969372, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "[734 & G H, 735 A C] 5.", "best_score": 0.0012366004412441714, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "There is no warrant for the court substituting its own view as to the allowance of three days in a technical matter like the fixation of rates which has been considered by an export Board of Trustees and whose decision has been confirmed by the Central Government.", "best_score": 0.032268797181788225, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "[735 D F] 6.", "best_score": 0.005062034444304049, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "1735 F H; 736 A] 7.", "best_score": 0.0003872366630355203, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "facts must come before the law because legal principles cannot be applied in a vacuum.", "best_score": 0.00024251107031880262, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "No oral evidence was let by the parties and documents do not prove them selves nor indeed is the admissibility of a document proof by itself of the truth of its; contents.", "best_score": 0.0006181475742013887, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00052", "sentence": "[737 F H, 738 A B]", "best_score": 0.014280671955880623, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00053", "sentence": "The said contributions amounted to Rs.", "best_score": 0.06852732632497839, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00053", "sentence": "In reference how ever the High Court decided in favour of the Company.", "best_score": 0.07656501172633219, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00053", "sentence": "[473 B C]", "best_score": 0.003102115838683788, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00054", "sentence": "It also dealt as an ex 122 porter and importer, shipping agent, and as buyer and dealer in diverse: commodities.", "best_score": 0.08357120077157129, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00055", "sentence": "69,891 2 6.", "best_score": 0.0011085052309686714, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00055", "sentence": "Per C.J.", "best_score": 0.00019407561819448566, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00055", "sentence": "Ltd.", "best_score": 0.0061605460335422985, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00055", "sentence": "M.", "best_score": 0.00038154026650788356, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00056", "sentence": "1 was placed in the second position.", "best_score": 0.13087866373790688, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00056", "sentence": "[735A B]", "best_score": 0.0020101995894944136, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00057", "sentence": "[567D E] 2.", "best_score": 0.0018097406463264075, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00057", "sentence": "The State Government is the authority to take a policy decision.", "best_score": 0.16227272868560338, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00057", "sentence": "Whether the decision is tenable or not in law, is not to be decided by the Court.", "best_score": 0.0005203275300664881, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00057", "sentence": "[566H, 567A] 565 3.", "best_score": 0.007536344745854734, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00057", "sentence": "[S67C]", "best_score": 0.0005838271718361317, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00058", "sentence": "[53 G] (b) According to Sec.", "best_score": 0.0019510671939835431, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00058", "sentence": "Society.", "best_score": 0.0017245206020522932, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00058", "sentence": "In respect of another item the contract was not entered into with the.", "best_score": 0.15656391399497813, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00058", "sentence": "Its aftermath was that the.", "best_score": 0.00017962351346305084, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00058", "sentence": "people 's verdict had been stultified.", "best_score": 0.11403405422837921, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00058", "sentence": "[56 C] (2) The ambiguity in section 9A, especially as to how long and in what sense can a contract be said to be subsisting envelopes the disbarment provision with subtle legal ques tions such as: how long does a contract subsist ?", "best_score": 0.07119736637220184, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00058", "sentence": "Is every 50 liability arising on a breach of contract a claim under the contract the Provisions of s .", "best_score": 0.0013283037926411685, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00058", "sentence": "A9 ?", "best_score": 0.0015061565150721397, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00058", "sentence": "If Government money is involved in the execution of the work does the contract necessarily become one with Government ?", "best_score": 0.009705579557177114, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00058", "sentence": "It is very de sirable that the disqualificatory net should not be cast too wide to disfranchise innumerable persons and must be easy of ascertainment if must be uncertainty is not to overhang elections [56 EH]", "best_score": 0.00018427255461841716, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00060", "sentence": "[942C D]", "best_score": 0.011350589458510012, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "The legatee executed settlement deeds in favour of her daughters with respect to part of the land received by her under the decree.", "best_score": 0.3645950894692554, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "The daughters took passion of the properties accepting their mother as their absolute owner.", "best_score": 0.3654846282442457, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "After the death of the legatee, the appellants.", "best_score": 0.09103533188658562, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "who were the sons of those daughters obtained a deed of surrender from their mothers accepting the legatee as the absolute owner of the properties.", "best_score": 0.07815151202995206, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "who were the descendants of the reversioner who filed the first suit contending that the compromise decree in the first suit was collusive.", "best_score": 0.11103613385987, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "as the sisters sons of the last male holder under the Hindu Law of Inheritance (Amendment) Act of 1929.", "best_score": 0.0005590165017706623, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "65 of the Evidence Act, 1872.", "best_score": 0.33783600822914067, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "[297 H; 298 A, C.", "best_score": 8.914423368381978e-05, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "of Mttnshi Nath Prasad, [1956] S.C.R.1.", "best_score": 0.0480013169212835, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "followed.", "best_score": 0.001927406918273823, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "Munnalal vs Krishobai, A.I.R.", "best_score": 0.00016449650844778784, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "1947 P.C.", "best_score": 0.00029400003757134034, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "15 and Basant Singh vs Bnj Pad, 62 I.A.", "best_score": 0.18227421448649625, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "180, referred to.", "best_score": 0.0001538631579526948, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "[298 G; 299 C, F G] Setthava vs Somayajulu, 56 I.A.", "best_score": 0.19217939870260223, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "146, applied.", "best_score": 0.00017909369693676187, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "[299 G H] The statement of the mother of the testator in the written statement of the earlier suit that the testator was a major was not relevant either under section 32(5) or 32(6) of the Evidence Act, because, it was made post litm motam.", "best_score": 0.0662029877279751, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "When the legatee flied her written statement in the first suit a dispute had arisen as to the age of the testator, and the controversy having existed time when the statement was made; the statement was inadmissible.", "best_score": 0.11332276446075125, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "1303 B D, F H] Bahadur Singh v, Mohan Singh, 29 I.A.", "best_score": 0.016150084289931702, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "1 and Kalka Prasad vs Mathura Prasad, 35 I.A.", "best_score": 0.05699274701751842, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "166, referred to.", "best_score": 0.0060244383420685055, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "[303 A] Md.", "best_score": 0.00019050903255304, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "Syedol Arffin vs Yeohooi Gark, 43 I.A.", "best_score": 0.3183326781210405, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "256, Rama Chandra Dutt vs Yogeshwar Narain Dec, I.L.R.", "best_score": 0.0016998935945787697, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": ", Oriental Govt.", "best_score": 0.009364388392501356, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "Security Life Assurance Co.", "best_score": 0.012701301642093203, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "Ltd.", "best_score": 0.0006362039440719031, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "vs Narisimha Chari, I.L.R.", "best_score": 0.053594223455747936, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": ", Gulab Tharkur vs Fadali , Prolhad Chandra vs Ramsaran, A.I.R.", "best_score": 0.029807893700757496, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "1924 Cal.", "best_score": 0.0008039020639579534, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "420, and Mst.", "best_score": 0.0005685886376245732, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "1934 All.", "best_score": 0.0029416977849162323, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "406 referred.", "best_score": 0.00010182685478091316, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "[303 H; 304 A D] The documents relied upon by the appellants, namely, a memorandum and an endorsement received from the Taluk Office showing that there were no entires relating to the birth of any children in the testators family in the birth register for the year in which the testator stated he was born, were not admissible in evidence as the writers of the documents were not examined to testify to the contents of those documents and to establish that notwithstanding their diligent efforts the original register was not traceable.", "best_score": 0.28598810208089204, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00061", "sentence": "[304 H; 305 A]", "best_score": 0.012031812514554006, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00062", "sentence": "The profit of Rs.", "best_score": 0.20534588153921013, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00062", "sentence": "to arise again.", "best_score": 0.003263324211748811, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00063", "sentence": "The appellant denied the contract and denied the subletting altogether.", "best_score": 0.3709553261920741, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00063", "sentence": "[993 D 994 A]", "best_score": 0.032400344706465786, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00064", "sentence": "On the creation of the State of Gujarat the area went to that State.", "best_score": 3.37817174932365e-05, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00064", "sentence": "The suits were decreed by the trial court and the decrees were 'confirmed by the first appellate court and in second appeal by a single Judge.", "best_score": 0.018712409754420328, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00064", "sentence": "The two schemes are substantially different.", "best_score": 0.0018641744923296227, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00064", "sentence": "[847 C] Section 57(A)(1)(e) was intended to meet the changing economic circumstances.", "best_score": 0.1685908727106438, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00064", "sentence": "State of Punjab V.", "best_score": 0.00014869336682678025, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00064", "sentence": "Mohar Singh, ; and Deep Chand, vs State of U.P.", "best_score": 0.08648565262151296, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00064", "sentence": "& Ors.", "best_score": 0.00035788110796084263, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00064", "sentence": "S.C.R.", "best_score": 0.00022389339176642975, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00064", "sentence": "8, distinguished.", "best_score": 0.00015420993693190154, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00064", "sentence": "Amalgamated Electricity Co.", "best_score": 0.0012949309344077475, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00064", "sentence": "Ltd.", "best_score": 0.0004554044548491328, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00064", "sentence": "vs N.", "best_score": 0.0003647160782602717, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00064", "sentence": "section Bhathena & Anr.", "best_score": 0.0004902102474340475, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00064", "sentence": "; , applied.", "best_score": 0.0008757542771833565, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "UP to February 28, 1969.", "best_score": 0.1538574901164766, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "The preliminary objection must accordingly be over ruled.", "best_score": 0.3665292286347633, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "3.14 of the Civil Service Rules.", "best_score": 0.3057020349884076, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "Under r.", "best_score": 0.0019919938759285984, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "The various payslips which are on record also show that the respondent 's appointment must have been on an officiating basis as defined in r.", "best_score": 0.2357553939861588, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "2.42 of the Civil Service Rules.", "best_score": 0.2909864860188474, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "[481 A D] The essential requisite for the applicability of r.", "best_score": 4.0277911865142504e-05, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "10 is that a person must have been appointed against a permanent vacancy.", "best_score": 0.2155694192802717, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "10 of the Gazetted Service Rules did not arise, and if so the question of calculating the total period of probation of three years which is necessary for the application of the Proviso to r.", "best_score": 0.16897523519522345, "best_label": "arguments_respondent", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "10(3) did not arise.", "best_score": 0.009055653564619364, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "[482 G] The circumstance that with effect from April 1.", "best_score": 0.002899966868460716, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "The view taken by the High Court, to the contrary, could not be sustained.", "best_score": 0.3641949622283344, "best_label": "arguments_respondent", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "[484 E] State of Punjab vs Dharam Singh, ; , C .", "best_score": 0.03739428423224317, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "1.", "best_score": 0.000763248673601374, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "Mysore vs Indore Mercantile Bank, Ltd., [1959] Supp.", "best_score": 5.2004708044912705e-05, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "2 S.C.R.", "best_score": 0.00024767902456225164, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "256, Tahsildar 454 Singh vs State of U.P., [1959] Supp.", "best_score": 0.01226169092584935, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "2 S.C.R.", "best_score": 0.0002476787884157428, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "875, State of Madhya Pradesh vs Lal Bhargavendra Singh, [1966] 2 S.C.R.", "best_score": 0.0031917942439418823, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "56, Dr.", "best_score": 0.00012549848631101043, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "Deep Kaur vs State of Punjab, and Devi Shanker Parbhakar vs State of Haryana [1971] 73 P.", "best_score": 0.06961107471916295, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "L.", "best_score": 0.00032619498943432383, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "R.", "best_score": 0.005700445155303777, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "644, referred to.", "best_score": 0.003561957176209917, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00065", "sentence": "It was not disputed that at the time when the said payslip was issued, the duration of the post had been extended upto February 28, 1969.", "best_score": 0.017714464164081678, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00066", "sentence": "In appeal, the Assistant Commissioner accepted the respondent 's contention, but the Tribunal reversed this finding.", "best_score": 0.06159687784697514, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00066", "sentence": "In the appeal before the Supreme Court, it was also contended on behalf of the respondent that the amount received was in the nature of a capital receipt, being a payment to the Jagirdar and his successors of compensation for relinquishing the title to the Jagir lands.", "best_score": 0.30076001913423395, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00066", "sentence": "[704 A] State of U.P.v.", "best_score": 0.0014881889171130783, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00066", "sentence": "Bihar and Orissa, , C.I.T.", "best_score": 0.0028822948995522193, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00066", "sentence": "Bacha F.", "best_score": 0.07110085875021531, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00066", "sentence": "Guzdar vs\nC.I.T.", "best_score": 0.048499468871931274, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00066", "sentence": "Bihar and Orissa, , followed.", "best_score": 0.12152352893738624, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00066", "sentence": "701 Where an owner of an estate exchanges a capital asset for a perpetual annuity, it is ordinarily taxable in his hands.", "best_score": 0.07042234431795225, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00066", "sentence": "Such installments when received would not be taxable as income.", "best_score": 0.18653157926612435, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00066", "sentence": "But in the present case there was no material to show that the amount received was an instalment of this nature.", "best_score": 0.03711943107647715, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00066", "sentence": "[706 H~707C] Commissioner of Inland Revenue vs Wesleyan and General Assurance Society, , and Perrin vs Dickson , referred to.", "best_score": 0.001873812636069105, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00067", "sentence": "The respondent did not prefer an appeal against the judgment of the High Court on this point and it was, therefore, not open to him to challenge that finding.", "best_score": 0.13937269898478247, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00067", "sentence": "338 and Savillo Perfumery June Perfect Ltd., at 161, referred to.", "best_score": 0.34326561864457394, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00068", "sentence": "While the first respondent was travelling by a U.P.", "best_score": 0.02247516949614122, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00068", "sentence": "Government Road.", "best_score": 0.017944768972899323, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00068", "sentence": "During the pendency of these proceedings, on an application made,,, by the first respondent under section 561A, Cr.", "best_score": 0.07254054948143047, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00068", "sentence": "[704 H]", "best_score": 0.09209856706973772, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00069", "sentence": "2,31,50,000.", "best_score": 0.006714737480727074, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00069", "sentence": "Under cl.", "best_score": 0.09263081161392923, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00069", "sentence": "The High Court took the view that under cl.", "best_score": 0.13378106882446, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00069", "sentence": "(Madras) Ltd., ; and Peare Lal Hari Singh vs The State of Punjab, ; , followed.", "best_score": 0.22420393798700816, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00069", "sentence": "The State of Bombay vs The United Motors (India) Ltd., ; , Himmatlal Harilal Mehta vs State of Madhya Pradesh, ; and The Bengal Immunity Company Ltd.", "best_score": 0.002140470093694671, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00069", "sentence": "vs State of Bihar, , relied on.", "best_score": 0.1583113878505639, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00069", "sentence": "Per Shah, J.", "best_score": 0.03582598763126902, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00070", "sentence": "2 to 5 his sons and to Nos.", "best_score": 0.010808349714755975, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00070", "sentence": "Thereupon the said respondents land owners initiated ejectment proceedings under sec.", "best_score": 0.27326916053160516, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00070", "sentence": "This Court confirmed the view of the High Court.", "best_score": 0.027274781418932924, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00071", "sentence": "Later, the house was put to auction on January 29, 1969 under section 20 of the , was purchased by him and that the sale certificate was also issued.", "best_score": 0.2967709973156153, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00071", "sentence": "699 at p.", "best_score": 0.0006892794061975974, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00071", "sentence": "712 referred to.", "best_score": 0.0003940568876955052, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00071", "sentence": "[221 F G] 3.", "best_score": 0.0015144871501352835, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00071", "sentence": "[222 G 223 A] 4.", "best_score": 0.0007634880043345728, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00071", "sentence": "Ordinance No.", "best_score": 0.21388524286450175, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00071", "sentence": "1 of 1949 could arise.", "best_score": 0.05118992976363771, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00071", "sentence": "[214 H]", "best_score": 0.0020843073065428238, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00072", "sentence": "(Miss) Binapani Dei, ; HELD: (i) From the material on record the only conclusion possible was that the Chief Minister imposed his opinion on the Cane Commissioner.", "best_score": 0.07757381744407495, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00072", "sentence": "He alone could have exercised that power.", "best_score": 0.39299744871337483, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00072", "sentence": "(6) read with cl.", "best_score": 0.27960821311940953, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00072", "sentence": "The executive officers entrusted with statutory discretions may in some cases be obliged to take into account considerations of public policy and to some context the policy of a Minister or the Government as a whole when it is a relevant factor in weighing the policy but this will not absolve .", "best_score": 0.005713570902556015, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00072", "sentence": "them from their duty to exercise their personal judgment in individual cases unless explicit statutory provision has been made for them to be given binding instructions by a superior.", "best_score": 0.0031777675311198674, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00072", "sentence": ", applied.", "best_score": 0.0016141859156848927, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00072", "sentence": "725, Shivji Nathubhai vs The Union of India, ; , Board of High School and Intermediate Education U.P.", "best_score": 0.22917650987359428, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00072", "sentence": "Allahabad vs Ghanshyam Das Gupta & Ors., [1962] 3 Supp.", "best_score": 0.0006963583846917615, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00072", "sentence": "S.C.R.", "best_score": 0.00043379437966034335, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00072", "sentence": "36.", "best_score": 0.002398847848721109, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00072", "sentence": "p.", "best_score": 0.005275878237291094, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00072", "sentence": "366, and James Edward Jeffs & Ors.", "best_score": 0.07971347743371582, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00072", "sentence": "551, referred tO.", "best_score": 0.09785014055291893, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00072", "sentence": "It had no opportunity to represent against the same.", "best_score": 0.012581429895513401, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Disposing of the appeals, this Court, HELD: 1.", "best_score": 0.2318495898034519, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "[169B] 1.1.", "best_score": 0.0013929105010301378, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "[142D] India Cement & Ors.", "best_score": 0.03541833700264771, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs State of Tamil Nadu & Ors., , followed.", "best_score": 0.04093330850393049, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "This is a clear bar on the State legislature taxing royalty so as, in effect, to amend the Second Schedule to the Central Act.", "best_score": 0.10666123921957349, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "[144B, 153B D, 168D] India Cement & Ors.", "best_score": 0.022623948588721483, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs State of Tamil Nadu & Ors.", "best_score": 0.0464379461067063, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": ", [1990] 1 S.C.C.12, followed.", "best_score": 0.0018570095267145897, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Ltd.", "best_score": 0.0043671170851558175, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "& Ors.", "best_score": 0.0014014455512978573, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": ", [1961] 2 S.C.R.537, Justice Wanchoo 's dissent explained.", "best_score": 0.00043948353262910207, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "A tax on buildings does not cease to be such merely because it is quantified on the basis of the income it fetches.", "best_score": 0.0037943673620079318, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "The former must be one directly imposed on land, levied on land as a unit and bearing a direct relationship to it.", "best_score": 0.23991615642923997, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "[148H, 149A D] Ajay Kumar Mukherjea vs Local Board of Barpeta, [1965] 3 Ss.", "best_score": 0.0007347646938045371, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "C.R.", "best_score": 0.001110823944549076, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "47; Ralla Ram vs The province of East Punjab, [1948] F.C.R.207; Buxa Dooars Tea Co.", "best_score": 8.304707135792686e-05, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs State, [1989] 3 S.C.R.211; Bhagwan Dass Jain vs Union of India, ; and R.R.", "best_score": 0.023798422181996962, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Emgomeeromg Co.", "best_score": 0.0002684723486774775, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Union of India vs Bomnbay Tyre International, [1984] 1 S.C.R.347; Re: A reference under the Government of Ireland Act, 1920 and Section 3 of the Finance Act (Northern Ireland), 1934, (1963) 2 All E.R.III, cited.", "best_score": 0.0002670488659196202, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "The 109 entry relied upon for this purpose i.e.", "best_score": 0.01056263678924302, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Such a declaration is contained in Section 2 of the .", "best_score": 0.27952662754502916, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "[153G H, 154A, 168D] 3.", "best_score": 0.0006727575971374781, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "There is a difference between the 'object ' of the Act and its 'subject '.", "best_score": 0.021679485586746258, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "The object of the levy may be to strengthen the finances of local bodies but the Act has nothing to do with municipal or local administration.", "best_score": 0.08204612962169913, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Accordingly State 's reliance on Entry 5 of List II is plainly too tenuous.", "best_score": 0.3342475515441608, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "[164D] 4.", "best_score": 0.0016397513040704412, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "The measure of erosion turns upon the field of the enactment framed in pursuance of the declaration.", "best_score": 0.05243985833286702, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Ltd.", "best_score": 0.0043671170851558175, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "& Ors.", "best_score": 0.0014014455512978573, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Tulloch & Co., ; and Indian Cement & Ors vs State of Tamil Nadu & Ors., [1990]1 S.C.C.", "best_score": 0.33016385267145826, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "12 followed.", "best_score": 0.015461788864812984, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "State of Haryana vs Chanan Mal, ; ; Ishwari Khatan Sugar Mills (P) Ltd vs State of U.P.", "best_score": 0.0005824207558766304, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "; and Western Coalfields Ltd.", "best_score": 0.040626821931000236, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs Special Area Development Authority.", "best_score": 0.0036171834770799744, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": ", [1982] 2 S.C.R.1,distinguished.", "best_score": 0.0016216047045130738, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Indian tobacco Co.", "best_score": 0.00013123686751826262, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Ltd.", "best_score": 0.0043671170851558175, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs Union, [1985] Supp.", "best_score": 0.0010256827879310134, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "1 S.C.R.", "best_score": 0.000670794028575039, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "145; State of West Bengal vs Union [1964] 1.", "best_score": 0.0006158697177190332, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "S.C.R.", "best_score": 0.00071697196877409, "best_label": "arguments_respondent", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "371; Central Coalfields vs State of M.P., A.I.R.", "best_score": 0.007461759333494375, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "(1986) M.P.33; M.", "best_score": 0.028761434083782983, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Karunanidhi vs Union of India, ; ; State of Tamil Nadu vs Hind Stone etc.", "best_score": 0.002319922132272088, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "; , ; I.T.C.", "best_score": 0.0014179547521329168, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs State of Karnataka, ; Bharat Coking Coal vs State of Bihar, ; ; Kannan Dewan Hills Co.", "best_score": 0.028626854874460508, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs State of Kerala, [1973] 1.", "best_score": 0.0009191608178590397, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "S.C.R.", "best_score": 0.00071697196877409, "best_label": "arguments_respondent", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "356; Baijnath Kedia vs State of Bihar ; ; H.R.S.", "best_score": 0.12407309857160663, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "[1964] 6 S.C.R.; Ch.", "best_score": 0.0008508388407649982, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Tika Ramji & Ors.", "best_score": 9.981736616778823e-05, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs State of U.P.,[1956] S.C.R.", "best_score": 0.0066154866869020165, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "393; Laxmi Narayan Agarwala vs State, A.I.R.", "best_score": 0.0006505864401331013, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "919830 Ori.210; Bherulal vs State, A.I.R.", "best_score": 0.0015920928349137725, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "(1965) Raj.", "best_score": 0.0016807784709209708, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "161; Sharma vs State A.I.R.", "best_score": 0.001591300205439563, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "(1969) P&H 79 and Saurashtra Cement & Chemical Industries Ltd.", "best_score": 0.0005535252015363382, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs Union , referred to.", "best_score": 0.0026593237553749786, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Trivedi & Sons vs State of Gujarat.", "best_score": 0.0002895738647901141, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "[1986] Suppl.", "best_score": 0.015500627608971874, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "S.C.C.", "best_score": 0.0007410202330856685, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "20, cited.", "best_score": 0.0027081538543288347, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "The further amendments to Section 6 have not changed this basic position.", "best_score": 0.11266665482622504, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "The levy is a percentage or multiple of the royalty depending upon the kind of mineral and in the case of iron ore the method of extraction and nature of the process employed.", "best_score": 0.11645588410931065, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "There are no clear indications in the statute that the amounts are collected by way of fee and not tax.", "best_score": 0.14539853005368636, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Even the assumption that the levy can be treated, in part, as a fee and, in part, as a tax will not advance the case of the respondents.", "best_score": 0.16731333070522295, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "[169C F,H,170A] Indian Cement & Ors.", "best_score": 0.006909617288038726, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs State of Tamil Nadu & Ors., followed.", "best_score": 0.03421379141512993, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Central Coalfields Ltd.", "best_score": 0.00604924502267503, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "5.1 The attempt to sustain the tax under the Bengal Cess Act 1880 on the basis of Article 277 cannot also succeed.[171C] Ramkrishna Ramanath vs Janpad Sabha, [1962]Suppl.", "best_score": 0.11130717704691057, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "3.S.C.R.", "best_score": 0.0007732121260230673, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "70; Town Municipal Committee vs Ramachandra ; , referred to.", "best_score": 0.0005929645106946871, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": ", [172B] M.P.", "best_score": 0.0009574280238256374, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Lime Manufacturers ' Association vs State, A.I.R.", "best_score": 0.0002188498880515008, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "(1989) M.P.", "best_score": 0.12786364488699928, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "264 referred to.", "best_score": 0.000848983880648486, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Although there is no provision for the constitution of a separate fund for this purpose as is found in relation to the cesses levied under Part II or Part III of the Act yet this consideration alone does not preclude the levy from being considered as a fee.", "best_score": 0.3775368027876047, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "[171F H] Srinivasa Traders vs State, ; , referred to.", "best_score": 0.0017596478207504123, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "The grant of refund is not an automatic consequence of a declaration of illegality i.e.", "best_score": 0.000988692015231022, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Therefore a finding regarding the invalidity of a levy need not automatically result in direction for a refund of all collections thereof made made earlier.", "best_score": 0.2571109788379725, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "The declaration regarding the invalidity of a provision and the determination of the relief that should be granted in consequence thereof are two deferent things and, in the latter sphere, the Court has, and must be held to have, a certain amount of discretion.", "best_score": 0.0030588344555311777, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Once the principle that the Court has a discretion to grant or decline refund is recognised, the ground on which such discretion should be exercised is a matter of consideration for the Court having regard to all the circumstances of the case.", "best_score": 0.0011592694961528249, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "The Court can grant, would or restrict the relief in a manner most appropriate to the situation before it is such a way as to advance the interests of justice.", "best_score": 0.0003459215173327064, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Unjust enrichment of the refundee may or may not be another.", "best_score": 0.0020173389640959966, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Also there is no reason why the vital interest of the State should not be a relevant criterion for deciding that a refund should not be granted.", "best_score": 0.14789443957246817, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "4.4.1991.", "best_score": 0.0006386096055956246, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "The dates of the judgments of the appropriate High Court, may not constitute a declaration of law within the scope of Article 141 of the Constitution, but it cannot be gainsaid that the State cannot, on any ground of equity, be permitted to retain the cess collected on and after the date of the High Court 's judgment.", "best_score": 0.21626132638851575, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "The Coalfields, when they get the refunds, should pass on the same to their customers, the assessees.", "best_score": 0.07648723669522092, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "[186F G, 187B C] India Cement & Ors.", "best_score": 0.01877557340383158, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "State of Tamil Nadu & Ors, [1990] 1 S.C.C.12, followed.", "best_score": 0.10500431079254277, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Linkletter, 14 L Ed.", "best_score": 0.00027512221483168774, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "(2d) 601; Sunburst.", "best_score": 0.0002174141966003507, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "77 L.Ed.310; Mahabir Kishore & Ors.", "best_score": 0.00019788662062126733, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs Stte of Madhya Pradesh, [1989] 4 S.C.C.", "best_score": 0.3742994769602116, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "1; Chhotabhai Jethabhai Patel & Co.", "best_score": 3.9007925901333395e-05, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs Union of India, ; ; State of Madhya Pradesh vs Bhailal Bhai & Ors., ; ; Tilok Chand Motichand vs Munshi, [1969] 2 S.C.R> 824; Ramchandra Shankar Deodhar vs State of Maharashtra, ; ; Shri Vallabh Glass Works Ltd.", "best_score": 0.04245701006671498, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs Union of India, [1984] 3 S.C.R> 180; State of M.P.", "best_score": 0.0063667071292433704, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs Nandlal Jaiswal, [1986] 4 S.C.C.566 ' D.", "best_score": 0.01426698531123608, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Cawasji & Co.", "best_score": 0.00030178625302006227, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs State of Mysore, [1975] 2 S.C.R.511; Salonah Tea Co.", "best_score": 0.00022751534316509594, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Ltd.", "best_score": 0.0043671170851558175, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs Superintendent of Taxes, ; and Lakshmi Narain Agarwala vs State, A.I.R.", "best_score": 0.0005398782923041282, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Behram Khursheed Pesikaka vs State of Bombay, [1955] 1 S.C.R.613; R.M.D.", "best_score": 0.003513809971158897, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Chamarbaugwala vs Union of India, ; ; M.P.V.", "best_score": 0.005800161290865236, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Sundararamier & Co.", "best_score": 0.0001835721286709372, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs State of Andhra Pradesh & Anr.", "best_score": 0.0012152466932074657, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": ", ; ; West Ramnad Electric Distribution Co.", "best_score": 3.5349676507573685e-05, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "vs State of Madras, ; ; M.L.Jain vs State of U.P., [1963] suppl.", "best_score": 0.00026607345937516163, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "; K.T.", "best_score": 0.0010878909933955936, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Moopil Nayar vs State of Kerala & Anr., [1961] 3 S.C.R.77; Balaji vs I.T.O.", "best_score": 0.00037305462017732936, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Special Investigation Circle, ; ; Raja Jagannath Bakshi Singh vs State of U.P., ; ; Prem Chand Garg vs Excise Commissioner, U.P.", "best_score": 0.00029596501418711934, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Allahabad, [1963] Suppl.", "best_score": 0.00018003091592577405, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "1 S.C.R.", "best_score": 0.000670794028575039, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "885 and I.C.", "best_score": 0.0008752679260956202, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "Golaknath & Ors.v.", "best_score": 0.00023232526391695426, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "State of Punjab & Ors.", "best_score": 0.00015800293201500212, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": ",[1967] 2 S.C.R.", "best_score": 0.000913097321033933, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "762, cited.", "best_score": 0.02449928168233903, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00073", "sentence": "The undertaking given by the parties or interim directions given by the Court cannot be understood in such a manner as to conflict with the Court 's final decision.", "best_score": 0.030105558027973774, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00074", "sentence": "The appellant acquired a plot of land on which the respondent 's property stands, consisting of the main house and an outhouse with an open space in front of them.", "best_score": 0.33285538251426006, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00074", "sentence": "The land acquired covered a space 50 ft.", "best_score": 0.1418856981192829, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00074", "sentence": "in width for the electric wire to run over and this included a portion of the open space as also the outhouse.", "best_score": 0.19995434137371723, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00074", "sentence": "On this basis compensation of about Rs.", "best_score": 0.3923368230619772, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00074", "sentence": "1,000/ .", "best_score": 0.005341857232768252, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00074", "sentence": "Case law reviewed.", "best_score": 0.004381779101145496, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00074", "sentence": "R.", "best_score": 0.0013908082061062324, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00074", "sentence": "57 I.", "best_score": 0.0006388978600439107, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00074", "sentence": "A.", "best_score": 0.0034151328842104644, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00074", "sentence": "100.", "best_score": 0.0012619410665288709, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00074", "sentence": "The Secretary of State for India in Council V.", "best_score": 0.07049073629959435, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00074", "sentence": "R.", "best_score": 0.0013908082061062324, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00074", "sentence": "Narayanaswami Chettiar, Mad.", "best_score": 3.138032787805698e-05, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00074", "sentence": "391, distinguished.", "best_score": 0.003382519455787919, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00075", "sentence": "In determining a single their according to the rules of primogeniture the class of heirs who would 325 be entitled to succeed the property if it were partible must be ascertained first, and then the single heir applying the special rule must be selected.", "best_score": 0.11309604685616312, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00075", "sentence": "The power had to be exercised in accordance with the custom of the family and an order by the Governor purporting to exercise powers under the Chanda Patent contemplated a quasi judicial inquiry.", "best_score": 0.32438508206239913, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00075", "sentence": "[339 D E]", "best_score": 0.01712126151078167, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00076", "sentence": "The first appellant No.", "best_score": 0.392664723624704, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00076", "sentence": "P.", "best_score": 0.014652119066893095, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00076", "sentence": "P.", "best_score": 0.014652119066893095, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00076", "sentence": "There was no arrangement between the Association and the Corporation which was the sole authority to take action.", "best_score": 0.0015683695506864697, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00077", "sentence": "[773 B C] 770 In matters involving considerations of questions regarding adequacy or sufficiency of \"training\" the Public Service Commission having the benefit of expert opinion, is better situated to judge whether the particular candidate is qualified for a particular post and courts should hesitate to interfere with the discretion of the appointing authority so long as it is exercised bona fide.", "best_score": 0.19991246645928357, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00077", "sentence": "[773 G H] [Their Lordships considered that, in view of the conclusion that the appellants were duly qualified it was unnecessary to go into the question of \"Locus Standi\" of respondent No.", "best_score": 0.3349477826288895, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00078", "sentence": "Allowing the writ petition, HELD: 1.1 The is 183 an important piece of social legislation for the welfare of the labourers and has to be liberally construed.", "best_score": 0.007362298194912858, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00078", "sentence": "[186D] Standard Vacuum Refining Co.", "best_score": 0.00011550744394504311, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00078", "sentence": "of India Ltd.", "best_score": 0.21825799239280166, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00078", "sentence": "There was, therefore, no justification to treat the petitioners differently and deny them the right of regular appointment.", "best_score": 0.006035475817664795, "best_label": "arguments_appellant", "reason": "below_threshold"}
+{"doc_id": "validation_00078", "sentence": "That being so, all the workmen performing these jobs were to be treated alike.", "best_score": 0.26405097367356434, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00078", "sentence": "[187G 188A] 2.", "best_score": 0.0015804056790491017, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "70 I.A.", "best_score": 0.006364080249340808, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "232) is not sound in so far as it relates to the properties inherited from collaterals prior to adoption.", "best_score": 0.023700154677277985, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "1), followed.", "best_score": 0.002829931452337239, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "R.", "best_score": 0.013456749411977723, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "60 I.", "best_score": 0.05065737023168578, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "A.", "best_score": 0.00265969433593544, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "242), explained.", "best_score": 0.005579401367051644, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "70 I.A.", "best_score": 0.006364080249340808, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "232), not relied on in part.", "best_score": 0.00037426004815737214, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "279); Pudma Coomari vs Court of Wards ([1881] L.R.", "best_score": 0.024344524400503127, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "8 I.A.", "best_score": 0.0013010057693700196, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "14 I.A.", "best_score": 0.11858765117324224, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "16 I.A.", "best_score": 0.053331519011558116, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "45 I.A.", "best_score": 0.05644826623672094, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "62 I.A.", "best_score": 0.02001998894447908, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "161); Bapuji v Gangaram ([1941] I.L.R.", "best_score": 0.02944344068196377, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "Nagpur 178); and Prem Jagat Kuer vs Harihar Bakhsh Singh ([1945] I.L.R.", "best_score": 0.06349373106066544, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00079", "sentence": "21 Lucknow 1), referred to.", "best_score": 0.00037244981170431787, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00080", "sentence": "No other overt act is necessary to constitute the offence.", "best_score": 0.011024051632063528, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00080", "sentence": "[361 F H] Municipal Board.", "best_score": 0.06473112931626163, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00080", "sentence": "L.J.", "best_score": 0.00045331403447359045, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00080", "sentence": "974; Narain Prasad vs State of Rajasthan, AIR overruled.", "best_score": 0.0034033757078806765, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00081", "sentence": "By a consent decree, in the suit filed by the wife, he transferred to her the flat in which she was living and agreed to pay mehar money.", "best_score": 0.22205081182976327, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00081", "sentence": "For some time thereafter they lived together but again separated.", "best_score": 0.3666277149337927, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00081", "sentence": "for grant of maintenance to her and her son.", "best_score": 0.07381442053551235, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00081", "sentence": "This was granted.", "best_score": 0.001091891437152124, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00081", "sentence": "The High Court dismissed the wife 's appeal.", "best_score": 0.19358007091199167, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00081", "sentence": "[78H] 1.", "best_score": 0.0016018502288943641, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00081", "sentence": "the wife out of the conjugal home.", "best_score": 0.003793156321468412, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00081", "sentence": "[80D] 76 2.", "best_score": 0.00020845591643336222, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00081", "sentence": "[80C] 3.", "best_score": 0.0007150688640984374, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00081", "sentence": "Ill used wives and desperate divorcees shall not be driven to material and moral dereliction to seek sanctuary in the streets.", "best_score": 0.005667268712060453, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00081", "sentence": "a subsequent series of recurrent doles is contra indicated and the husband liberated.", "best_score": 8.257374074719563e-05, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00081", "sentence": "The key note thought is adequacy of payment which will take reasonable care of the wife 's maintenance.", "best_score": 0.22867022698214634, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00081", "sentence": "[80H] (d) The payment of illusory amounts by way of customary or personal law requirement will be considered in the reduction of maintenance rate but cannot annihilate that rate unless it is a reasonable substitute The legal sanctity of the payment is certified by the fulfilment of the social obligation, not by a ritual exercise rooted in custom.", "best_score": 0.14185768797233658, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00081", "sentence": "No construction which leads to frustration of the statutory project can secure validation if the Court is to pay true homage to the Constitution.", "best_score": 0.00011052124133121073, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00081", "sentence": "[81B C] 4.", "best_score": 0.0003851714148124038, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00082", "sentence": "7000/ and Rs.", "best_score": 0.00012402473899520664, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00082", "sentence": "Allowing the appeal by Certificate, the Court ^ HELD: 1.", "best_score": 0.23560559283786178, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00082", "sentence": "[275 A H, 276 A] Hukamchand Mills 's case, ; applied.", "best_score": 9.927278777447659e-05, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00082", "sentence": "[277 B, 278 A B] Artemiou vs Procopiou, , Luke vs Inland Revenue Commissioner and 577 Quoted with approval.", "best_score": 0.001277535818016756, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00082", "sentence": "More often than not such appeals would come up for hearing after the expiry of the said period of two years a fact fully known and within the contemplation of the Legislature when it introduced the section in the Act in 1948.", "best_score": 0.04646481183662018, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00082", "sentence": "[278 E H, 279 A D] 4.", "best_score": 0.0035567837993701833, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00082", "sentence": "[279 D H, 280 A G] Commissioner of Income Tax vs Kishoresingh Kalyan Singh Solanki, ; approved.", "best_score": 0.03785479116111728, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00082", "sentence": "[281 C D] 6.", "best_score": 0.02213565482785259, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00082", "sentence": "[281 E H, 282 A] C.I.T.", "best_score": 0.0009945380496823326, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00082", "sentence": "vs Sabitri Devi Agarwalla, over ruled.", "best_score": 0.14072330266035576, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00082", "sentence": "Pooran Mall 's case, ; relied on.", "best_score": 0.23179363060210592, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00083", "sentence": "1 S.C.R.", "best_score": 0.0009538252363458475, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00083", "sentence": "528, referred to.", "best_score": 0.006384133281416412, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00083", "sentence": "13th E d.", "best_score": 0.0019897692956769293, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00083", "sentence": "644, referred to.", "best_score": 0.003844592284455899, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00083", "sentence": "Pandit M.", "best_score": 0.0004718998388285058, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00083", "sentence": "section M.", "best_score": 0.002615358995529727, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00083", "sentence": "Sharma vs Dr.", "best_score": 0.0004085427004176987, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00083", "sentence": "154, relied on.", "best_score": 0.004462404430234339, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00083", "sentence": "Janardan Reddy vs The State of Hyderabad, ; , Syed Qasion Rezvi vs The State of Hyderabad, [1953] S.C.R.", "best_score": 0.3510616322124356, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00083", "sentence": "589 and Bhagubhai Dullabhabhai Bhandari vs The District magistrate, Thana; , , referred to.", "best_score": 0.006429092546208152, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00084", "sentence": "In 1982 she left for Nigeria, along with her parents, where her father went on deputation.", "best_score": 0.35335658413363835, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00084", "sentence": "Degree.", "best_score": 0.001624240862755885, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00084", "sentence": "Giving reasons for the said order, this Court, HELD: 1.", "best_score": 0.0008747910137140498, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00084", "sentence": "Rules are intended to be reasonable, and should take into account the variety of circumstances in which those whom the rules seek to govern find themselves.", "best_score": 0.00017231226082304555, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00084", "sentence": "[861C] 2.", "best_score": 0.0006791092106511287, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00084", "sentence": "[860H, 861A] 3.", "best_score": 0.0008539313073456483, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00084", "sentence": "[861B, 861E]", "best_score": 0.0004844843427708669, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00085", "sentence": "23 ^ HELD: 1.", "best_score": 0.0005096201988335102, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00085", "sentence": "[27 B; C] 3.", "best_score": 0.003621821416495361, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00085", "sentence": "[27 F] 4.", "best_score": 0.0050264937768852175, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00085", "sentence": "No.", "best_score": 0.014308918000439473, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00085", "sentence": "such concept can be imported into the election law because the object of the law is that the electoral process should not be set at naught and an elected candidate should not be thrown out unless the grounds mentioned in the Act are clearly and fully proved.", "best_score": 0.3883150941641119, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00085", "sentence": "[27 D] 5.", "best_score": 0.001814218503174101, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00085", "sentence": "vs Dhija Ram & Ors.", "best_score": 0.027546871761812634, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00085", "sentence": "; [30 C]", "best_score": 0.0010140766597631647, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00086", "sentence": "Sales Tax Act, read with Entry 6 of Notification No.", "best_score": 0.0012943902261842136, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00086", "sentence": "Sales Tax Act, read with the Notification.", "best_score": 0.10511778504692923, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00086", "sentence": "[732 E, H] Bamavater Budhaiprasad vs The Asstt.", "best_score": 0.009369321852442563, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00086", "sentence": "Sales Tax Officer, Akola and Another, 12, S.T.C.", "best_score": 0.00012954519787714794, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00086", "sentence": "286, followed.", "best_score": 0.0003940166947831443, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00086", "sentence": "V.", "best_score": 0.00039687246563684076, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00086", "sentence": "P.", "best_score": 0.05438484803266486, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00086", "sentence": "Sanasundara Mudaliar vs State of Madras 14, S.T.C.", "best_score": 0.12002383986903101, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00086", "sentence": "943; Commissioner of Sales Tax vs Vicco Laboratories, 22 S.T.C.", "best_score": 0.3564696840892677, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00086", "sentence": "169, approved.", "best_score": 3.885155624803891e-05, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00087", "sentence": "Thereafter, no further action was taken in this behalf.", "best_score": 0.07532299971118206, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00087", "sentence": "vs State of Gujarat and another, AIR 1981 Gujarat 107, the State can be permitted to exercise its power of withdrawal unilaterally.", "best_score": 0.3393567353065386, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00087", "sentence": "It is well settled in the field of specific performance of contracts that no person will be compelled to acquire any land, as a breach of a contract can always be compensated for by damages.", "best_score": 0.2266027017994547, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00087", "sentence": "The State Government has definitely acted in the best interests of the public and public revenues and its decision could not be faulted.", "best_score": 0.08013905110790788, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00087", "sentence": "[595D F, H; 596B; F H] Appeal allowed.", "best_score": 0.03930179397582588, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00087", "sentence": "[597G] M/s.", "best_score": 0.0006415988952992183, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00087", "sentence": "Majas Land Development Corpn.", "best_score": 0.1705307456691234, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "Allowing the appeal to this Court, ^ HELD: It is not necessary that the State Government should pick and choose individual Magistrates and confer special power on them.", "best_score": 0.38580340712608563, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "[1083E; 1084C] Mohd.", "best_score": 0.012789796614028197, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "Qasim & Anr.", "best_score": 0.3670936966011218, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "ILR [1968] Guj.", "best_score": 0.0008885521870702853, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "4, disapproved.", "best_score": 0.0006297042839122699, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "K.", "best_score": 0.006133151950989766, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "N.", "best_score": 0.008564284365507836, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "Vijayan vs State, AIR 1953 Tr.", "best_score": 0.000711714112017928, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "Co.", "best_score": 0.004893368085159977, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "402.", "best_score": 0.00094075202065656, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "State vs Judhabir Caetri AIR 1953 Assam 35; (F.B.); State of Mysore vs Kashambi & Anr: ; Ashaq Hussain Khan vs S.D.O.", "best_score": 0.38253238850462634, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "Manghir.", "best_score": 0.000859666135793511, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "ATR 1965 Pat 446 and C.", "best_score": 0.00035170907974090026, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "V.", "best_score": 0.20950971710680696, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "Collector & Ors., AIR 1970 Kerala 50.", "best_score": 5.068075825493863e-05, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "approved.", "best_score": 0.0063785943145659, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "(1) Where the language of a statutory provision is susceptible of two interpretations, the one which promotes the object of the provision.", "best_score": 0.11994084184650838, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "comports best with its purpose and preserves its smooth working, should be chosen in preference to the other which introduces inconvenience and uncertainty in the working of the system.", "best_score": 0.0007051750246004592, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "The fallacy in the narrow view stems from the undue stress it lavs on the mode empowerment at the cost of the special purpose of the empowerment ignoring the fact that the Act is a code by itself which creates new offences triable only by those Magistrates of the First Class who are specially empowered under section 2(c) of the Act, and not under the Code of Criminal Procedure.", "best_score": 0.1695634273768867, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "[1081F G; 1083E F, G 1084B] Sindhi Lokana Chajthram vs State of Gujarat, ; and Abdul Hussain Tayabali and ors.", "best_score": 0.12822266821361833, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00088", "sentence": "; , followed.", "best_score": 0.0041550104998174, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00089", "sentence": "The police surgeon who made a postmortem examination expressed the opinion that the shot must have been fired from a distance of 2 to 18 inches only.", "best_score": 0.1818664166040942, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00090", "sentence": "The authorities Linder the Act dismissed the appeals.", "best_score": 0.26951613285009507, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00091", "sentence": "The number of Senior Lecturers and Lecturers (Sr.", "best_score": 0.3791222983594999, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00091", "sentence": "[742B] 2.", "best_score": 0.00018005718181379908, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00091", "sentence": "dearness allowance which is a certain percentage of basic salary, would have gone up.", "best_score": 0.013569832041278377, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00091", "sentence": "[741F H; 742A] 3.", "best_score": 0.000179769324701128, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00091", "sentence": "[742C D] [The Court expressed the hope that the authorities will extend the same benefit also to the two companions of the appellant notwithstanding their failure to approach this Court, perhaps on account of cost constraint, and not drive them to another round of litigation.] [742F]", "best_score": 0.06026336504961649, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00092", "sentence": "115.", "best_score": 0.07314082935163933, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00092", "sentence": "State Reorganisation Act, 1956, so that.", "best_score": 0.0003048846665400803, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00092", "sentence": "But, once he had that opportunity.", "best_score": 0.0830420277161321, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00092", "sentence": "G] In the present case.", "best_score": 0.021302775633470796, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00092", "sentence": "[830 B] He is not entitled to any relief because he had not made out in his petition to the Court any of the grounds on which a final list can be assailed.", "best_score": 0.09959690861693805, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00092", "sentence": "etc.", "best_score": 0.002017415765684178, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00092", "sentence": "(S.L.R.", "best_score": 0.0017483049880653197, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00092", "sentence": "1969 p.", "best_score": 0.21215546647120964, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00092", "sentence": "1 ) (C As.", "best_score": 0.0151359163634076, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00092", "sentence": "1439 & 1446 of 1967 decided on 16 10 1968) explained.", "best_score": 0.0007118158583445525, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00092", "sentence": "Union of India & Anr.", "best_score": 0.2559021862722375, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00092", "sentence": "Roy & Ors.", "best_score": 0.009013743317689933, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00092", "sentence": "[1968] 2 S.C.R.", "best_score": 0.00023100747898198982, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00092", "sentence": "Prabhavalkar & Ors.", "best_score": 0.010246261161937456, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00092", "sentence": "; at 2106, followed.", "best_score": 0.023987782373880915, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00093", "sentence": "Section 94(1), Cr.", "best_score": 0.22369321747624887, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00093", "sentence": "P.C.", "best_score": 0.0056970677889505664, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00094", "sentence": "No arbitrary time limit can be laid down.", "best_score": 0.13260776694097381, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00095", "sentence": "2 to 8.", "best_score": 0.0007191473674273819, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00095", "sentence": "1185 Allowing the appeal, this Court, HELD: 1.", "best_score": 0.11654435047876859, "best_label": "judgement", "reason": "below_threshold"}
+{"doc_id": "validation_00095", "sentence": "That is the rationale behind the scheme.", "best_score": 0.002839228580619369, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00095", "sentence": "[1192E F, 1193A B] 3.", "best_score": 0.027713267159661856, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00095", "sentence": "[1193D G] Such rights are not granted in India.", "best_score": 0.12513724854799937, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00095", "sentence": "But with the change of situation and complex problems arising, it is high time to give the wife or the spouse a right of occupation in a truly matrimonial home, in case of marriage breaking up or in case of strained relationship between the husband and the wife.] [1193G] Prem Chand and another vs Sher Singh, [1981] Delhi Rent Judgment 287; Smt.", "best_score": 0.11529509086956592, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00095", "sentence": "22 page 650, referred to.", "best_score": 0.20808678318117513, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00096", "sentence": ".", "best_score": 0.011268761420720972, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00096", "sentence": ".", "best_score": 0.011268761420720972, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00096", "sentence": "47, r.", "best_score": 0.0020613178056270403, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00096", "sentence": "47, r.", "best_score": 0.0020613178056270403, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00097", "sentence": "While gradually releasing 45 of them he purported to detain the appellants and the petitioners under R.", "best_score": 0.37029174091118117, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00097", "sentence": "1, 3, 4, 5, 6, 7, 8, 9, 12 and 13.", "best_score": 0.0062533077555506226, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00098", "sentence": "Under cls.", "best_score": 0.08072497639985299, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00098", "sentence": "[313 H] The question had to be decided on a construction of section 41 of the Act.", "best_score": 0.019563319841642574, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00098", "sentence": "But it is only after ascertaining the income and after giving exemptions, that section 41 of the Act comes into play, and the income tax authority ha.", "best_score": 0.3025854940021324, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00098", "sentence": ".", "best_score": 0.014709859370518689, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00098", "sentence": "the option under section 41, to assess the beneficiary directly or, in respect of the same income, the trustee on behalf of the beneficiary.", "best_score": 0.01828090273906459, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00098", "sentence": "Since the interest on securities in the hands of the trustees does not become an income 298 other than such interest in the hands of the beneficiary, it retains its character as such interest whether the assess ment is made on the trustee or the beneficiary.", "best_score": 0.03575999694642251, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00098", "sentence": "[312 G; 313 E, F G, 314 A; 315 A D]", "best_score": 0.0005971284566738896, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00099", "sentence": "59 I.A.", "best_score": 0.0028960206595357156, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00099", "sentence": "2o6, referred to.", "best_score": 0.012561038689203862, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00099", "sentence": "section Ar.", "best_score": 0.021459954497046966, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00099", "sentence": "Arunachalam Chettiar, (1953] S.C.R.", "best_score": 0.0226333450857156, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00099", "sentence": "249, Kusumben D.", "best_score": 0.25954081644127336, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00099", "sentence": "Case law reviewed.", "best_score": 0.021166853108466117, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00099", "sentence": "[1955] I S.C.R.", "best_score": 0.386876703043498, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00099", "sentence": "185 and Zoraster & Co.", "best_score": 0.3698422276740267, "best_label": "reasoning", "reason": "below_threshold"}
+{"doc_id": "validation_00099", "sentence": "Per Shah, J.", "best_score": 0.0493944074446496, "best_label": "facts", "reason": "below_threshold"}
+{"doc_id": "validation_00099", "sentence": "The section does riot specifically impose such a restriction nor is it implied.", "best_score": 0.013656861059765506, "best_label": "reasoning", "reason": "below_threshold"}

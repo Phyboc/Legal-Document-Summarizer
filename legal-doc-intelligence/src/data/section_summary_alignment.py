@@ -93,12 +93,117 @@ logger = logging.getLogger(__name__)
 # thing discarding short orders ("Appeal dismissed." is two words).
 # ``cite_verify.split_sentences`` is left unchanged because cite-and-verify
 # depends on its existing behaviour.
+
+# Trailing-period tokens that do NOT end a sentence. IN-ABS summaries are dense
+# with reporter citations (``A.I.R.``, ``P.C.``, ``I.L.R.``), section references
+# (``s.``, ``cl.``, ``art.``) and party abbreviations (``vs.``, ``Ltd.``). A naive
+# ``(?<=[.!?])\s+`` split breaks inside them and produces citation fragments
+# (``"Ry."``, ``"1936 P.C."``) that then became whole training targets in the
+# first full build. Abbreviations are stored lower-case, without the final dot.
+_ABBREVIATIONS = frozenset({
+    "a", "anr", "art", "arts", "bom", "cal", "ch", "cj", "cl", "cls", "co",
+    "corp", "cr", "crlj", "del", "distt", "dr", "edn", "etc", "govt", "guj",
+    "hc", "hon", "ibid", "ilr", "j", "jj", "ker", "ltd", "lr", "lrs", "mad",
+    "mr", "mrs", "ms", "no", "nos", "ors", "p", "para", "paras", "pat", "pc",
+    "pp", "prof", "r", "raj", "rs", "ry", "s", "sc", "sch", "scr", "scc",
+    "sec", "secs", "shri", "smt", "st", "v", "vol", "vs",
+})
+
+# ``A.I.R.`` / ``P.C.`` / ``P.W.`` / ``M.R.`` / ``B.`` - an initialism, not a
+# sentence end. The trailing dot is part of the match.
+_INITIALISM = re.compile(r"(?:[A-Za-z]\.)+[A-Za-z]?")
+# Sub-section / pin cite such as ``56(j).`` or ``265(1)(a).``
+_SUBSECTION = re.compile(r"\d+\([A-Za-z0-9]+\)\.?")
+_TERMINAL = re.compile(r"[.!?][\"'\])]*$")
+
+
+def _ends_with_abbreviation(text: str, period_index: int) -> bool:
+    """True when the period at ``period_index`` belongs to an abbreviation."""
+    token = text[: period_index + 1].rsplit(None, 1)[-1].lstrip("\"'([")
+    core = token.rstrip(".!?")
+    if not core:
+        return False
+    if _INITIALISM.fullmatch(token):
+        return True
+    if _SUBSECTION.fullmatch(token):
+        return True
+    return core.lower() in _ABBREVIATIONS
+
+
+def _looks_like_fragment(piece: str) -> bool:
+    """True for a citation stub such as ``"Ry."`` or ``"1936 P.C."``.
+
+    A real operative order can be two words long (``"Appeal dismissed."``), so
+    length alone is not the test: the piece must also contain no lower-case
+    word of four or more letters, which every genuine English sentence does.
+    """
+    return len(piece.split()) <= 2 and not re.search(r"[a-z]{4,}", piece)
+
+
+def _split_on_periods(text: str) -> list[str]:
+    """Split at real sentence boundaries, protecting abbreviations."""
+    boundaries: list[int] = []
+    for match in re.finditer(r"[.!?]", text):
+        end = match.end()
+        if end < len(text) and not text[end].isspace():
+            continue
+        rest = text[end:].lstrip()
+        if rest and not re.match(r"[\"'(\[]?[A-Z0-9]", rest):
+            continue
+        if _ends_with_abbreviation(text, match.start()):
+            continue
+        boundaries.append(end)
+
+    pieces: list[str] = []
+    start = 0
+    for boundary in boundaries:
+        piece = text[start:boundary].strip()
+        if piece:
+            pieces.append(piece)
+        start = boundary
+    tail = text[start:].strip()
+    if tail:
+        pieces.append(tail)
+    return pieces
+
+
+def _merge_fragments(pieces: list[str]) -> list[str]:
+    """Reattach pieces that cannot stand as sentences.
+
+    Two repairs: a piece that does not end in terminal punctuation is glued to
+    the next one (the split happened *after* it, so it is still mid-sentence),
+    and a leading citation stub is glued to the sentence that follows it. The
+    original characters are preserved; only whitespace at the join is normalised.
+    """
+    merged: list[str] = []
+    for piece in pieces:
+        if merged and (
+            _looks_like_fragment(piece) or not _TERMINAL.search(merged[-1])
+        ):
+            merged[-1] = f"{merged[-1]} {piece}".strip()
+        else:
+            merged.append(piece)
+
+    repaired: list[str] = []
+    for piece in merged:
+        if repaired and _looks_like_fragment(repaired[-1]):
+            repaired[-1] = f"{repaired[-1]} {piece}".strip()
+        else:
+            repaired.append(piece)
+    return repaired
+
+
 def summary_sentences(full_summary: str) -> list[str]:
-    """Split a reference summary into sentences, keeping every non-empty one."""
-    if not full_summary:
+    """Split a reference summary into sentences, keeping every non-empty one.
+
+    Abbreviation-aware: ``"1936 P.C."`` and ``"Ry."`` are no longer emitted as
+    standalone sentences, so they cannot become stand-alone training targets.
+    Genuine short orders (``"Appeal dismissed."``) are still retained.
+    """
+    if not full_summary or not full_summary.strip():
         return []
-    parts = re.split(r"(?<=[.!?])\s+", full_summary)
-    return [part.strip() for part in parts if part.strip()]
+    text = re.sub(r"\s+", " ", full_summary).strip()
+    return _merge_fragments(_split_on_periods(text))
 
 # The historical config module carried these alongside ALIGNMENT_THRESHOLD and
 # ALIGNMENT_RELATIVE_MARGIN. They are read from config when present so the

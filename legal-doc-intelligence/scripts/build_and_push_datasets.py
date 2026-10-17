@@ -151,9 +151,18 @@ def run_one(
     dry_run: bool,
     append: bool = False,
 ) -> RunResult:
-    """Build one dataset, and upload it unless ``push`` is False."""
-    output_dir = output_root / spec.name
-    repo_id = repo_id_for(namespace, prefix, spec.name) if namespace else None
+    """Build one dataset, and upload it unless ``push`` is False.
+
+    A ``--fast`` run of a ``--full`` spec is redirected to its own directory and
+    Hub repo (``<name>-fast<N>``). Otherwise ``--fast`` would write ~60 documents
+    into ``artifacts/training_data/full`` - and, worse, push them over the
+    canonical full dataset on the Hub, which is exactly what the committed
+    ``full/`` build (mode ``sample20``) shows happened once already.
+    """
+    is_full_spec = "--full" in spec.flags
+    name = f"{spec.name}-fast{fast_n}" if (fast and is_full_spec) else spec.name
+    output_dir = output_root / name
+    repo_id = repo_id_for(namespace, prefix, name) if namespace else None
     result = RunResult(name=spec.name, output_dir=str(output_dir), repo_id=repo_id)
 
     argv = resolve_flags(spec, fast, fast_n) + ["--output_dir", str(output_dir)]

@@ -52,9 +52,11 @@ import hashlib
 import json
 import logging
 import os
+import re
 import sys
+import time
 from collections import Counter
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -66,7 +68,13 @@ _PKG_ROOT = Path(__file__).resolve().parents[1]
 if str(_PKG_ROOT) not in sys.path:
     sys.path.insert(0, str(_PKG_ROOT))
 
-from config import BART_MODEL, MAX_CHUNKS_PER_DOC, MAX_INPUT_LENGTH, MAX_TARGET_LENGTH  # noqa: E402
+from config import (  # noqa: E402
+    BART_MODEL,
+    FALLBACK_SECTION_LABEL,
+    MAX_CHUNKS_PER_DOC,
+    MAX_INPUT_LENGTH,
+    MAX_TARGET_LENGTH,
+)
 from src.data.chunker import approximate_tokens, chunk_document  # noqa: E402
 from src.data.cleaning import preprocess, split_paragraphs  # noqa: E402
 from src.data.pii_redaction import redact  # noqa: E402
@@ -109,12 +117,11 @@ TEXT_COLUMN_CANDIDATES = ("text", "judgment", "judgement", "document", "content"
 SUMMARY_COLUMN_CANDIDATES = ("summary", "reference_summary", "headnote", "abstract")
 FILE_COLUMN_CANDIDATES = ("file", "filename", "doc_name", "id", "doc_id")
 
-# Label used for documents whose structure the detector cannot resolve. The
-# validated build (artifacts/alignment_validation.json) uses ``full_document``;
-# consistently labelling the whole document is honest, whereas reusing a real
-# section name such as ``reasoning`` would claim a structure the detector never
-# found.
-FALLBACK_SECTION_LABEL = "full_document"
+# Documents whose structure the detector cannot resolve are labelled
+# ``config.FALLBACK_SECTION_LABEL`` (``full_document``): labelling the whole
+# document is honest, whereas reusing a real section name such as ``reasoning``
+# would claim a structure the detector never found. It is imported from config so
+# the inference pipeline cannot drift from the labels this builder writes.
 
 CROSS_ENCODER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
@@ -153,13 +160,27 @@ class DocumentBuild:
     pii_counts: dict = field(default_factory=dict)
     error: str | None = None
 
-    target_overflow_sentences: int = 0
-    # NEW: chunks whose real-tokenizer length exceeds MAX_INPUT_LENGTH are
-    # dropped here, before alignment ever runs on them - never silently kept,
-    # never silently truncated.
+    # Chunks whose real-tokenizer length exceeds MAX_INPUT_LENGTH are dropped
+    # here, before alignment ever runs on them - never silently kept, never
+    # silently truncated.
     oversized_chunks_dropped: int = 0
     oversized_chunk_details: list = field(default_factory=list)
-    evidence_decision_counts: dict = field(default_factory=dict)
+
+    # A pseudo-target that is longer than the chunk it is supposed to summarise
+    # cannot be produced from that chunk; it is misalignment, not supervision.
+    # Such records are dropped and reported rather than trained on.
+    degenerate_targets_dropped: int = 0
+    degenerate_target_details: list = field(default_factory=list)
+
+    # Cost accounting, so a multi-hour/full build can be extrapolated from a
+    # sample instead of guessed at.
+    preprocessing_seconds: float = 0.0
+    alignment_seconds: float = 0.0
+    pairs_scored: int = 0
+
+    # sha1 of the raw source text, persisted in the resume journal so split
+    # isolation can still be verified from a resumed run.
+    text_sha1: str = ""
 
 
 # --------------------------------------------------------------------------- #
@@ -371,6 +392,7 @@ def build_document(
         (group_by_section | fallback) -> chunk_document -> align
     """
     result = DocumentBuild(doc_id=doc_id, split=split)
+    _doc_started = time.perf_counter()
 
     try:
         # 1-2. Cleaning and preamble stripping (existing implementation).
@@ -394,6 +416,7 @@ def build_document(
 
         # 7. Section-aware chunking (existing implementation).
         chunks = chunk_document(section_groups)
+        result.preprocessing_seconds = time.perf_counter() - _doc_started
 
         # NEW: real-tokenizer validation BEFORE the expensive Cross-Encoder pass.
         # chunk_document() bounds chunk size with approximate_tokens, which can
@@ -435,12 +458,15 @@ def build_document(
         # 8-10. Split the reference summary into sentences and align it to the
         #       chunks with the shared Cross-Encoder (existing implementation).
         section_chunks = [(chunk.section, chunk.text) for chunk in chunks]
+        _alignment_started = time.perf_counter()
         alignment = align_summary_to_sections(
             section_chunks,
             summary or "",
             chunk_positions=_chunk_positions(chunks),
             **(alignment_kwargs or {}),
         )
+        result.alignment_seconds = time.perf_counter() - _alignment_started
+        result.pairs_scored = alignment.total_sentences * len(section_chunks)
 
         result.evidence_decision_counts = dict(alignment.decision_counts)
         result.ambiguous = [{"doc_id": doc_id, **entry} for entry in alignment.ambiguous]
@@ -496,6 +522,32 @@ def build_document(
             )
             result.target_overflow_sentences += len(overflow)
             if not matched or not target:
+                continue
+
+            # A target longer than its own source chunk cannot have been produced
+            # from it - that is misalignment, not supervision. A target with no
+            # word of three or more letters is a citation stub ("1936 P.C.").
+            # Both are dropped and counted, never trained on.
+            if len(target.split()) > len(chunk.text.split()) or not re.search(
+                r"[a-z]{3,}", target
+            ):
+                result.degenerate_targets_dropped += 1
+                result.degenerate_target_details.append({
+                    "doc_id": doc_id,
+                    "chunk_id": chunk.chunk_id,
+                    "section": chunk.section,
+                    "target_words": len(target.split()),
+                    "chunk_words": len(chunk.text.split()),
+                    "alignment_score": round(
+                        float(alignment.chunk_pair_scores.get(index, [0.0])[0]), 4
+                    ),
+                })
+                logger.warning(
+                    "%s chunk %d (%s): dropping impossible target (%d target words "
+                    "vs %d chunk words)",
+                    doc_id, chunk.chunk_id, chunk.section,
+                    len(target.split()), len(chunk.text.split()),
+                )
                 continue
 
             # matched_labels collects every plausible label of every sentence
@@ -604,6 +656,9 @@ def quality_flags(builds: list[DocumentBuild]) -> dict:
         "target_overflow_sentences_total": sum(
             r.get("n_overflow_sentences", 0) for r in retained
         ),
+        "degenerate_targets_dropped": sum(
+            b.degenerate_targets_dropped for b in builds
+        ),
         "documents_with_single_chunk": sum(1 for b in builds if b.chunks_created == 1),
     }
 
@@ -694,6 +749,7 @@ def build_stats(
     split_isolation: dict,
     length_validation: dict,
     args: argparse.Namespace,
+    elapsed_seconds: float = 0.0,
 ) -> dict:
     """Assemble ``build_stats.json``. No expected count is hard-coded anywhere."""
     chunks_created = sum(b.chunks_created for b in builds)
@@ -730,6 +786,28 @@ def build_stats(
     def _rate(key: str) -> float:
         return round(evidence_counts.get(key, 0) / decisions_total, 4) if decisions_total else 0.0
 
+    # Cost accounting. ``alignment_seconds`` dominates a CPU build; recording
+    # pairs/sec lets a full run be extrapolated from any sample instead of
+    # discovered after the fact. No number here is an estimate.
+    alignment_seconds = sum(b.alignment_seconds for b in builds)
+    pairs_scored = sum(b.pairs_scored for b in builds)
+    documents = len(builds)
+    timings = {
+        "total_seconds": round(elapsed_seconds, 2),
+        "preprocessing_seconds": round(sum(b.preprocessing_seconds for b in builds), 2),
+        "alignment_seconds": round(alignment_seconds, 2),
+        "alignment_share": (
+            round(alignment_seconds / elapsed_seconds, 4) if elapsed_seconds else 0.0
+        ),
+        "seconds_per_document": (
+            round(elapsed_seconds / documents, 2) if documents else 0.0
+        ),
+        "pairs_scored": pairs_scored,
+        "pairs_per_second": (
+            round(pairs_scored / alignment_seconds, 1) if alignment_seconds else 0.0
+        ),
+    }
+
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "mode": mode,
@@ -743,6 +821,12 @@ def build_stats(
             "documents_without_records": sum(1 for b in builds if not b.records),
             "documents_with_oversized_chunks_dropped": sum(1 for b in builds if b.oversized_chunks_dropped),
             "oversized_chunks_dropped_total": sum(b.oversized_chunks_dropped for b in builds),
+            "documents_with_degenerate_targets": sum(
+                1 for b in builds if b.degenerate_targets_dropped
+            ),
+            "degenerate_targets_dropped_total": sum(
+                b.degenerate_targets_dropped for b in builds
+            ),
         },
         "chunks": {
             "created": chunks_created,
@@ -833,6 +917,7 @@ def build_stats(
             "aligned_target": _length_stats(target_tokens),
             "chunk_text": _length_stats(chunk_tokens),
         },
+        "timings": timings,
         "length_validation": length_validation,
         "quality_flags": quality_flags(builds),
         "split_isolation": split_isolation,
@@ -1064,6 +1149,10 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
 
     output_dir = Path(args.output_dir)
     refuse_occupied_output_dir(output_dir, getattr(args, "overwrite", False))
+    # Created before the first document so the resume journal can be appended to
+    # as the build proceeds. A crash (or a Colab disconnect) therefore never costs
+    # more than the document in flight.
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     # Real BART tokenizer: lengths are validated, not estimated, for the dataset
     # that will later be trained on. This fails the build when transformers is
@@ -1104,6 +1193,8 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
     all_unassigned: list[dict] = []
     all_ambiguous: list[dict] = []
     references: list[dict] = []
+    resume = bool(getattr(args, "resume", False))
+    _build_started = time.perf_counter()
 
     for split in splits:
         dataset = load_split(split, limit=limit)
@@ -1117,17 +1208,57 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
         doc_ids_by_split[split] = set()
         content_hash_by_split[split] = {}
 
+        # --- resume journal ------------------------------------------------ #
+        # One JSON object per completed document. Documents are processed in the
+        # official split order and never re-ordered, so a resumed run skips a
+        # prefix and appends after it.
+        journal = output_dir / f".{split}.checkpoint.jsonl"
+        completed: list[DocumentBuild] = []
+        if resume and journal.exists():
+            for line in journal.read_text(encoding="utf-8").splitlines():
+                if not line.strip():
+                    continue
+                completed.append(DocumentBuild(**json.loads(line)))
+            logger.info(
+                "%s: resuming - %d document(s) already checkpointed in %s",
+                split, len(completed), journal.name,
+            )
+        elif journal.exists() and not resume:
+            logger.warning(
+                "Ignoring the existing checkpoint %s (pass --resume to reuse it). "
+                "It will be overwritten by this run.", journal,
+            )
+            journal.unlink()
+
+        # Replayed documents must contribute to the totals exactly as if this run
+        # had produced them, including their content hash for split isolation.
+        for build in completed:
+            builds.append(build)
+            records_by_split[split].extend(build.records)
+            all_unassigned.extend(build.unassigned)
+            all_ambiguous.extend(build.ambiguous)
+            if build.reference is not None:
+                references.append(build.reference)
+            doc_ids_by_split[split].add(build.doc_id)
+            if build.text_sha1:
+                content_hash_by_split[split][build.doc_id] = build.text_sha1
+        done_ids = {build.doc_id for build in completed}
+        journal_handle = journal.open("a", encoding="utf-8")
+
         for index, row in enumerate(dataset):
             # Document ids are <split>_<position in that split>, so a document
             # is addressable and provably single-split.
             doc_id = f"{split}_{index:05d}"
+            if doc_id in done_ids:
+                continue
             doc_ids_by_split[split].add(doc_id)
 
             text = row.get(text_col) or ""
             summary = row.get(summary_col) or ""
-            content_hash_by_split[split][doc_id] = hashlib.sha1(
+            text_sha1 = hashlib.sha1(
                 text.encode("utf-8", errors="ignore")
             ).hexdigest()
+            content_hash_by_split[split][doc_id] = text_sha1
 
             build = build_document(
                 doc_id,
@@ -1141,6 +1272,7 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
                 max_target_tokens=MAX_TARGET_LENGTH,
                 max_input_tokens=MAX_INPUT_LENGTH,
             )
+            build.text_sha1 = text_sha1
             builds.append(build)
             records_by_split[split].extend(build.records)
             all_unassigned.extend(build.unassigned)
@@ -1148,12 +1280,22 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
             if build.reference is not None:
                 references.append(build.reference)
 
+            # Checkpoint after every document: the expensive Cross-Encoder pass is
+            # already paid for, and a crash/disconnect then costs one document, not
+            # the whole run.
+            journal_handle.write(json.dumps(asdict(build), ensure_ascii=False) + "\n")
+            journal_handle.flush()
+            os.fsync(journal_handle.fileno())
+
             if (index + 1) % 25 == 0:
                 logger.info(
                     "%s: %d/%d documents, %d records so far",
                     split, index + 1, len(dataset), len(records_by_split[split]),
                 )
 
+        journal_handle.close()
+
+    elapsed_seconds = time.perf_counter() - _build_started
     split_isolation = verify_split_isolation(doc_ids_by_split, content_hash_by_split)
 
     # Real-tokenizer validation. Nothing is truncated silently: a violation
@@ -1189,6 +1331,7 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
         split_isolation=split_isolation,
         length_validation=length_validation,
         args=args,
+        elapsed_seconds=elapsed_seconds,
     )
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -1233,6 +1376,13 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
 
     write_dataset_card(output_dir / "README.md", stats, records_by_split)
 
+    # Only now, with every output on disk, is the resume journal disposable. A
+    # failure anywhere above leaves it in place so the run can be resumed.
+    for split in records_by_split:
+        checkpoint = output_dir / f".{split}.checkpoint.jsonl"
+        if checkpoint.exists():
+            checkpoint.unlink()
+
     return records_by_split, stats, builds
 
 
@@ -1242,53 +1392,69 @@ def report(stats: dict, output_dir: Path) -> None:
     sentences = stats["summary_sentences"]
     target = stats["lengths_estimated_with_approximate_tokens"]["aligned_target"]
     evidence_mode = stats["evidence"]["mode"]
+    timings = stats.get("timings", {})
 
+    # One list entry per printed line: adjacent f-strings silently concatenate, so
+    # continuation text is joined explicitly with "\n".
     lines = [
         "",
         "=" * 72,
         "BUILD SUMMARY",
         "=" * 72,
-        f"  documents processed    : {dataset['documents_processed']}"
-        f"  {dataset['documents_per_split']}",
-        f"  structure fallbacks    : {dataset['documents_structure_fallback']}",
-        f"  documents at chunk cap : {dataset['documents_at_chunk_cap']} (cap = {MAX_CHUNKS_PER_DOC})",
+        f"  documents processed     : {dataset['documents_processed']}"
+        f" {dataset['documents_per_split']}",
+        f"  structure fallbacks     : {dataset['documents_structure_fallback']}",
+        f"  documents at chunk cap  : {dataset['documents_at_chunk_cap']}"
+        f" (cap = {MAX_CHUNKS_PER_DOC})",
         f"  documents with 0 records: {dataset['documents_without_records']}",
-        f"  chunks created         : {chunks['created']}",
-        f"  chunks retained        : {chunks['retained']}"
-        f"   ({chunks['dropped_no_aligned_target']} dropped: no aligned target)",
-        # in report(), add a line:
-        f"  oversized chunks dropped: {dataset.get('oversized_chunks_dropped_total', 0)}",
-        f"  ({dataset.get('documents_with_oversized_chunks_dropped', 0)} documents affected)",
-        f"  records per split      : {chunks['retained_per_split']}",
-        f"  records by section     : {chunks['retained_by_section']}",
-        f"  summary sentences      : {sentences['total']}"
-        f"  ({sentences['aligned']} aligned / {sentences['unassigned']} unassigned"
+        f"  chunks created          : {chunks['created']}",
+        f"  chunks retained         : {chunks['retained']}"
+        f" ({chunks['dropped_no_aligned_target']} dropped: no aligned target)",
+        f"  oversized chunks dropped: "
+        f"{dataset.get('oversized_chunks_dropped_total', 0)}"
+        f" ({dataset.get('documents_with_oversized_chunks_dropped', 0)} documents affected)",
+        f"  records per split       : {chunks['retained_per_split']}",
+        f"  records by section      : {chunks['retained_by_section']}",
+        f"  summary sentences       : {sentences['total']}"
+        f" ({sentences['aligned']} aligned / {sentences['unassigned']} unassigned"
         f" = {sentences['unassigned_rate']:.1%})",
-        f"  multi-label rate       : {sentences['multi_label_rate']:.1%}"
-        f"  (labels per sentence {sentences['labels_per_sentence']})",
-        f"  aligned target tokens~ : mean {target['mean']} median {target['median']}"
+        f"  multi-label rate        : {sentences['multi_label_rate']:.1%}"
+        f" (labels per sentence {sentences['labels_per_sentence']})",
+        f"  aligned target tokens~  : mean {target['mean']} median {target['median']}"
         f" p90 {target['p90']} max {target['max']}",
         f"  records w/ target over {stats['quality_flags']['max_input_length_limit']} tok: "
         f"{stats['quality_flags']['records_with_target_over_model_input']}"
-        f"  (single-chunk docs: {stats['quality_flags']['documents_with_single_chunk']})",
+        f" (single-chunk docs: {stats['quality_flags']['documents_with_single_chunk']})",
+        f"  impossible targets      : "
+        f"{stats['quality_flags'].get('degenerate_targets_dropped', 0)}"
+        f" dropped (target longer than its chunk, or no prose)",
         f"  target-overflow recs    : {stats['targets']['records_with_overflow']}"
-        f"  ({stats['targets']['overflow_sentences_total']} sentences)",
-        f"  judgement outcomes     : {stats['judgement']['documents_by_outcome']}",
-        f"  judgement sentences    : {stats['judgement']['judgement_sentences_assigned']} assigned / "
+        f" ({stats['targets']['overflow_sentences_total']} sentences)",
+        f"  time                    : {timings.get('total_seconds', 0)}s"
+        f" ({timings.get('seconds_per_document', 0)}s/doc,"
+        f" alignment {timings.get('alignment_share', 0):.0%} of it)",
+        f"  alignment throughput    : {timings.get('pairs_per_second', 0)} pairs/s"
+        f" ({timings.get('pairs_scored', 0)} pairs scored)",
+        f"  judgement outcomes      : {stats['judgement']['documents_by_outcome']}",
+        f"  judgement sentences     : "
+        f"{stats['judgement']['judgement_sentences_assigned']} assigned / "
         f"{stats['judgement']['judgement_sentences_retained']} retained",
-        f"  tokenizer validation   : max input {stats['length_validation']['max_input_tokens']}"
+        f"  tokenizer validation    : max input "
+        f"{stats['length_validation']['max_input_tokens']}"
         f" / max target {stats['length_validation']['max_target_tokens']}",
-        f"  split isolation        : {'VERIFIED' if stats['split_isolation']['verified'] else 'FAILED'}"
-        f"  (cross-split duplicate text: {stats['split_isolation']['cross_split_content_duplicates']})",
-        f"  alignment backend      : {stats['alignment']['backend']}",
-        f"  evidence mode          : {'ON (UNCALIBRATED)' if evidence_mode else 'off'}"
-        f"   decisions: {stats['evidence']['decision_counts']}",
-        f"  evidence rates         : supported {stats['evidence']['supported_rate']:.1%}"
+        f"  split isolation         : "
+        f"{'VERIFIED' if stats['split_isolation']['verified'] else 'FAILED'}"
+        f" (cross-split duplicate text: "
+        f"{stats['split_isolation']['cross_split_content_duplicates']})",
+        f"  alignment backend       : {stats['alignment']['backend']}",
+        f"  evidence mode           : {'ON (UNCALIBRATED)' if evidence_mode else 'off'}"
+        f" (decisions: {stats['evidence']['decision_counts']})",
+        f"  evidence rates          : supported {stats['evidence']['supported_rate']:.1%}"
         f" / ambiguous {stats['evidence']['ambiguous_rate']:.1%}"
         f" / unsupported {stats['evidence']['unsupported_rate']:.1%}"
         f" / not-summary-content {stats['evidence']['not_summary_content_rate']:.1%}",
-        f"  evidence settings      : {stats['evidence']['settings']}",
-        f"  output                 : {output_dir}",
+        f"  evidence settings       : {stats['evidence']['settings']}",
+        f"  output                  : {output_dir}",
         "=" * 72,
     ]
     print("\n".join(lines))
@@ -1453,6 +1619,69 @@ def _append_dataset_dicts(dataset_dict, repo_id: str, token: str | None):
     return merged
 
 
+# --------------------------------------------------------------------------- #
+# Hub formats / viewer
+# --------------------------------------------------------------------------- #
+
+# Uploaded into a sub-directory so the Dataset Viewer's default config cannot
+# pick them up alongside the Parquet shards.
+RAW_FORMAT_DIR = "raw"
+RAW_FORMAT_FILES = (
+    "train.jsonl", "validation.jsonl", "test.jsonl",
+    "reference_summaries.jsonl", "unassigned.jsonl", "ambiguous.jsonl",
+)
+
+
+def _viewer_config_yaml(
+    split_paths: dict[str, list[str]], jsonl_splits: set[str]
+) -> str:
+    """YAML front-matter ``configs:`` block pinning every data file.
+
+    Pinning the paths is what makes extra formats safe: with an explicit
+    ``data_files`` list the Hub (and ``load_dataset``) resolves exactly these
+    files, so the raw JSONL copies in ``raw/`` are served as a second, viewable
+    config instead of being mistaken for more data of the default one.
+    """
+    lines: list[str] = []
+
+    def block(name: str, pattern) -> None:
+        lines.append(f"- config_name: {name}")
+        lines.append("  data_files:")
+        wrote_any = False
+        for split in OFFICIAL_SPLITS:
+            paths = pattern(split)
+            if not paths:
+                continue
+            wrote_any = True
+            lines.append(f"  - split: {split}")
+            if len(paths) == 1:
+                lines.append(f"    path: {paths[0]}")
+            else:
+                lines.append("    path:")
+                lines.extend(f"    - {path}" for path in paths)
+        if not wrote_any:
+            lines.pop()
+            lines.pop()
+
+    block("default", lambda split: split_paths.get(split, []))
+    if jsonl_splits:
+        block(
+            "jsonl",
+            lambda split: [f"{RAW_FORMAT_DIR}/{split}.jsonl"]
+            if split in jsonl_splits
+            else [],
+        )
+    return "configs:\n" + "\n".join(lines) + "\n"
+
+
+def _attach_viewer_config(card_text: str, extra_yaml: str) -> str:
+    """Insert ``extra_yaml`` at the end of the card's YAML front matter."""
+    if not card_text.startswith("---"):
+        return f"---\n{extra_yaml}---\n\n{card_text}"
+    end = card_text.index("\n---", 3)
+    return card_text[:end] + "\n" + extra_yaml + card_text[end + 1:]
+
+
 def push_to_hub(args: argparse.Namespace, stats: dict | None) -> None:
     """Validate locally, then upload the splits and the dataset card."""
     output_dir = Path(args.output_dir)
@@ -1514,10 +1743,64 @@ def push_to_hub(args: argparse.Namespace, stats: dict | None) -> None:
     )
     logger.info("Pushed splits to https://huggingface.co/datasets/%s", args.repo_id)
 
+    from huggingface_hub import HfApi
+
+    api = HfApi()
+
+    # Optional second format. Parquet is what ``push_to_hub`` writes and what the
+    # Dataset Viewer renders as a table; raw JSONL is added on request because a
+    # reader can open those files in the browser without any tooling.
+    jsonl_splits: set[str] = set()
+    if getattr(args, "upload_jsonl", False):
+        for name in RAW_FORMAT_FILES:
+            source = output_dir / name
+            if not source.exists():
+                continue
+            api.upload_file(
+                path_or_fileobj=str(source),
+                path_in_repo=f"{RAW_FORMAT_DIR}/{name}",
+                repo_id=args.repo_id,
+                repo_type="dataset",
+                token=resolve_hf_token(),
+                commit_message=f"Add {name} (raw, human-readable copy)",
+            )
+            if name in {f"{split}.jsonl" for split in OFFICIAL_SPLITS}:
+                jsonl_splits.add(name.split(".")[0])
+        logger.info("Uploaded raw JSONL under %s/: %s", RAW_FORMAT_DIR, sorted(jsonl_splits))
+
     card = output_dir / "README.md"
     if card.exists():
-        from huggingface_hub import HfApi
-        HfApi().upload_file(
+        # Pin the data files explicitly. Without this, the extra raw JSONL could be
+        # auto-detected as more data for the default config; with it, each format is
+        # an explicit, selectable config and ``load_dataset`` stays unambiguous.
+        try:
+            remote_files = api.list_repo_files(
+                args.repo_id, repo_type="dataset", token=resolve_hf_token()
+            )
+        except Exception as exc:  # pragma: no cover - network dependent
+            remote_files = []
+            logger.warning("Could not list %s to pin the viewer config: %s", args.repo_id, exc)
+
+        parquet_files = [name for name in remote_files if name.endswith(".parquet")]
+        split_paths = {
+            split: sorted(
+                name for name in parquet_files
+                if Path(name).name.startswith(f"{split}-") or Path(name).name == f"{split}.parquet"
+            )
+            for split in OFFICIAL_SPLITS
+        }
+        for split, paths in split_paths.items():
+            if not paths:
+                logger.warning("No Parquet file found on the Hub for split '%s'", split)
+
+        if any(split_paths.values()):
+            text = card.read_text(encoding="utf-8")
+            text = _attach_viewer_config(
+                text, _viewer_config_yaml(split_paths, jsonl_splits)
+            )
+            card.write_text(text, encoding="utf-8")
+
+        api.upload_file(
             path_or_fileobj=str(card),
             path_in_repo="README.md",
             repo_id=args.repo_id,
@@ -1526,6 +1809,9 @@ def push_to_hub(args: argparse.Namespace, stats: dict | None) -> None:
             commit_message="Add dataset card",
         )
         logger.info("Uploaded dataset card")
+        logger.info(
+            "View the rows at https://huggingface.co/datasets/%s/viewer", args.repo_id
+        )
 
     # Read back what the Hub now serves, so the upload is confirmed rather than assumed.
     try:
@@ -1632,6 +1918,24 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--overwrite", action="store_true",
         help="Allow writing into an output_dir that already contains dataset outputs.",
+    )
+    parser.add_argument(
+        "--resume", action="store_true",
+        help=(
+            "Continue an interrupted build in the same --output_dir. Every finished "
+            "document is checkpointed as it completes, so a crash, a killed job or a "
+            "disconnected Colab session costs at most one document. Documents already "
+            "checkpointed are not re-scored with the Cross-Encoder."
+        ),
+    )
+    parser.add_argument(
+        "--upload-jsonl", action="store_true",
+        help=(
+            "With --push-to-hub: also upload the splits as raw JSONL under raw/ and "
+            "pin both formats in the dataset card's viewer config. Parquet stays the "
+            "default (it is what load_dataset returns and what the Hub viewer renders); "
+            "the JSONL copies are for reading the rows directly in the browser."
+        ),
     )
 
     args = parser.parse_args(argv)

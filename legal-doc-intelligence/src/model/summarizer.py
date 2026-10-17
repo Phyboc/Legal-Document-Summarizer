@@ -10,6 +10,9 @@ GENERATION_PROFILES = {
     "arguments_respondent": {"min_length": 40, "max_length": 150, "num_beams": NUM_BEAMS},
     "reasoning": {"min_length": 60, "max_length": 250, "num_beams": NUM_BEAMS},
     "judgement": {"min_length": 20, "max_length": 100, "num_beams": NUM_BEAMS},
+    # Structure fallback: the whole judgment is one section (config.
+    # FALLBACK_SECTION_LABEL). Kept in step with the dataset builder.
+    "full_document": {"min_length": 60, "max_length": 250, "num_beams": NUM_BEAMS},
     "default": {"min_length": 40, "max_length": 200, "num_beams": NUM_BEAMS},
 }
 

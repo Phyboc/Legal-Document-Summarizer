@@ -46,6 +46,12 @@ CITATION_HIGH_CONFIDENCE = 0.65
 # Sections
 SECTIONS = ["facts", "arguments_appellant", "arguments_respondent", "reasoning", "judgement"]
 
+# Label used when structure detection cannot resolve a document. The dataset
+# builder and the inference pipeline MUST agree on this string: a model trained
+# on `full_document` records is never asked to summarise a section inference
+# calls `reasoning`, so the mismatch silently wastes that training signal.
+FALLBACK_SECTION_LABEL = "full_document"
+
 # PII patterns
 PII_PATTERNS = {
     "aadhaar": r"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}\b",

@@ -160,6 +160,43 @@ def test_short_operative_sentences_are_not_dropped():
     assert "Appeal dismissed." in sentences, "two-word order must be retained"
 
 
+def test_legal_abbreviations_do_not_split_a_sentence():
+    text = (
+        "See A.I.R. 1936 P.C. 141 at 143 and Rylands vs Fletcher, "
+        "(1866 Law Report 1 Excheq uer 265). The appeal fails."
+    )
+    sentences = summary_sentences(text)
+    assert len(sentences) == 2, sentences
+    assert sentences[0].startswith("See A.I.R. 1936 P.C. 141"), sentences[0]
+    assert sentences[1] == "The appeal fails."
+
+
+def test_subsection_pin_cite_does_not_split_a_sentence():
+    text = "According to notification No. 56(j). 2.636 of the Manual, the order stands."
+    assert summary_sentences(text) == [text]
+
+
+def test_citation_fragment_is_merged_into_the_sentence_that_follows_it():
+    # The first full build produced whole training targets like "Ry." and
+    # "1936 P.C." - citation stubs left over from naive splitting.
+    text = (
+        "M.R. Ry. In the premises, the appeals must fail and are accordingly "
+        "dismissed with costs."
+    )
+    sentences = summary_sentences(text)
+    assert len(sentences) == 1, sentences
+    assert sentences[0].startswith("M.R. Ry. In the premises"), sentences[0]
+
+
+def test_every_split_sentence_ends_with_terminal_punctuation():
+    text = (
+        "The Court held in P.W. 2's evidence that the order was void. "
+        "Under cl. 7 of the Scheme no appeal lies. Appeal dismissed."
+    )
+    for sentence in summary_sentences(text):
+        assert sentence.strip()[-1] in ".!?", sentence
+
+
 def test_cite_verify_short_sentence_drop_is_why_a_local_splitter_exists():
     # Documents the reason section_summary_alignment does not reuse the shared
     # helper: cite_verify.split_sentences drops < 3-word sentences.

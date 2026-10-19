@@ -71,9 +71,9 @@ from src.data.chunker import approximate_tokens, chunk_document  # noqa: E402
 from src.data.cleaning import preprocess, split_paragraphs  # noqa: E402
 from src.data.pii_redaction import redact  # noqa: E402
 from src.data.section_detector import (  # noqa: E402
+    build_section_groups,
     detect_sections,
-    fallback_to_single_section,
-    group_by_section,
+    is_operative_order,
 )
 from src.data.section_summary_alignment import (  # noqa: E402
     align_summary_to_sections,
@@ -96,12 +96,11 @@ TEXT_COLUMN_CANDIDATES = ("text", "judgment", "judgement", "document", "content"
 SUMMARY_COLUMN_CANDIDATES = ("summary", "reference_summary", "headnote", "abstract")
 FILE_COLUMN_CANDIDATES = ("file", "filename", "doc_name", "id", "doc_id")
 
-# Label used for documents whose structure the detector cannot resolve. The
-# validated build (artifacts/alignment_validation.json) uses ``full_document``;
-# consistently labelling the whole document is honest, whereas reusing a real
-# section name such as ``reasoning`` would claim a structure the detector never
-# found.
-FALLBACK_SECTION_LABEL = "full_document"
+# Documents whose structure the detector cannot resolve are grouped exactly as
+# inference groups them (``section_detector.build_section_groups``): remainder as
+# ``reasoning``, operative order as ``judgement``. Earlier builds labelled them
+# ``full_document``; that label is retired so training never sees a different
+# section structure from the one the summarizer is run on.
 
 CROSS_ENCODER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
@@ -319,7 +318,6 @@ def build_document(
     *,
     redact_names: bool = False,
     strip_preamble: bool = True,
-    fallback_label: str = FALLBACK_SECTION_LABEL,
     alignment_kwargs: dict | None = None,
     token_measure=None,
     max_target_tokens: int = MAX_TARGET_LENGTH,
@@ -330,7 +328,7 @@ def build_document(
     built from exactly the same text the inference path would see:
 
         preprocess -> redact -> split_paragraphs -> detect_sections ->
-        (group_by_section | fallback) -> chunk_document -> align
+        build_section_groups -> chunk_document -> align
     """
     result = DocumentBuild(doc_id=doc_id, split=split)
 
@@ -343,16 +341,12 @@ def build_document(
         #    is opt-in.
         redacted, result.pii_counts = redact(clean, redact_names_flag=redact_names)
 
-        # 4-5. Paragraph split and section detection (existing implementations).
+        # 4-6. Paragraph split, section detection, operative-order promotion and
+        #      fallback. Shared with the inference pipeline (build_section_groups),
+        #      so training and inference see identical section labels.
         paragraphs = split_paragraphs(redacted)
         paragraph_objects = detect_sections(paragraphs)
-
-        # 6. Fallback behaviour when the detector cannot resolve a structure.
-        result.structure_fallback = fallback_to_single_section(paragraph_objects)
-        if result.structure_fallback:
-            section_groups = {fallback_label: paragraph_objects}
-        else:
-            section_groups = group_by_section(paragraph_objects)
+        section_groups, result.structure_fallback = build_section_groups(paragraph_objects)
 
         # 7. Section-aware chunking (existing implementation).
         chunks = chunk_document(section_groups)
@@ -369,7 +363,8 @@ def build_document(
         #       chunks with the shared Cross-Encoder (existing implementation).
         section_chunks = [(chunk.section, chunk.text) for chunk in chunks]
         alignment = align_summary_to_sections(
-            section_chunks, summary or "", **(alignment_kwargs or {})
+            section_chunks, summary or "", is_operative=is_operative_order,
+            **(alignment_kwargs or {}),
         )
 
         result.alignment = alignment
@@ -704,7 +699,7 @@ def build_stats(
         "preprocessing": {
             "strip_preamble": not args.no_strip_preamble,
             "redact_names": args.redact_names,
-            "fallback_section_label": FALLBACK_SECTION_LABEL,
+            "section_grouping": "section_detector.build_section_groups (shared with inference)",
             "pii_pattern_counts": dict(pii_counts),
             "chunk_size": None,  # recorded by config; see config.CHUNK_SIZE
             "max_chunks_per_doc": MAX_CHUNKS_PER_DOC,

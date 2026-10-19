@@ -71,6 +71,7 @@ from __future__ import annotations
 import logging
 import re
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 sys.path.insert(0, ".")
@@ -198,6 +199,9 @@ class SentenceAlignment:
     # is never copied into one chunk per assigned section.
     primary_chunk: int | None = None
     primary_chunk_score: float = 0.0
+    # True when the sentence states the court's operative order and was routed to
+    # a judgement chunk (see ``align_summary_to_sections``). Provenance only.
+    operative: bool = False
 
     @property
     def best_label(self) -> str | None:
@@ -330,6 +334,7 @@ def align_summary_to_sections(
     allow_multi_label: bool | None = None,
     relative_margin: float | None = None,
     precomputed: tuple[list[str], list[dict[str, float]], list[list[float]]] | None = None,
+    is_operative: Callable[[str], bool] | None = None,
 ) -> AlignmentResult:
     """Align each sentence of ``full_summary`` to section label(s) and to a chunk.
 
@@ -341,6 +346,13 @@ def align_summary_to_sections(
     section. A sentence that satisfies neither is left unassigned. Within each
     assigned section the sentence is attached to that section's best-matching
     chunk, which is what makes a chunk-level target possible at all.
+
+    ``is_operative`` marks sentences that state the court's final order. Relevance
+    alone does not place them: a Cross-Encoder scores a restated fact about as
+    highly as the order itself, so most orders landed in facts or reasoning chunks.
+    For an operative sentence the ``judgement`` label is added whenever a judgement
+    chunk clears ``threshold`` (the source must support it), and its primary chunk is
+    the best judgement chunk. Without a judgement chunk above threshold, nothing changes.
 
     ``precomputed`` allows reusing an existing ``score_summary_sentences``
     result instead of paying for the Cross-Encoder pass twice.
@@ -393,6 +405,14 @@ def align_summary_to_sections(
         else:
             record.assigned = [max(above, key=lambda lbl: per_label[lbl])]
 
+        # Operative-order routing. ``above`` already means the judgement section
+        # clears the threshold, so the source supports the sentence there.
+        record.operative = bool(
+            is_operative and "judgement" in labels and "judgement" in above and is_operative(sentence)
+        )
+        if record.operative and "judgement" not in record.assigned:
+            record.assigned.append("judgement")
+
         # ``assigned`` remains the plausible section labels (build statistics and
         # metadata depend on it), but the sentence now has at most ONE training
         # destination: the single highest-scoring chunk among the plausible
@@ -403,6 +423,12 @@ def align_summary_to_sections(
         candidate_indices = [
             j for j, (label, _) in enumerate(section_chunks) if label in record.assigned
         ]
+        if record.operative:
+            # An operative order belongs in a judgement chunk, not wherever it
+            # happens to score best among its plausible sections.
+            candidate_indices = [
+                j for j in candidate_indices if section_chunks[j][0] == "judgement"
+            ]
         if candidate_indices:
             primary_chunk = max(candidate_indices, key=lambda j: row[j])
             record.primary_chunk = primary_chunk

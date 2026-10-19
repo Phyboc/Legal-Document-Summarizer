@@ -18,10 +18,18 @@ _model_missing = False
 # cover civil decrees and generic operative orders as well, and are shared by the
 # rule classifier, the trailing-judgement promotion, and the eval outcome metric.
 _DISPOSITION_PATTERNS = [
-    # appeals / petitions / revisions / writs / suits being disposed of
-    r"\b(?:appeal|petition|revision|application|suit)s?\s+(?:is|are|stands?|be|hereby)?\s*(?:partly\s+)?(?:allowed|dismissed|decreed|set aside|disposed)\b",
+    # appeals / petitions / revisions / writs / suits / decrees / orders being disposed of.
+    # The subject may be followed by a modal or an adverb ("must accordingly be
+    # allowed", "is accordingly set aside") - the forms the earlier pattern missed.
+    r"\b(?:appeal|petition|revision|application|suit|writ|matter|decree|order|judgment|judgement|conviction|sentence|impugned\s+\w+)s?(?:\s+(?:is|are|was|were|must|shall|may|not|stands?|stand|be|been|has|have|hereby|accordingly|therefore|also|duly|partly|partially))*\s+(?:allowed(?!\s+to\b)|dismissed|decreed|set\s+aside|quashed|remanded|remitted|modified|upheld|affirmed|reversed|restored|disposed\s+of)\b",
+    # The verb not adjacent to its subject: "is accordingly set aside", "is hereby
+    # quashed". "allowed to" is a permission, not an order.
+    r"\b(?:is|are|stands?)\s+(?:hereby\s+|accordingly\s+|therefore\s+|also\s+)*(?:set\s+aside|quashed|dismissed|allowed(?!\s+to\b)|modified|remanded|remitted|affirmed|upheld|restored)\b",
+    # Past-tense court action in the first person: "We dismissed the appeal".
+    r"\bwe\s+(?:hereby\s+|accordingly\s+|therefore\s+)*(?:dismissed|allowed(?!\s+to\b)|set\s+aside|quashed|remanded|modified)\b",
     r"\bwrit\s+petitions?\s+(?:is|are)\s+(?:allowed|dismissed)\b",
-    r"\b(?:we|court|i)\s+(?:allow|dismiss|decree|set aside|quash|remit|remand|acquit|convict)\b",
+    r"\b(?:we|court|i)\s+(?:hereby\s+|accordingly\s+|therefore\s+)*(?:allow|dismiss|decree|set aside|quash|remit|remand|acquit|convict|modify|affirm|uphold)\b",
+    r"\bdeclared\s+(?:invalid|void|illegal|unconstitutional|ultra\s+vires)\b",
     # criminal dispositions
     r"\bconviction\s+(?:and\s+sentence\s+)?(?:is|are)\s+(?:set aside|upheld|maintained|confirmed)\b",
     r"\b(?:is|are|stands?|be)\s+acquitted\b",
@@ -50,6 +58,53 @@ def is_disposition(text: str) -> bool:
     """
     low = text.lower()
     return any(r.search(low) for r in _DISPOSITION_RE)
+
+
+# A lower court's (or the trial court's) decision recited as history: "The High
+# Court dismissed the petition", "the suit was decreed by the trial court". Such a
+# sentence matches ``is_disposition`` but is not the final order of this judgment.
+_LOWER_COURT_RE = re.compile(
+    r"\b(?:high\s+court|trial\s+court|lower\s+court|sessions\s+(?:court|judge)|magistrate|"
+    r"tribunal|single\s+judge|division\s+bench|first\s+appellate|appellate\s+court|"
+    r"district\s+(?:court|judge)|learned\s+(?:judge|magistrate)|commissioner|by\s+this\s+court)\b",
+    re.IGNORECASE,
+)
+# Wording that marks the court's own final order even when a lower court is named:
+# "the judgment of the High Court is set aside" is final, "the High Court was
+# dismissed" is not.
+_FINAL_ORDER_FORM_RE = re.compile(
+    r"\b(?:is|are|must|shall|stands?)\s+(?:hereby\s+|accordingly\s+)*(?:set\s+aside|allowed|dismissed|quashed|modified|remanded|affirmed|upheld)\b"
+    r"|\b(?:accordingly|hereby)\b",
+    re.IGNORECASE,
+)
+_PAST_MARKER_RE = re.compile(
+    r"\b(?:was|were|had|has\s+been|have\s+been|dismissed|allowed|decreed|rejected|upheld|"
+    r"confirmed|affirmed|quashed|passed|rendered|delivered)\b",
+    re.IGNORECASE,
+)
+
+
+def is_lower_court_history(text: str) -> bool:
+    """True when a disposition sentence recites a lower court's order as history.
+
+    A sentence is history when it names a lower court (or "this Court" for an
+    earlier special-leave order) in the past tense and does not carry final-order
+    wording ("accordingly", "hereby", "is set aside"). Heuristic: it is used to
+    keep history out of the final-order routing, and is reported as ambiguous.
+    """
+    if _FINAL_ORDER_FORM_RE.search(text):
+        return False
+    return bool(_LOWER_COURT_RE.search(text) and _PAST_MARKER_RE.search(text))
+
+
+def is_operative_order(text: str) -> bool:
+    """True when a sentence states this court's operative order (final disposition).
+
+    ``is_disposition`` minus lower-court history. Used to route operative-order
+    sentences in the training data; the inference-side promotion keeps the looser
+    ``is_disposition`` because it only moves paragraphs in the document's tail.
+    """
+    return is_disposition(text) and not is_lower_court_history(text)
 
 
 SECTION_PATTERNS = {
@@ -210,3 +265,29 @@ def fallback_to_single_section(paragraphs: list[Paragraph]) -> bool:
     groups = group_by_section(paragraphs)
     dominant_ratio = max(len(v) for v in groups.values()) / len(paragraphs)
     return dominant_ratio > 0.85
+
+
+def build_section_groups(paragraphs: list[Paragraph]) -> tuple[dict[str, list[Paragraph]], bool]:
+    """Group detected paragraphs into the sections that chunking consumes.
+
+    This is the one grouping rule shared by inference (``src.pipeline``) and the
+    training-data build (``scripts/build_dataset.py``), so both see the same
+    section labels. Returns ``(section_groups, structure_fallback)``.
+
+    Operative-order paragraphs in the tail are promoted to ``judgement`` first. When
+    detection is too weak to trust (``fallback_to_single_section``), the document is
+    kept in two groups - the remainder as ``reasoning`` and the operative order as
+    ``judgement`` - rather than one block, so the final order cannot be folded into
+    and trimmed out of the reasoning.
+    """
+    paragraphs = promote_trailing_judgement(paragraphs)
+    if not fallback_to_single_section(paragraphs):
+        return group_by_section(paragraphs), False
+    judgement = [p for p in paragraphs if p.section == "judgement"]
+    rest = [p for p in paragraphs if p.section != "judgement"]
+    groups: dict[str, list[Paragraph]] = {}
+    if rest:
+        groups["reasoning"] = rest
+    if judgement:
+        groups["judgement"] = judgement
+    return groups, True

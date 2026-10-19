@@ -1,0 +1,54 @@
+{
+  "label": "after fix (operative routing + shared grouping + detector coverage)",
+  "generated_at": "2026-10-19T13:42:08+00:00",
+  "documents": 100,
+  "documents_failed": 0,
+  "documents_with_judgement_section_detected": 100,
+  "judgement_outcome_states": {
+    "sentences_assigned_elsewhere": 11,
+    "retained": 51,
+    "no_judgement_sentence": 38
+  },
+  "documents_with_reference_outcome": 40,
+  "documents_with_reference_outcome_pct": 40.0,
+  "documents_with_any_outcome_retained_in_target": 36,
+  "documents_with_any_outcome_retained_pct_of_outcome_docs": 90.0,
+  "outcome_sentences_total": 69,
+  "outcome_sentence_stages": {
+    "unassigned": 4,
+    "retained": 64,
+    "budget_overflow": 1
+  },
+  "outcome_sentence_stage_pct": {
+    "unassigned": 5.8,
+    "retained": 92.75,
+    "budget_overflow": 1.45
+  },
+  "outcome_sentences_retained_pct": 92.75,
+  "training_detector_misses": 33,
+  "training_detector_miss_examples": [
+    "This order was confirmed by the higher income tax authorities.",
+    "Held, that the petition was wholly misconceived, and must be dismissed.",
+    "Being aggrieved, the appellant assailed the order by a writ petition in the High Court, which was dismissed.",
+    "A Bench of three Hon 'ble Judges while permitting Shriram to restart its power plant as also other plants subject to certain conditions, referred the applications for compensa tion to a larger Bench o",
+    "821 2.\nThe Delhi Legal Aid and Advice Board is directed to take up the cases of all those who claim to have suffered on account of oleum gas and to file actions on their behalf in the appropriate Cour",
+    "Though the respondent contested the petition contending that he had neither turned the appellant out from his house nor withdrawn from her society later as he made a statement in the Court that the ap",
+    "2.3.\nWhen a declaration is made under Section 3 and a further declaration is made under Section 11, the inhabitants of the areas are affected and any further action in relation to the area which is de",
+    "The court gave a last chance and fixed the trial peremptorily having regard to the statutory mandate under section 86 (7) requiring an election petition to be disposed of within 6 months from the date",
+    "In the appeal to this Court it was contended on behalf of the appellant that: (1) the earlier order of the High Court by which prayer (c) was allowed to be deleted and the order by which Respondent No",
+    "An election petition cannot be dismissed for default and when the appellant applied for permission to continue the case, the High Court should have given the opportunity to continue the election petit"
+  ],
+  "lower_court_context_sentences": 24,
+  "non_lower_court_outcome_sentences": {
+    "total": 45,
+    "stages": {
+      "unassigned": 2,
+      "retained": 43
+    },
+    "retained_pct": 95.56,
+    "assigned_judgement_label": 18,
+    "in_judgement_chunk": 13,
+    "training_detector_misses": 22
+  },
+  "max_target_length": 448
+}

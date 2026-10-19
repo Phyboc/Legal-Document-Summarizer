@@ -1,0 +1,25 @@
+{
+  "generated_at": "2026-10-19",
+  "machine": "CPU-only torch; no model trained, no new generation run",
+  "test_set": "IN-ABS test[:100], full pipeline, vs published IN-ABS summary",
+  "sources": {
+    "zero_shot_bart": "artifacts/eval/test100_e1.json (facebook/bart-base)",
+    "existing_finetuned_e3": "artifacts/eval/test100_e3.json",
+    "corrected_finetuned": "not run (GPU required)"
+  },
+  "metrics": {
+    "rouge1_lawyer": {"zero_shot": 50.93, "existing_e3": 55.15, "corrected": null},
+    "rouge2_lawyer": {"zero_shot": 24.96, "existing_e3": 30.75, "corrected": null},
+    "rougeL_lawyer": {"zero_shot": 44.65, "existing_e3": 49.64, "corrected": null},
+    "bertscore_f1_lawyer": {"zero_shot": 83.51, "existing_e3": 85.04, "corrected": null},
+    "rouge1_full": {"zero_shot": 52.86, "existing_e3": 58.80, "corrected": null},
+    "rouge2_full": {"zero_shot": 30.05, "existing_e3": 34.04, "corrected": null},
+    "rougeL_full": {"zero_shot": 45.11, "existing_e3": 51.07, "corrected": null},
+    "bertscore_f1_full": {"zero_shot": 83.67, "existing_e3": 85.13, "corrected": null},
+    "outcome_present_lawyer_pct": {"zero_shot": 78.0, "existing_e3": 34.0, "corrected": null},
+    "outcome_recall_lawyer_pct": {"zero_shot": 34.15, "existing_e3": 15.71, "corrected": null, "docs_with_reference_disposition": 31}
+  },
+  "outcome_definition": "present = Lawyer summary contains a sentence matched by current section_detector.is_disposition; recall = mean token recall of reference disposition sentences over docs whose reference has one",
+  "key_finding": "Under one consistent detector, zero-shot presence/recall exceed the fine-tune because zero-shot copies orders verbatim while e3 compresses and drops them; the data fix routes orders to judgement to address this; a corrected retrain is required to confirm.",
+  "not_run": ["corrected model (all columns)", "outcome presence full", "outcome agreement", "NLI per-run", "perturbation stability", "toxicity", "Citizen length compliance"]
+}

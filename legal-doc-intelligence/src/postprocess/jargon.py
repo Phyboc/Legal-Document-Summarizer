@@ -4,11 +4,11 @@ import re
 
 # 30 core inline-safe substitutions (in production would be 170+)
 INLINE_SUBSTITUTIONS = {
-    "appellant": "the person appealing",
-    "respondent": "the other party",
-    "petitioner": "the person filing the case",
-    "plaintiff": "the person filing the case",
-    "defendant": "the accused party",
+    "appellant": "person appealing",
+    "respondent": "other party",
+    "petitioner": "person filing the case",
+    "plaintiff": "person filing the case",
+    "defendant": "accused party",
     "prima facie": "at first glance",
     "ex parte": "from one side only",
     "sub judice": "under judicial consideration",
@@ -28,12 +28,28 @@ INLINE_SUBSTITUTIONS = {
     "aforesaid": "mentioned earlier",
     "notwithstanding": "despite",
     "whereas": "since",
-    "learned counsel": "the lawyer",
+    "learned counsel": "lawyer",
     "moved this Court": "asked this court",
     "in the result": "in conclusion",
-    "impugned order": "the order being challenged",
-    "operative order": "the actual decision",
-    "ratio decidendi": "the legal reasoning behind the decision",
+    "impugned order": "order being challenged",
+    "operative order": "actual decision",
+    "ratio decidendi": "legal reasoning behind the decision",
+    # Inflected / plural forms. The base-form \b...\b patterns above miss these
+    # ("appellant" does not match "appellants", "convict" not "convicted"), which
+    # left Citizen Mode identical to Lawyer Mode on judgements written in the
+    # plural. Replacements carry no leading article so "the appellants" reads as
+    # "the people appealing", not "the the person appealing".
+    "appellants": "people appealing",
+    "respondents": "other parties",
+    "petitioners": "people filing the case",
+    "plaintiffs": "people filing the case",
+    "defendants": "accused parties",
+    "convicted": "found guilty",
+    "acquitted": "found not guilty",
+    "quashed": "cancelled",
+    "remanded": "sent back",
+    "adjudicated": "decided",
+    "affidavits": "sworn statements",
 }
 
 

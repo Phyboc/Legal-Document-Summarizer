@@ -135,6 +135,11 @@ class DocumentBuild:
     target_overflow_sentences: int = 0
     pii_counts: dict = field(default_factory=dict)
     error: str | None = None
+    # Audit trail, never written to the dataset: the per-sentence alignment and
+    # the section label of every chunk, so outcome survival can be traced stage
+    # by stage (scripts/audit_outcome_survival.py).
+    alignment: object | None = None
+    chunk_sections: list[str] = field(default_factory=list)
 
 
 # --------------------------------------------------------------------------- #
@@ -367,6 +372,8 @@ def build_document(
             section_chunks, summary or "", **(alignment_kwargs or {})
         )
 
+        result.alignment = alignment
+        result.chunk_sections = [chunk.section for chunk in chunks]
         result.summary_sentences = alignment.total_sentences
         result.multi_label_sentences = sum(1 for r in alignment.per_sentence if len(r.assigned) > 1)
         result.assigned_labels = sum(len(r.assigned) for r in alignment.per_sentence)

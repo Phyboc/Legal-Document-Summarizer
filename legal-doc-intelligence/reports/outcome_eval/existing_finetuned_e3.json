@@ -1,0 +1,515 @@
+{
+  "label": "existing_finetuned_e3",
+  "source_run": "artifacts\\eval\\test100_e3.json",
+  "model": "models/legallens-bart-base-e3",
+  "split": "test",
+  "documents_scored": 100,
+  "scope": "lawyer",
+  "outcome_present_pct": 34.0,
+  "outcome_recall_pct": 15.71,
+  "documents_with_reference_disposition": 31,
+  "definition": "present = Lawyer summary contains a sentence matched by section_detector.is_disposition; recall = mean token recall of the reference's disposition sentences (>=3-letter tokens), over documents whose reference has a disposition",
+  "rescored_at": "2026-10-19T13:43:04+00:00",
+  "per_document": [
+    {
+      "doc_id": "test_00000",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00001",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00002",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00003",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00004",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00005",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00006",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00007",
+      "present": 1.0,
+      "recall": 0.19047619047619047
+    },
+    {
+      "doc_id": "test_00008",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00009",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00010",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00011",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00012",
+      "present": 1.0,
+      "recall": 0.22549019607843138
+    },
+    {
+      "doc_id": "test_00013",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00014",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00015",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00016",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00017",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00018",
+      "present": 1.0,
+      "recall": 0.6666666666666666
+    },
+    {
+      "doc_id": "test_00019",
+      "present": 1.0,
+      "recall": 0.16129032258064516
+    },
+    {
+      "doc_id": "test_00020",
+      "present": 1.0,
+      "recall": 0.24
+    },
+    {
+      "doc_id": "test_00021",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00022",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00023",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00024",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00025",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00026",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00027",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00028",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00029",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00030",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00031",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00032",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00033",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00034",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00035",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00036",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00037",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00038",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00039",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00040",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00041",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00042",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00043",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00044",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00045",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00046",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00047",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00048",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00049",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00050",
+      "present": 1.0,
+      "recall": 0.6268656716417911
+    },
+    {
+      "doc_id": "test_00051",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00052",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00053",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00054",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00055",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00056",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00057",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00058",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00059",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00060",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00061",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00062",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00063",
+      "present": 1.0,
+      "recall": 0.4117647058823529
+    },
+    {
+      "doc_id": "test_00064",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00065",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00066",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00067",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00068",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00069",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00070",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00071",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00072",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00073",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00074",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00075",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00076",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00077",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00078",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00079",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00080",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00081",
+      "present": 1.0,
+      "recall": 0.16666666666666666
+    },
+    {
+      "doc_id": "test_00082",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00083",
+      "present": 1.0,
+      "recall": 0.35294117647058826
+    },
+    {
+      "doc_id": "test_00084",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00085",
+      "present": 1.0,
+      "recall": 1.0
+    },
+    {
+      "doc_id": "test_00086",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00087",
+      "present": 1.0,
+      "recall": 0.08333333333333333
+    },
+    {
+      "doc_id": "test_00088",
+      "present": 1.0,
+      "recall": 0.06976744186046512
+    },
+    {
+      "doc_id": "test_00089",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00090",
+      "present": 1.0,
+      "recall": 0.5769230769230769
+    },
+    {
+      "doc_id": "test_00091",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00092",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00093",
+      "present": 0.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00094",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00095",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00096",
+      "present": 1.0,
+      "recall": null
+    },
+    {
+      "doc_id": "test_00097",
+      "present": 1.0,
+      "recall": 0.09836065573770492
+    },
+    {
+      "doc_id": "test_00098",
+      "present": 0.0,
+      "recall": 0.0
+    },
+    {
+      "doc_id": "test_00099",
+      "present": 0.0,
+      "recall": null
+    }
+  ]
+}

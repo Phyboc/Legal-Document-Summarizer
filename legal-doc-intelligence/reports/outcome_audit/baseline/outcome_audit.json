@@ -1,0 +1,44 @@
+{
+  "label": "baseline (HEAD 37eeeef)",
+  "generated_at": "2026-10-19T13:31:01+00:00",
+  "documents": 100,
+  "documents_failed": 0,
+  "documents_with_judgement_section_detected": 99,
+  "judgement_outcome_states": {
+    "no_judgement_sentence": 48,
+    "retained": 44,
+    "no_judgement_section": 1,
+    "sentences_assigned_elsewhere": 7
+  },
+  "documents_with_reference_outcome": 40,
+  "documents_with_reference_outcome_pct": 40.0,
+  "documents_with_any_outcome_retained_in_target": 36,
+  "documents_with_any_outcome_retained_pct_of_outcome_docs": 90.0,
+  "outcome_sentences_total": 69,
+  "outcome_sentence_stages": {
+    "unassigned": 5,
+    "retained": 62,
+    "budget_overflow": 2
+  },
+  "outcome_sentence_stage_pct": {
+    "unassigned": 7.25,
+    "retained": 89.86,
+    "budget_overflow": 2.9
+  },
+  "outcome_sentences_retained_pct": 89.86,
+  "training_detector_misses": 53,
+  "training_detector_miss_examples": [
+    "This order was confirmed by the higher income tax authorities.",
+    "The first petitioner appealed to the High Court against the said order of the District judge but that appeal was Dismissed.",
+    "Held, that the petition was wholly misconceived, and must be dismissed.",
+    "Being aggrieved, the appellant assailed the order by a writ petition in the High Court, which was dismissed.",
+    "A second appeal under section 100 Code of Civil Procedure 1908 was allowed by the Allahabad High Court and the matter was remanded by the High Court under Order XLI, Rule 23 CPC as amended by the High",
+    "The suit was dismissed in March, 1946, I.e., towards the end of 1353 F on the ground that there was no sub letting and the entries were not correct No attempt was made by anyone to bring the village r",
+    "The suit was regarded as one falling under article 134B of the Act and the suit having been filed within 12 years from the death of the settlor was held to be within time and the respondents Plaintiff",
+    "A Bench of three Hon 'ble Judges while permitting Shriram to restart its power plant as also other plants subject to certain conditions, referred the applications for compensa tion to a larger Bench o",
+    "821 2.\nThe Delhi Legal Aid and Advice Board is directed to take up the cases of all those who claim to have suffered on account of oleum gas and to file actions on their behalf in the appropriate Cour",
+    "Though the respondent contested the petition contending that he had neither turned the appellant out from his house nor withdrawn from her society later as he made a statement in the Court that the ap"
+  ],
+  "lower_court_context_sentences": 24,
+  "max_target_length": 448
+}

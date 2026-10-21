@@ -1,0 +1,174 @@
+{
+  "generated_at": "2026-10-17T07:50:28+00:00",
+  "mode": "sample20",
+  "source_dataset": "percins/IN-ABS",
+  "dataset": {
+    "documents_processed": 60,
+    "documents_per_split": {
+      "train": 20,
+      "validation": 20,
+      "test": 20
+    },
+    "documents_failed": 0,
+    "documents_structure_fallback": 2,
+    "documents_at_chunk_cap": 4,
+    "documents_without_records": 0
+  },
+  "chunks": {
+    "created": 512,
+    "retained": 385,
+    "dropped_no_aligned_target": 127,
+    "retained_per_split": {
+      "train": 124,
+      "validation": 131,
+      "test": 130
+    },
+    "retained_by_section": {
+      "facts": 100,
+      "reasoning": 225,
+      "judgement": 30,
+      "arguments_appellant": 10,
+      "arguments_respondent": 1,
+      "full_document": 19
+    }
+  },
+  "summary_sentences": {
+    "total": 2007,
+    "aligned": 1481,
+    "unassigned": 526,
+    "unassigned_rate": 0.2621,
+    "multi_label": 297,
+    "multi_label_rate": 0.148,
+    "labels_per_sentence": 0.9003
+  },
+  "judgement": {
+    "documents_by_outcome": {
+      "retained": 30,
+      "no_judgement_sentence": 26,
+      "no_judgement_section": 2,
+      "sentences_assigned_elsewhere": 2
+    },
+    "documents_with_judgement_section": 58,
+    "documents_with_judgement_chunks": 58,
+    "judgement_sentences_assigned": 92,
+    "judgement_sentences_retained": 59,
+    "records_in_judgement_section": 30
+  },
+  "targets": {
+    "max_target_length": 448,
+    "records_with_overflow": 7,
+    "overflow_sentences_total": 14
+  },
+  "alignment": {
+    "cross_encoder_model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+    "backend": "CrossEncoder",
+    "threshold": 0.4,
+    "relative_margin": 0.9,
+    "allow_multi_label": true,
+    "score_stats": {
+      "count": 1467,
+      "mean": 0.9226,
+      "median": 0.9857,
+      "p90": 0.999,
+      "max": 1.0
+    }
+  },
+  "evidence": {
+    "mode": false,
+    "settings": {
+      "coverage_bound": 0.5,
+      "ambiguity_margin": 0.02,
+      "min_common_span": 4,
+      "max_rare_df": 1,
+      "contradiction_mode": "high_confidence"
+    },
+    "calibrated": false,
+    "decision_counts": {},
+    "decisions_total": 0,
+    "supported": 0,
+    "ambiguous": 0,
+    "unsupported": 0,
+    "not_summary_content": 0,
+    "supported_rate": 0.0,
+    "ambiguous_rate": 0.0,
+    "unsupported_rate": 0.0,
+    "not_summary_content_rate": 0.0,
+    "ambiguous_sentences": 0
+  },
+  "preprocessing": {
+    "strip_preamble": true,
+    "redact_names": false,
+    "fallback_section_label": "full_document",
+    "pii_pattern_counts": {
+      "aadhaar": 0,
+      "pan": 0,
+      "phone": 0,
+      "email": 0
+    },
+    "chunk_size": null,
+    "max_chunks_per_doc": 15
+  },
+  "lengths_estimated_with_approximate_tokens": {
+    "aligned_target": {
+      "mean": 160.6,
+      "median": 126.0,
+      "p90": 357.0,
+      "max": 543.0
+    },
+    "chunk_text": {
+      "mean": 659.3,
+      "median": 804.0,
+      "p90": 845.0,
+      "max": 850.0
+    }
+  },
+  "length_validation": {
+    "records": 385,
+    "max_input_tokens": 966,
+    "max_target_tokens": 448,
+    "input_violations": 0,
+    "target_violations": 0,
+    "violation_examples": [],
+    "ok": true
+  },
+  "quality_flags": {
+    "max_input_length_limit": 1024,
+    "max_target_length_limit": 448,
+    "records_with_target_over_model_input": 0,
+    "records_with_target_longer_than_chunk": 12,
+    "records_with_target_overflow": 7,
+    "target_overflow_sentences_total": 14,
+    "documents_with_single_chunk": 0
+  },
+  "split_isolation": {
+    "verified": true,
+    "method": "official IN-ABS splits preserved; documents partitioned before chunking",
+    "documents_per_split": {
+      "train": 20,
+      "validation": 20,
+      "test": 20
+    },
+    "doc_id_overlaps": {},
+    "cross_split_content_duplicates": 0,
+    "cross_split_content_duplicate_examples": []
+  },
+  "outputs": {
+    "directory": "artifacts\\training_data\\full",
+    "splits": {
+      "train": "train.jsonl",
+      "validation": "validation.jsonl",
+      "test": "test.jsonl"
+    },
+    "parquet_splits": [
+      "train",
+      "validation",
+      "test"
+    ],
+    "reference_summaries": "reference_summaries.jsonl",
+    "unassigned_report": "unassigned.jsonl",
+    "ambiguous_report": "ambiguous.jsonl",
+    "inspection_sample": "inspect_sample.txt",
+    "dataset_card": "README.md",
+    "manifest": "build_manifest.json"
+  }
+}

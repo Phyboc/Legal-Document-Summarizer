@@ -23,10 +23,24 @@ class CrossEncoderSingleton:
                 self._model = _MockCrossEncoder()
         return self._model
 
-    def score(self, pairs: list[tuple[str, str]], normalize: bool = True) -> list[float]:
-        """Score (query, passage) pairs. Returns floats in [0,1] if normalize=True."""
+    def score(
+        self,
+        pairs: list[tuple[str, str]],
+        normalize: bool = True,
+        batch_size: int | None = None,
+    ) -> list[float]:
+        """Score (query, passage) pairs. Returns floats in [0,1] if normalize=True.
+
+        ``batch_size`` is forwarded to the model when given. The library default
+        (32) is tuned for short web passages, so longer legal pairs are scored
+        faster with a larger batch; ``None`` keeps the library default, which is
+        what the citation path uses. ``_MockCrossEncoder`` accepts and ignores it.
+        """
         model = self.get_model()
-        scores = model.predict(pairs)
+        if batch_size is not None and not isinstance(model, _MockCrossEncoder):
+            scores = model.predict(pairs, batch_size=batch_size)
+        else:
+            scores = model.predict(pairs)
         if hasattr(scores, "tolist"):
             scores = scores.tolist()
         if not isinstance(scores, list):

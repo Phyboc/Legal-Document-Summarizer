@@ -1,0 +1,39 @@
+{
+  "build_id": "sample100-2026-10-17T08:50:53+00:00",
+  "generated_at": "2026-10-17T08:50:53+00:00",
+  "source_dataset": "percins/IN-ABS",
+  "mode": "sample100",
+  "alignment_backend": "CrossEncoder",
+  "alignment_mode": "cross_encoder",
+  "documents_per_split": {
+    "validation": 100
+  },
+  "records_per_split": {
+    "validation": 645
+  },
+  "total_records": 645,
+  "length_validation": {
+    "records": 645,
+    "max_input_tokens": 1018,
+    "max_target_tokens": 448,
+    "input_violations": 0,
+    "target_violations": 0,
+    "violation_examples": [],
+    "ok": true
+  },
+  "output_hashes": {
+    "validation.jsonl": "f7941ff27fee69b32345a77aca8b024ff132e3845d94876346858f57b407b01d",
+    "reference_summaries.jsonl": "e5beb89f8ca6c0f2d08dc6e4da6b600340524ff787a28b18404aeaf4d239700a",
+    "unassigned.jsonl": "4cc4f1eab97ba26b2dd0972bafff4a6180f7537a004f3fd61d8fe50755476ff3",
+    "ambiguous.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build_stats.json": "d7472bdcd508902083b7868a7fdfc2cb2d6acb99a011c8632e9b25c0712c80f0"
+  },
+  "evidence_mode": false,
+  "evidence_settings": {
+    "coverage_bound": 0.5,
+    "ambiguity_margin": 0.02,
+    "min_common_span": 4,
+    "max_rare_df": 1,
+    "contradiction_mode": "high_confidence"
+  }
+}

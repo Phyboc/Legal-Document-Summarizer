@@ -1,6 +1,7 @@
 """Main pipeline: orchestrates all stages from raw judgment to Lawyer/Citizen output."""
 import sys
 sys.path.insert(0, ".")
+from config import FALLBACK_SECTION_LABEL
 from src.data.cleaning import preprocess, split_paragraphs
 from src.data.pii_redaction import redact
 from src.data.section_detector import detect_sections, group_by_section, fallback_to_single_section
@@ -28,7 +29,9 @@ def process_document(text: str, redact_names: bool = False,
 
     # Group by section (or fallback to single section)
     if fallback_to_single_section(para_objects):
-        section_groups = {"reasoning": para_objects}
+        # Must match scripts/build_dataset.py's FALLBACK_SECTION_LABEL, otherwise
+        # the model is trained on a section label inference never produces.
+        section_groups = {FALLBACK_SECTION_LABEL: para_objects}
     else:
         section_groups = group_by_section(para_objects)
 

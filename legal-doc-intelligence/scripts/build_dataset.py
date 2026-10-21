@@ -52,9 +52,11 @@ import hashlib
 import json
 import logging
 import os
+import re
 import sys
+import time
 from collections import Counter
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -66,7 +68,18 @@ _PKG_ROOT = Path(__file__).resolve().parents[1]
 if str(_PKG_ROOT) not in sys.path:
     sys.path.insert(0, str(_PKG_ROOT))
 
-from config import BART_MODEL, MAX_CHUNKS_PER_DOC, MAX_INPUT_LENGTH, MAX_TARGET_LENGTH  # noqa: E402
+from config import (  # noqa: E402
+    ALIGNMENT_TOP_K_CANDIDATES,
+    ALIGNMENT_USE_LEXICAL_PREFILTER,
+    ALIGNMENT_WINDOW_OVERLAP,
+    ALIGNMENT_WINDOW_TOKENS,
+    BART_MODEL,
+    CROSS_ENCODER_BATCH_SIZE,
+    FALLBACK_SECTION_LABEL,
+    MAX_CHUNKS_PER_DOC,
+    MAX_INPUT_LENGTH,
+    MAX_TARGET_LENGTH,
+)
 from src.data.chunker import approximate_tokens, chunk_document  # noqa: E402
 from src.data.cleaning import preprocess, split_paragraphs  # noqa: E402
 from src.data.pii_redaction import redact  # noqa: E402
@@ -75,9 +88,18 @@ from src.data.section_detector import (  # noqa: E402
     detect_sections,
     is_operative_order,
 )
+from src.data.evidence_alignment import (  # noqa: E402
+    DECISION_AMBIGUOUS,
+    DECISION_NOT_SUMMARY_CONTENT,
+    DECISION_SUPPORTED,
+    DECISION_UNSUPPORTED,
+    DECISIONS,
+    EvidenceSettings,
+)
 from src.data.section_summary_alignment import (  # noqa: E402
     align_summary_to_sections,
     build_aligned_target,
+    evidence_settings_from_config,
     validate_token_lengths,
 )
 
@@ -89,6 +111,15 @@ logger = logging.getLogger("build_dataset")
 
 DATASET_ID = "percins/IN-ABS"
 OFFICIAL_SPLITS = ("train", "validation", "test")
+
+# Document counts of the official IN-ABS splits, used to extrapolate a sample's
+# measured throughput to the full corpus. Verified against the Hub's dataset
+# statistics (7128 documents in total).
+IN_ABS_SPLIT_SIZES = {"train": 5346, "validation": 712, "test": 1070}
+
+# Suffix used to stage the incoming build beside the remote registry during
+# ``--append`` so both schemas can be unified in one DatasetDict.
+APPEND_SUFFIX = "__append_overlay"
 
 # Column resolution: prefer the documented IN-ABS names, then common aliases, so
 # a schema drift produces a clear error instead of a silently wrong dataset.
@@ -132,6 +163,10 @@ class DocumentBuild:
     judgement_sentences_retained: int = 0
     # Sentences that did not fit the target token budget (recorded, not discarded).
     target_overflow_sentences: int = 0
+    # Evidence layer: how each sentence was decided, and the ambiguous ones kept
+    # for inspection. Empty when evidence mode is off.
+    evidence_decision_counts: dict = field(default_factory=dict)
+    ambiguous: list[dict] = field(default_factory=list)
     pii_counts: dict = field(default_factory=dict)
     error: str | None = None
     # Audit trail, never written to the dataset: the per-sentence alignment and
@@ -139,6 +174,28 @@ class DocumentBuild:
     # by stage (scripts/audit_outcome_survival.py).
     alignment: object | None = None
     chunk_sections: list[str] = field(default_factory=list)
+
+    # Chunks whose real-tokenizer length exceeds MAX_INPUT_LENGTH are dropped
+    # here, before alignment ever runs on them - never silently kept, never
+    # silently truncated.
+    oversized_chunks_dropped: int = 0
+    oversized_chunk_details: list = field(default_factory=list)
+
+    # A pseudo-target that is longer than the chunk it is supposed to summarise
+    # cannot be produced from that chunk; it is misalignment, not supervision.
+    # Such records are dropped and reported rather than trained on.
+    degenerate_targets_dropped: int = 0
+    degenerate_target_details: list = field(default_factory=list)
+
+    # Cost accounting, so a multi-hour/full build can be extrapolated from a
+    # sample instead of guessed at.
+    preprocessing_seconds: float = 0.0
+    alignment_seconds: float = 0.0
+    pairs_scored: int = 0
+
+    # sha1 of the raw source text, persisted in the resume journal so split
+    # isolation can still be verified from a resumed run.
+    text_sha1: str = ""
 
 
 # --------------------------------------------------------------------------- #
@@ -263,7 +320,23 @@ def require_real_encoder(allow_stub: bool) -> str:
 # A build into a directory that already holds these is refused unless --overwrite
 # is given. This guards against the failure that produced the earlier
 # 1287-record file: two independent builds concatenated into one JSONL.
-DATASET_OUTPUT_FILES = ("train.jsonl", "validation.jsonl", "test.jsonl", "build_stats.json")
+DATASET_OUTPUT_FILES = (
+    "train.jsonl", "validation.jsonl", "test.jsonl", "build_stats.json", "ambiguous.jsonl",
+)
+
+
+def _chunk_positions(chunks) -> list[float]:
+    """Document position (0..1) of each chunk, from its ``para_range`` midpoint.
+
+    Deliberately NOT ``chunk_index``: ``chunk_document`` emits chunks in
+    section-block order, so the index is not a document position. ``para_range``
+    does span source paragraphs, so its midpoint is a real one. Used only as the
+    evidence layer's soft, final tie-break - never as a hard rule.
+    """
+    spans = [chunk.para_range for chunk in chunks]
+    highest = max((end for _, end in spans), default=0)
+    denominator = highest if highest > 0 else 1
+    return [((start + end) / 2) / denominator for start, end in spans]
 
 
 def refuse_occupied_output_dir(output_dir: Path, overwrite: bool) -> None:
@@ -321,6 +394,8 @@ def build_document(
     alignment_kwargs: dict | None = None,
     token_measure=None,
     max_target_tokens: int = MAX_TARGET_LENGTH,
+    max_input_tokens: int = MAX_INPUT_LENGTH,   # NEW
+
 ) -> DocumentBuild:
     """Run one source document through the existing pipeline and align its summary.
 
@@ -331,6 +406,7 @@ def build_document(
         build_section_groups -> chunk_document -> align
     """
     result = DocumentBuild(doc_id=doc_id, split=split)
+    _doc_started = time.perf_counter()
 
     try:
         # 1-2. Cleaning and preamble stripping (existing implementation).
@@ -350,6 +426,36 @@ def build_document(
 
         # 7. Section-aware chunking (existing implementation).
         chunks = chunk_document(section_groups)
+        result.preprocessing_seconds = time.perf_counter() - _doc_started
+
+        # NEW: real-tokenizer validation BEFORE the expensive Cross-Encoder pass.
+        # chunk_document() bounds chunk size with approximate_tokens, which can
+        # under-count dense legal/technical text relative to BART's real subword
+        # tokenizer. Catching this here costs milliseconds; catching it only at
+        # the end of the whole split (the previous behaviour) meant discovering
+        # it after every document - including this one - had already paid for
+        # full Cross-Encoder alignment scoring.
+        if token_measure is not None:
+            kept_chunks = []
+            for chunk in chunks:
+                n_tokens = token_measure(chunk.text)
+                if n_tokens > max_input_tokens:
+                    result.oversized_chunk_details.append({
+                        "chunk_id": chunk.chunk_id,
+                        "section": chunk.section,
+                        "tokens": n_tokens,
+                        "limit": max_input_tokens,
+                    })
+                else:
+                    kept_chunks.append(chunk)
+            if result.oversized_chunk_details:
+                result.oversized_chunks_dropped = len(result.oversized_chunk_details)
+                logger.warning(
+                    "%s: dropping %d oversized chunk(s) (real tokenizer > %d tokens): %s",
+                    doc_id, result.oversized_chunks_dropped, max_input_tokens,
+                    result.oversized_chunk_details[:3],
+                )
+            chunks = kept_chunks
         result.chunks_created = len(chunks)
         result.at_chunk_cap = len(chunks) >= MAX_CHUNKS_PER_DOC
 
@@ -362,13 +468,26 @@ def build_document(
         # 8-10. Split the reference summary into sentences and align it to the
         #       chunks with the shared Cross-Encoder (existing implementation).
         section_chunks = [(chunk.section, chunk.text) for chunk in chunks]
+        _alignment_started = time.perf_counter()
         alignment = align_summary_to_sections(
-            section_chunks, summary or "", is_operative=is_operative_order,
+            section_chunks,
+            summary or "",
+            is_operative=is_operative_order,
+            chunk_positions=_chunk_positions(chunks),
             **(alignment_kwargs or {}),
         )
 
         result.alignment = alignment
         result.chunk_sections = [chunk.section for chunk in chunks]
+        result.alignment_seconds = time.perf_counter() - _alignment_started
+        # The real comparison count (sentences x candidate windows), not an
+        # assumption: this is what the encoder actually paid for.
+        result.pairs_scored = alignment.pairs_scored or (
+            alignment.total_sentences * len(section_chunks)
+        )
+
+        result.evidence_decision_counts = dict(alignment.decision_counts)
+        result.ambiguous = [{"doc_id": doc_id, **entry} for entry in alignment.ambiguous]
         result.summary_sentences = alignment.total_sentences
         result.multi_label_sentences = sum(1 for r in alignment.per_sentence if len(r.assigned) > 1)
         result.assigned_labels = sum(len(r.assigned) for r in alignment.per_sentence)
@@ -403,6 +522,21 @@ def build_document(
         # primary chunk, so it appears in at most one record. Chunks with no
         # target are dropped.
         assigned_by_sentence = {r.sentence: r.assigned for r in alignment.per_sentence}
+        # Which window of THIS chunk each sentence's match rests on. Written into
+        # the record so a reviewer can audit the alignment without re-reading the
+        # whole chunk: the span is the evidence, not the chunk.
+        span_by_sentence = {
+            r.sentence: {
+                "sentence": r.sentence,
+                "span": r.evidence_span,
+                "location": r.evidence_location,
+            }
+            for r in alignment.per_sentence
+            if r.evidence_span is not None
+        }
+        # Evidence provenance, only attached when the layer actually ran, so the
+        # default record schema stays identical to the pure Cross-Encoder build.
+        evidence_provenance: dict = {}
         measure = token_measure or approximate_tokens
 
         for index, chunk in enumerate(chunks):
@@ -420,6 +554,32 @@ def build_document(
             if not matched or not target:
                 continue
 
+            # A target longer than its own source chunk cannot have been produced
+            # from it - that is misalignment, not supervision. A target with no
+            # word of three or more letters is a citation stub ("1936 P.C.").
+            # Both are dropped and counted, never trained on.
+            if len(target.split()) > len(chunk.text.split()) or not re.search(
+                r"[a-z]{3,}", target
+            ):
+                result.degenerate_targets_dropped += 1
+                result.degenerate_target_details.append({
+                    "doc_id": doc_id,
+                    "chunk_id": chunk.chunk_id,
+                    "section": chunk.section,
+                    "target_words": len(target.split()),
+                    "chunk_words": len(chunk.text.split()),
+                    "alignment_score": round(
+                        float(alignment.chunk_pair_scores.get(index, [0.0])[0]), 4
+                    ),
+                })
+                logger.warning(
+                    "%s chunk %d (%s): dropping impossible target (%d target words "
+                    "vs %d chunk words)",
+                    doc_id, chunk.chunk_id, chunk.section,
+                    len(target.split()), len(chunk.text.split()),
+                )
+                continue
+
             # matched_labels collects every plausible label of every sentence
             # whose primary chunk is THIS chunk, so a record can carry several
             # labels while remaining a single training example.
@@ -432,8 +592,22 @@ def build_document(
                 round(s, 4)
                 for s in alignment.chunk_pair_scores.get(index, [])[:len(matched)]
             ]
+            matched_evidence_spans = [
+                span_by_sentence[sentence]
+                for sentence in matched
+                if sentence in span_by_sentence
+            ]
+            if alignment.evidence_mode:
+                reason_by_sentence = {r.sentence: r.evidence_reason for r in alignment.per_sentence}
+                evidence_provenance = {
+                    "evidence_decision": DECISION_SUPPORTED,
+                    "evidence_reasons": [reason_by_sentence.get(s) for s in matched],
+                    "evidence_settings": alignment.evidence_settings,
+                }
 
             result.records.append({
+                # --- evidence provenance (evidence mode only) --------------- #
+                **evidence_provenance,
                 # --- required training fields -------------------------------- #
                 "doc_id": doc_id,
                 "chunk_id": chunk.chunk_id,
@@ -446,6 +620,9 @@ def build_document(
                 "matched_sentences": matched,
                 "alignment_scores": alignment_scores,
                 "matched_labels": matched_labels,
+                # Auditable evidence window inside chunk_text (chunk-relative
+                # character range + the text), for the same sentences.
+                "matched_evidence_spans": matched_evidence_spans,
                 "structure_fallback": result.structure_fallback,
                 # --- target-budget provenance ------------------------------- #
                 "overflow_sentences": overflow,
@@ -516,6 +693,9 @@ def quality_flags(builds: list[DocumentBuild]) -> dict:
         ),
         "target_overflow_sentences_total": sum(
             r.get("n_overflow_sentences", 0) for r in retained
+        ),
+        "degenerate_targets_dropped": sum(
+            b.degenerate_targets_dropped for b in builds
         ),
         "documents_with_single_chunk": sum(1 for b in builds if b.chunks_created == 1),
     }
@@ -599,6 +779,7 @@ def build_stats(
     *,
     mode: str,
     backend: str,
+    alignment_kwargs_settings=None,
     builds: list[DocumentBuild],
     records_by_split: dict[str, list[dict]],
     doc_ids_by_split: dict[str, set[str]],
@@ -606,6 +787,7 @@ def build_stats(
     split_isolation: dict,
     length_validation: dict,
     args: argparse.Namespace,
+    elapsed_seconds: float = 0.0,
 ) -> dict:
     """Assemble ``build_stats.json``. No expected count is hard-coded anywhere."""
     chunks_created = sum(b.chunks_created for b in builds)
@@ -629,6 +811,63 @@ def build_stats(
     for build in builds:
         pii_counts.update(build.pii_counts)
 
+    # --- evidence layer accounting ------------------------------------------ #
+    # Counts are reported even at zero, so a build without evidence mode shows
+    # explicit zeros rather than an absent section that could be misread.
+    evidence_mode = bool(getattr(args, "evidence_mode", False))
+    evidence_counts: Counter = Counter()
+    for build in builds:
+        evidence_counts.update(build.evidence_decision_counts or {})
+    decisions_total = sum(v for k, v in evidence_counts.items() if k in DECISIONS)
+    ambiguous_total = sum(len(b.ambiguous) for b in builds)
+
+    def _rate(key: str) -> float:
+        return round(evidence_counts.get(key, 0) / decisions_total, 4) if decisions_total else 0.0
+
+    # Cost accounting. ``alignment_seconds`` dominates a CPU build; recording
+    # pairs/sec lets a full run be extrapolated from any sample instead of
+    # discovered after the fact. No number here is an estimate.
+    alignment_seconds = sum(b.alignment_seconds for b in builds)
+    pairs_scored = sum(b.pairs_scored for b in builds)
+    documents = len(builds)
+    # Extrapolation, not a guess: the sample's own measured rate applied to the
+    # full corpus. This is what answers "how long is --full going to take?" before
+    # five hours are spent finding out.
+    selected_splits = list(getattr(args, "split", None) or OFFICIAL_SPLITS)
+    target_documents = getattr(args, "total_documents", 0) or sum(
+        IN_ABS_SPLIT_SIZES.get(split, 0) for split in selected_splits
+    )
+    seconds_per_document = elapsed_seconds / documents if documents else 0.0
+    projection = {
+        "measured_documents": documents,
+        "full_corpus_documents": target_documents,
+        "full_corpus_hours": round(seconds_per_document * target_documents / 3600, 2),
+        "device": "see alignment.backend / sentence-transformers device log line",
+        "basis": (
+            "seconds_per_document from this build, scaled to the full corpus; "
+            "alignment dominates, so this moves with the encoder's throughput"
+        ),
+    }
+
+    timings = {
+        "total_seconds": round(elapsed_seconds, 2),
+        "preprocessing_seconds": round(sum(b.preprocessing_seconds for b in builds), 2),
+        "alignment_seconds": round(alignment_seconds, 2),
+        # Clamped to 1: with a very fast stub the summed per-document timers can
+        # round above the wall clock, and a share over 100% is just noise.
+        "alignment_share": (
+            min(1.0, round(alignment_seconds / elapsed_seconds, 4))
+            if elapsed_seconds else 0.0
+        ),
+        "seconds_per_document": (
+            round(elapsed_seconds / documents, 2) if documents else 0.0
+        ),
+        "pairs_scored": pairs_scored,
+        "pairs_per_second": (
+            round(pairs_scored / alignment_seconds, 1) if alignment_seconds else 0.0
+        ),
+    }
+
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "mode": mode,
@@ -640,6 +879,14 @@ def build_stats(
             "documents_structure_fallback": sum(1 for b in builds if b.structure_fallback),
             "documents_at_chunk_cap": sum(1 for b in builds if b.at_chunk_cap),
             "documents_without_records": sum(1 for b in builds if not b.records),
+            "documents_with_oversized_chunks_dropped": sum(1 for b in builds if b.oversized_chunks_dropped),
+            "oversized_chunks_dropped_total": sum(b.oversized_chunks_dropped for b in builds),
+            "documents_with_degenerate_targets": sum(
+                1 for b in builds if b.degenerate_targets_dropped
+            ),
+            "degenerate_targets_dropped_total": sum(
+                b.degenerate_targets_dropped for b in builds
+            ),
         },
         "chunks": {
             "created": chunks_created,
@@ -688,6 +935,15 @@ def build_stats(
             "threshold": args.threshold,
             "relative_margin": args.relative_margin,
             "allow_multi_label": not args.no_multi_label,
+            # Evidence matching: the encoder truncates at 512 sub-word tokens, so
+            # chunks are scored as windows and each sentence is compared with the
+            # top-k chunks a lexical prefilter ranks highest. Recorded so the pair
+            # count in build_stats.json is explainable.
+            "window_tokens": args.window_tokens,
+            "window_overlap_tokens": args.window_overlap_tokens,
+            "top_k_candidates": args.top_k_candidates,
+            "lexical_prefilter": not args.no_prefilter,
+            "encoder_batch_size": CROSS_ENCODER_BATCH_SIZE,
             "score_stats": {
                 "count": len(pair_scores),
                 "mean": round(sum(pair_scores) / len(pair_scores), 4) if pair_scores else 0.0,
@@ -695,6 +951,28 @@ def build_stats(
                 "p90": round(_percentile(pair_scores, 90), 4),
                 "max": round(max(pair_scores), 4) if pair_scores else 0.0,
             },
+        },
+        "evidence": {
+            "mode": evidence_mode,
+            # Recorded verbatim so an evidence build can never be mistaken for a
+            # calibrated one: these are the values the aligner actually applied.
+            "settings": (
+                alignment_kwargs_settings.as_dict()
+                if alignment_kwargs_settings is not None
+                else evidence_settings_from_config().as_dict()
+            ),
+            "calibrated": False,
+            "decision_counts": dict(evidence_counts),
+            "decisions_total": decisions_total,
+            "supported": evidence_counts.get(DECISION_SUPPORTED, 0),
+            "ambiguous": evidence_counts.get(DECISION_AMBIGUOUS, 0),
+            "unsupported": evidence_counts.get(DECISION_UNSUPPORTED, 0),
+            "not_summary_content": evidence_counts.get(DECISION_NOT_SUMMARY_CONTENT, 0),
+            "supported_rate": _rate(DECISION_SUPPORTED),
+            "ambiguous_rate": _rate(DECISION_AMBIGUOUS),
+            "unsupported_rate": _rate(DECISION_UNSUPPORTED),
+            "not_summary_content_rate": _rate(DECISION_NOT_SUMMARY_CONTENT),
+            "ambiguous_sentences": ambiguous_total,
         },
         "preprocessing": {
             "strip_preamble": not args.no_strip_preamble,
@@ -708,6 +986,8 @@ def build_stats(
             "aligned_target": _length_stats(target_tokens),
             "chunk_text": _length_stats(chunk_tokens),
         },
+        "timings": timings,
+        "projection": projection,
         "length_validation": length_validation,
         "quality_flags": quality_flags(builds),
         "split_isolation": split_isolation,
@@ -742,6 +1022,7 @@ def write_manifest(
         "source_dataset": DATASET_ID,
         "mode": args.mode,
         "alignment_backend": backend,
+        "alignment_mode": "evidence" if getattr(args, "evidence_mode", False) else "cross_encoder",
         "documents_per_split": stats["dataset"]["documents_per_split"],
         "records_per_split": {split: len(recs) for split, recs in records_by_split.items()},
         "total_records": sum(len(recs) for recs in records_by_split.values()),
@@ -750,10 +1031,13 @@ def write_manifest(
             name: sha256(output_dir / name)
             for name in (
                 "train.jsonl", "validation.jsonl", "test.jsonl",
-                "reference_summaries.jsonl", "unassigned.jsonl", "build_stats.json",
+                "reference_summaries.jsonl", "unassigned.jsonl", "ambiguous.jsonl",
+                "build_stats.json",
             )
             if (output_dir / name).exists()
         },
+        "evidence_mode": bool(getattr(args, "evidence_mode", False)),
+        "evidence_settings": stats["evidence"]["settings"],
     }
     (output_dir / "build_manifest.json").write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
@@ -824,6 +1108,24 @@ def write_dataset_card(path: Path, stats: dict, records_by_split: dict[str, list
     """Dataset documentation that states the provenance and the caveats."""
     counts = ", ".join(f"`{split}`: {len(recs)}" for split, recs in records_by_split.items())
     alignment = stats["alignment"]
+    evidence = stats["evidence"]
+    evidence_note = ""
+    if evidence["mode"]:
+        evidence_note = (
+            "\n### Evidence-aware alignment (UNCALIBRATED)\n\n"
+            "This build additionally required each summary sentence to have "
+            "evidence in the candidate chunk it was attached to. The decision "
+            "layer is rule-based (dates, years, amounts, provisions, citations, "
+            "content-word overlap) and uses lexicographic ranking - no weights. "
+            f"Settings applied: `{evidence['settings']}`. Outcomes: "
+            f"supported `{evidence['supported']}`, ambiguous `{evidence['ambiguous']}`, "
+            f"unsupported `{evidence['unsupported']}`, "
+            f"not-summary-content `{evidence['not_summary_content']}`. Only "
+            "supported sentences were written to a record; ambiguous and "
+            "unsupported sentences are reported in `ambiguous.jsonl` and "
+            "`unassigned.jsonl` instead. The thresholds are placeholders pending "
+            "the calibration sweep, so the figures above are NOT a quality claim.\n"
+        )
     card = f"""---
 language:
 - en
@@ -867,6 +1169,7 @@ BART summarizer that produces structured, section-aware judgments summaries.
 * Sentences clearing no threshold are **left unassigned** rather than pushed
   into a nearest neighbour.
 * Chunks with no aligned target are **excluded** from the supervised dataset.
+{evidence_note}
 
 | Setting | Value |
 | --- | --- |
@@ -916,6 +1219,10 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
 
     output_dir = Path(args.output_dir)
     refuse_occupied_output_dir(output_dir, getattr(args, "overwrite", False))
+    # Created before the first document so the resume journal can be appended to
+    # as the build proceeds. A crash (or a Colab disconnect) therefore never costs
+    # more than the document in flight.
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     # Real BART tokenizer: lengths are validated, not estimated, for the dataset
     # that will later be trained on. This fails the build when transformers is
@@ -936,13 +1243,34 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
         alignment_kwargs["relative_margin"] = args.relative_margin
     if args.no_multi_label:
         alignment_kwargs["allow_multi_label"] = False
+    # Evidence matching: chunks are scored as encoder-sized windows and each
+    # sentence only against its top-k lexically ranked candidates.
+    alignment_kwargs["window_tokens"] = args.window_tokens
+    alignment_kwargs["overlap_tokens"] = args.window_overlap_tokens
+    alignment_kwargs["top_k_candidates"] = args.top_k_candidates
+    alignment_kwargs["use_prefilter"] = not args.no_prefilter
+    if getattr(args, "evidence_mode", False):
+        # Evidence mode is opt-in and, until calibrated, must be recorded as such
+        # in build_stats.json / build_manifest.json.
+        alignment_kwargs["evidence_mode"] = True
+        alignment_kwargs["evidence_settings"] = EvidenceSettings(
+            coverage_bound=args.evidence_coverage_bound,
+            ambiguity_margin=args.evidence_ambiguity_margin,
+            min_common_span=args.evidence_min_span,
+            max_rare_df=args.evidence_max_rare_df,
+            contradiction_mode=args.evidence_contradiction_mode,
+        )
+        logger.info("Evidence-aware alignment ENABLED (uncalibrated): %s", alignment_kwargs["evidence_settings"].as_dict())
 
     builds: list[DocumentBuild] = []
     records_by_split: dict[str, list[dict]] = {}
     doc_ids_by_split: dict[str, set[str]] = {}
     content_hash_by_split: dict[str, dict] = {}
     all_unassigned: list[dict] = []
+    all_ambiguous: list[dict] = []
     references: list[dict] = []
+    resume = bool(getattr(args, "resume", False))
+    _build_started = time.perf_counter()
 
     for split in splits:
         dataset = load_split(split, limit=limit)
@@ -956,17 +1284,57 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
         doc_ids_by_split[split] = set()
         content_hash_by_split[split] = {}
 
+        # --- resume journal ------------------------------------------------ #
+        # One JSON object per completed document. Documents are processed in the
+        # official split order and never re-ordered, so a resumed run skips a
+        # prefix and appends after it.
+        journal = output_dir / f".{split}.checkpoint.jsonl"
+        completed: list[DocumentBuild] = []
+        if resume and journal.exists():
+            for line in journal.read_text(encoding="utf-8").splitlines():
+                if not line.strip():
+                    continue
+                completed.append(DocumentBuild(**json.loads(line)))
+            logger.info(
+                "%s: resuming - %d document(s) already checkpointed in %s",
+                split, len(completed), journal.name,
+            )
+        elif journal.exists() and not resume:
+            logger.warning(
+                "Ignoring the existing checkpoint %s (pass --resume to reuse it). "
+                "It will be overwritten by this run.", journal,
+            )
+            journal.unlink()
+
+        # Replayed documents must contribute to the totals exactly as if this run
+        # had produced them, including their content hash for split isolation.
+        for build in completed:
+            builds.append(build)
+            records_by_split[split].extend(build.records)
+            all_unassigned.extend(build.unassigned)
+            all_ambiguous.extend(build.ambiguous)
+            if build.reference is not None:
+                references.append(build.reference)
+            doc_ids_by_split[split].add(build.doc_id)
+            if build.text_sha1:
+                content_hash_by_split[split][build.doc_id] = build.text_sha1
+        done_ids = {build.doc_id for build in completed}
+        journal_handle = journal.open("a", encoding="utf-8")
+
         for index, row in enumerate(dataset):
             # Document ids are <split>_<position in that split>, so a document
             # is addressable and provably single-split.
             doc_id = f"{split}_{index:05d}"
+            if doc_id in done_ids:
+                continue
             doc_ids_by_split[split].add(doc_id)
 
             text = row.get(text_col) or ""
             summary = row.get(summary_col) or ""
-            content_hash_by_split[split][doc_id] = hashlib.sha1(
+            text_sha1 = hashlib.sha1(
                 text.encode("utf-8", errors="ignore")
             ).hexdigest()
+            content_hash_by_split[split][doc_id] = text_sha1
 
             build = build_document(
                 doc_id,
@@ -978,12 +1346,22 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
                 alignment_kwargs=alignment_kwargs,
                 token_measure=token_measure,
                 max_target_tokens=MAX_TARGET_LENGTH,
+                max_input_tokens=MAX_INPUT_LENGTH,
             )
+            build.text_sha1 = text_sha1
             builds.append(build)
             records_by_split[split].extend(build.records)
             all_unassigned.extend(build.unassigned)
+            all_ambiguous.extend(build.ambiguous)
             if build.reference is not None:
                 references.append(build.reference)
+
+            # Checkpoint after every document: the expensive Cross-Encoder pass is
+            # already paid for, and a crash/disconnect then costs one document, not
+            # the whole run.
+            journal_handle.write(json.dumps(asdict(build), ensure_ascii=False) + "\n")
+            journal_handle.flush()
+            os.fsync(journal_handle.fileno())
 
             if (index + 1) % 25 == 0:
                 logger.info(
@@ -991,6 +1369,9 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
                     split, index + 1, len(dataset), len(records_by_split[split]),
                 )
 
+        journal_handle.close()
+
+    elapsed_seconds = time.perf_counter() - _build_started
     split_isolation = verify_split_isolation(doc_ids_by_split, content_hash_by_split)
 
     # Real-tokenizer validation. Nothing is truncated silently: a violation
@@ -1009,6 +1390,23 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
             f"{length_validation['target_violations']}\n"
             f"  examples: {length_validation['violation_examples']}"
         )
+    # Quality gate: a handful of impossible targets is dropped and reported, but a
+    # systematic rate means the alignment itself is broken and the dataset must not
+    # be written - a large low-quality dataset is worse than a failed build.
+    attempted = len(all_records) + sum(b.degenerate_targets_dropped for b in builds)
+    degenerate_rate = (
+        sum(b.degenerate_targets_dropped for b in builds) / attempted if attempted else 0.0
+    )
+    if degenerate_rate > args.max_degenerate_rate:
+        raise SystemExit(
+            "Refusing to write the dataset: "
+            f"{degenerate_rate:.2%} of would-be records carry an impossible target "
+            f"(limit {args.max_degenerate_rate:.2%}). An alignment target longer than its "
+            "own chunk is not supervision; at this rate the alignment - not the individual "
+            "document - is at fault. Inspect build_stats.json / the per-document warnings, "
+            "or raise --max-degenerate-rate to accept the loss deliberately."
+        )
+
     logger.info(
         "Tokenizer validation passed: max input %d <= %d, max target %d <= %d",
         length_validation["max_input_tokens"], MAX_INPUT_LENGTH,
@@ -1018,6 +1416,7 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
     stats = build_stats(
         mode=args.mode,
         backend=backend,
+        alignment_kwargs_settings=alignment_kwargs.get("evidence_settings"),
         builds=builds,
         records_by_split=records_by_split,
         doc_ids_by_split=doc_ids_by_split,
@@ -1025,6 +1424,7 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
         split_isolation=split_isolation,
         length_validation=length_validation,
         args=args,
+        elapsed_seconds=elapsed_seconds,
     )
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -1040,6 +1440,9 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
 
     write_jsonl(output_dir / "reference_summaries.jsonl", references)
     write_jsonl(output_dir / "unassigned.jsonl", all_unassigned)
+    # Written even when empty, so a consumer can tell "no ambiguous sentences"
+    # apart from "evidence mode was never run".
+    write_jsonl(output_dir / "ambiguous.jsonl", all_ambiguous)
 
     stats["outputs"] = {
         "directory": str(output_dir),
@@ -1047,6 +1450,7 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
         "parquet_splits": parquet_written,
         "reference_summaries": "reference_summaries.jsonl",
         "unassigned_report": "unassigned.jsonl",
+        "ambiguous_report": "ambiguous.jsonl",
         "inspection_sample": "inspect_sample.txt" if args.sample else None,
         "dataset_card": "README.md",
         "manifest": "build_manifest.json",
@@ -1065,6 +1469,13 @@ def run_build(args: argparse.Namespace) -> tuple[dict[str, list[dict]], dict, li
 
     write_dataset_card(output_dir / "README.md", stats, records_by_split)
 
+    # Only now, with every output on disk, is the resume journal disposable. A
+    # failure anywhere above leaves it in place so the run can be resumed.
+    for split in records_by_split:
+        checkpoint = output_dir / f".{split}.checkpoint.jsonl"
+        if checkpoint.exists():
+            checkpoint.unlink()
+
     return records_by_split, stats, builds
 
 
@@ -1073,43 +1484,73 @@ def report(stats: dict, output_dir: Path) -> None:
     chunks = stats["chunks"]
     sentences = stats["summary_sentences"]
     target = stats["lengths_estimated_with_approximate_tokens"]["aligned_target"]
+    evidence_mode = stats["evidence"]["mode"]
+    timings = stats.get("timings", {})
 
+    # One list entry per printed line: adjacent f-strings silently concatenate, so
+    # continuation text is joined explicitly with "\n".
     lines = [
         "",
         "=" * 72,
         "BUILD SUMMARY",
         "=" * 72,
-        f"  documents processed    : {dataset['documents_processed']}"
-        f"  {dataset['documents_per_split']}",
-        f"  structure fallbacks    : {dataset['documents_structure_fallback']}",
-        f"  documents at chunk cap : {dataset['documents_at_chunk_cap']} (cap = {MAX_CHUNKS_PER_DOC})",
+        f"  documents processed     : {dataset['documents_processed']}"
+        f" {dataset['documents_per_split']}",
+        f"  structure fallbacks     : {dataset['documents_structure_fallback']}",
+        f"  documents at chunk cap  : {dataset['documents_at_chunk_cap']}"
+        f" (cap = {MAX_CHUNKS_PER_DOC})",
         f"  documents with 0 records: {dataset['documents_without_records']}",
-        f"  chunks created         : {chunks['created']}",
-        f"  chunks retained        : {chunks['retained']}"
-        f"   ({chunks['dropped_no_aligned_target']} dropped: no aligned target)",
-        f"  records per split      : {chunks['retained_per_split']}",
-        f"  records by section     : {chunks['retained_by_section']}",
-        f"  summary sentences      : {sentences['total']}"
-        f"  ({sentences['aligned']} aligned / {sentences['unassigned']} unassigned"
+        f"  chunks created          : {chunks['created']}",
+        f"  chunks retained         : {chunks['retained']}"
+        f" ({chunks['dropped_no_aligned_target']} dropped: no aligned target)",
+        f"  oversized chunks dropped: "
+        f"{dataset.get('oversized_chunks_dropped_total', 0)}"
+        f" ({dataset.get('documents_with_oversized_chunks_dropped', 0)} documents affected)",
+        f"  records per split       : {chunks['retained_per_split']}",
+        f"  records by section      : {chunks['retained_by_section']}",
+        f"  summary sentences       : {sentences['total']}"
+        f" ({sentences['aligned']} aligned / {sentences['unassigned']} unassigned"
         f" = {sentences['unassigned_rate']:.1%})",
-        f"  multi-label rate       : {sentences['multi_label_rate']:.1%}"
-        f"  (labels per sentence {sentences['labels_per_sentence']})",
-        f"  aligned target tokens~ : mean {target['mean']} median {target['median']}"
+        f"  multi-label rate        : {sentences['multi_label_rate']:.1%}"
+        f" (labels per sentence {sentences['labels_per_sentence']})",
+        f"  aligned target tokens~  : mean {target['mean']} median {target['median']}"
         f" p90 {target['p90']} max {target['max']}",
         f"  records w/ target over {stats['quality_flags']['max_input_length_limit']} tok: "
         f"{stats['quality_flags']['records_with_target_over_model_input']}"
-        f"  (single-chunk docs: {stats['quality_flags']['documents_with_single_chunk']})",
+        f" (single-chunk docs: {stats['quality_flags']['documents_with_single_chunk']})",
+        f"  impossible targets      : "
+        f"{stats['quality_flags'].get('degenerate_targets_dropped', 0)}"
+        f" dropped (target longer than its chunk, or no prose)",
         f"  target-overflow recs    : {stats['targets']['records_with_overflow']}"
-        f"  ({stats['targets']['overflow_sentences_total']} sentences)",
-        f"  judgement outcomes     : {stats['judgement']['documents_by_outcome']}",
-        f"  judgement sentences    : {stats['judgement']['judgement_sentences_assigned']} assigned / "
+        f" ({stats['targets']['overflow_sentences_total']} sentences)",
+        f"  time                    : {timings.get('total_seconds', 0)}s"
+        f" ({timings.get('seconds_per_document', 0)}s/doc,"
+        f" alignment {timings.get('alignment_share', 0):.0%} of it)",
+        f"  alignment throughput    : {timings.get('pairs_per_second', 0)} pairs/s"
+        f" ({timings.get('pairs_scored', 0)} pairs scored)",
+        f"  full-corpus projection  : "
+        f"{stats.get('projection', {}).get('full_corpus_hours', 0)}h for "
+        f"{stats.get('projection', {}).get('full_corpus_documents', 0)} documents",
+        f"  judgement outcomes      : {stats['judgement']['documents_by_outcome']}",
+        f"  judgement sentences     : "
+        f"{stats['judgement']['judgement_sentences_assigned']} assigned / "
         f"{stats['judgement']['judgement_sentences_retained']} retained",
-        f"  tokenizer validation   : max input {stats['length_validation']['max_input_tokens']}"
+        f"  tokenizer validation    : max input "
+        f"{stats['length_validation']['max_input_tokens']}"
         f" / max target {stats['length_validation']['max_target_tokens']}",
-        f"  split isolation        : {'VERIFIED' if stats['split_isolation']['verified'] else 'FAILED'}"
-        f"  (cross-split duplicate text: {stats['split_isolation']['cross_split_content_duplicates']})",
-        f"  alignment backend      : {stats['alignment']['backend']}",
-        f"  output                 : {output_dir}",
+        f"  split isolation         : "
+        f"{'VERIFIED' if stats['split_isolation']['verified'] else 'FAILED'}"
+        f" (cross-split duplicate text: "
+        f"{stats['split_isolation']['cross_split_content_duplicates']})",
+        f"  alignment backend       : {stats['alignment']['backend']}",
+        f"  evidence mode           : {'ON (UNCALIBRATED)' if evidence_mode else 'off'}"
+        f" (decisions: {stats['evidence']['decision_counts']})",
+        f"  evidence rates          : supported {stats['evidence']['supported_rate']:.1%}"
+        f" / ambiguous {stats['evidence']['ambiguous_rate']:.1%}"
+        f" / unsupported {stats['evidence']['unsupported_rate']:.1%}"
+        f" / not-summary-content {stats['evidence']['not_summary_content_rate']:.1%}",
+        f"  evidence settings       : {stats['evidence']['settings']}",
+        f"  output                  : {output_dir}",
         "=" * 72,
     ]
     print("\n".join(lines))
@@ -1152,6 +1593,191 @@ def require_hf_auth(token: str | None) -> str:
     return name or "unknown"
 
 
+def _unify_dataset_features(dataset_dict):
+    """Cast every split to one shared feature schema.
+
+    ``Dataset.from_json`` infers features independently for each file. A list
+    column that is empty in one split (inferred ``List(null)``) and populated in
+    another (inferred ``List(string)``) therefore yields incompatible splits, and
+    ``DatasetDict.push_to_hub`` fails with "All datasets in `DatasetDict` should
+    have the same features". This merges the inferred features across splits and
+    casts every split to the merged schema, so the DatasetDict is internally
+    consistent regardless of which splits happened to exercise each column.
+    """
+    from datasets import Features, Sequence, Value
+
+    splits = list(dataset_dict)
+    columns: list[str] = []
+    for split in splits:
+        for name in dataset_dict[split].column_names:
+            if name not in columns:
+                columns.append(name)
+
+    # A column present in only some splits cannot be reconciled by casting, and
+    # silently dropping it would change the schema; fail loudly instead.
+    missing = {
+        name: [split for split in splits if name not in dataset_dict[split].column_names]
+        for name in columns
+        if any(name not in dataset_dict[split].column_names for split in splits)
+    }
+    if missing:
+        raise SystemExit(
+            "Refusing to upload: the splits do not share a column set and this cannot "
+            f"be reconciled by casting: {missing}. Rebuild all splits together."
+        )
+
+    def _merge(left, right):
+        """Combine two inferred features, preferring the more specific type."""
+        if left is None:
+            return right
+        if right is None:
+            return left
+        if isinstance(left, Sequence) and isinstance(right, Sequence):
+            return Sequence(_merge(left.feature, right.feature))
+        if isinstance(left, Value) and isinstance(right, Value):
+            if left.dtype == right.dtype:
+                return left
+            if left.dtype == "null":
+                return right
+            if right.dtype == "null":
+                return left
+            # Genuinely different scalar types: widen to string so the cast is lossless.
+            return Value("string")
+        return left
+
+    merged: dict = {name: None for name in columns}
+    for name in columns:
+        for split in splits:
+            merged[name] = _merge(merged[name], dataset_dict[split].features[name])
+
+    features = Features(merged)
+    return dataset_dict.__class__(
+        {split: dataset_dict[split].cast(features) for split in splits}
+    )
+
+
+def _append_dataset_dicts(dataset_dict, repo_id: str, token: str | None):
+    """Merge a fresh build into an existing Hub dataset instead of replacing it.
+
+    Hugging Face datasets are snapshot-replace on every ``push_to_hub``; there is
+    no native ``append_rows``. So an append is: **load the existing repo**, keep
+    its rows, drop from them the ``(doc_id, chunk_id)`` pairs the fresh build
+    produces (**upsert** semantics - the new build wins), concatenate the rest,
+    then push that combined DatasetDict.
+
+    Remote-only rows and remote-only splits are preserved. When the repo does
+    not exist yet, the fresh build is returned unchanged.
+    """
+    from datasets import DatasetDict, concatenate_datasets, load_dataset
+
+    try:
+        remote = load_dataset(repo_id, token=token)
+    except Exception as exc:  # pragma: no cover - network dependent
+        # Expected when the repo is genuinely new. Any other failure surfaces
+        # here and in the subsequent push, so it is logged loudly, never silently.
+        logger.warning(
+            "Could not load the existing Hub dataset %s (%s); uploading a fresh "
+            "dataset instead. If the repo DOES exist, investigate before trusting "
+            "this as an append.", repo_id, exc,
+        )
+        return dataset_dict
+
+    # The remote registry and the fresh build each inferred their own schema, so
+    # unify ALL of them together before anything can be concatenated or pushed.
+    scratch: dict = {split: remote[split] for split in remote}
+    for split, split_data in dataset_dict.items():
+        scratch[f"{split}{APPEND_SUFFIX}"] = split_data
+    scratch = _unify_dataset_features(DatasetDict(scratch))
+
+    appended: dict = {}
+    for split in OFFICIAL_SPLITS:
+        base = scratch.get(split)
+        overlay = scratch.get(f"{split}{APPEND_SUFFIX}")
+        if base is None and overlay is None:
+            continue
+        if base is not None and overlay is not None:
+            new_keys = {(row["doc_id"], row["chunk_id"]) for row in overlay}
+
+            def _keep_remote(row, _keys=new_keys):
+                return (row["doc_id"], row["chunk_id"]) not in _keys
+
+            base = concatenate_datasets([base.filter(_keep_remote), overlay])
+        appended[split] = base if base is not None else overlay
+
+    # Any remote split outside the official set is carried over untouched, so an
+    # append can never silently delete part of an existing dataset.
+    for split in scratch:
+        if split not in OFFICIAL_SPLITS and not split.endswith(APPEND_SUFFIX):
+            appended[split] = scratch[split]
+
+    merged = DatasetDict(appended)
+    logger.info("Append merged rows per split: %s", {s: len(ds) for s, ds in merged.items()})
+    return merged
+
+
+# --------------------------------------------------------------------------- #
+# Hub formats / viewer
+# --------------------------------------------------------------------------- #
+
+# Uploaded into a sub-directory so the Dataset Viewer's default config cannot
+# pick them up alongside the Parquet shards.
+RAW_FORMAT_DIR = "raw"
+RAW_FORMAT_FILES = (
+    "train.jsonl", "validation.jsonl", "test.jsonl",
+    "reference_summaries.jsonl", "unassigned.jsonl", "ambiguous.jsonl",
+)
+
+
+def _viewer_config_yaml(
+    split_paths: dict[str, list[str]], jsonl_splits: set[str]
+) -> str:
+    """YAML front-matter ``configs:`` block pinning every data file.
+
+    Pinning the paths is what makes extra formats safe: with an explicit
+    ``data_files`` list the Hub (and ``load_dataset``) resolves exactly these
+    files, so the raw JSONL copies in ``raw/`` are served as a second, viewable
+    config instead of being mistaken for more data of the default one.
+    """
+    lines: list[str] = []
+
+    def block(name: str, pattern) -> None:
+        lines.append(f"- config_name: {name}")
+        lines.append("  data_files:")
+        wrote_any = False
+        for split in OFFICIAL_SPLITS:
+            paths = pattern(split)
+            if not paths:
+                continue
+            wrote_any = True
+            lines.append(f"  - split: {split}")
+            if len(paths) == 1:
+                lines.append(f"    path: {paths[0]}")
+            else:
+                lines.append("    path:")
+                lines.extend(f"    - {path}" for path in paths)
+        if not wrote_any:
+            lines.pop()
+            lines.pop()
+
+    block("default", lambda split: split_paths.get(split, []))
+    if jsonl_splits:
+        block(
+            "jsonl",
+            lambda split: [f"{RAW_FORMAT_DIR}/{split}.jsonl"]
+            if split in jsonl_splits
+            else [],
+        )
+    return "configs:\n" + "\n".join(lines) + "\n"
+
+
+def _attach_viewer_config(card_text: str, extra_yaml: str) -> str:
+    """Insert ``extra_yaml`` at the end of the card's YAML front matter."""
+    if not card_text.startswith("---"):
+        return f"---\n{extra_yaml}---\n\n{card_text}"
+    end = card_text.index("\n---", 3)
+    return card_text[:end] + "\n" + extra_yaml + card_text[end + 1:]
+
+
 def push_to_hub(args: argparse.Namespace, stats: dict | None) -> None:
     """Validate locally, then upload the splits and the dataset card."""
     output_dir = Path(args.output_dir)
@@ -1192,19 +1818,85 @@ def push_to_hub(args: argparse.Namespace, stats: dict | None) -> None:
     dataset_dict = datasets.DatasetDict({
         split: datasets.Dataset.from_json(str(path)) for split, path in split_files.items()
     })
+    # Normalise the per-split inferred schemas before they are combined, so an
+    # all-empty list column in one split cannot make the DatasetDict inconsistent.
+    dataset_dict = _unify_dataset_features(dataset_dict)
+
+    # ``--append``: fold this build into the repo that already exists on the Hub
+    # instead of replacing it (upsert by doc_id + chunk_id).
+    if getattr(args, "append", False):
+        dataset_dict = _append_dataset_dicts(dataset_dict, args.repo_id, resolve_hf_token())
+    else:
+        logger.info("Overwriting the Hub dataset (no --append).")
+
     logger.info("Loaded %s locally", {s: len(d) for s, d in dataset_dict.items()})
 
     dataset_dict.push_to_hub(
         args.repo_id,
         token=resolve_hf_token(),
+        private=getattr(args, "private", False),
         commit_message="Upload section-aligned IN-ABS chunk-level training dataset",
     )
     logger.info("Pushed splits to https://huggingface.co/datasets/%s", args.repo_id)
 
+    from huggingface_hub import HfApi
+
+    api = HfApi()
+
+    # Optional second format. Parquet is what ``push_to_hub`` writes and what the
+    # Dataset Viewer renders as a table; raw JSONL is added on request because a
+    # reader can open those files in the browser without any tooling.
+    jsonl_splits: set[str] = set()
+    if getattr(args, "upload_jsonl", False):
+        for name in RAW_FORMAT_FILES:
+            source = output_dir / name
+            if not source.exists():
+                continue
+            api.upload_file(
+                path_or_fileobj=str(source),
+                path_in_repo=f"{RAW_FORMAT_DIR}/{name}",
+                repo_id=args.repo_id,
+                repo_type="dataset",
+                token=resolve_hf_token(),
+                commit_message=f"Add {name} (raw, human-readable copy)",
+            )
+            if name in {f"{split}.jsonl" for split in OFFICIAL_SPLITS}:
+                jsonl_splits.add(name.split(".")[0])
+        logger.info("Uploaded raw JSONL under %s/: %s", RAW_FORMAT_DIR, sorted(jsonl_splits))
+
     card = output_dir / "README.md"
     if card.exists():
-        from huggingface_hub import HfApi
-        HfApi().upload_file(
+        # Pin the data files explicitly. Without this, the extra raw JSONL could be
+        # auto-detected as more data for the default config; with it, each format is
+        # an explicit, selectable config and ``load_dataset`` stays unambiguous.
+        try:
+            remote_files = api.list_repo_files(
+                args.repo_id, repo_type="dataset", token=resolve_hf_token()
+            )
+        except Exception as exc:  # pragma: no cover - network dependent
+            remote_files = []
+            logger.warning("Could not list %s to pin the viewer config: %s", args.repo_id, exc)
+
+        parquet_files = [name for name in remote_files if name.endswith(".parquet")]
+        split_paths = {
+            split: sorted(
+                name for name in parquet_files
+                if Path(name).name.startswith(f"{split}-") or Path(name).name == f"{split}.parquet"
+            )
+            for split in OFFICIAL_SPLITS
+        }
+        for split, paths in split_paths.items():
+            if not paths:
+                logger.warning("No Parquet file found on the Hub for split '%s'", split)
+
+        if any(split_paths.values()):
+            text = card.read_text(encoding="utf-8")
+            text = _attach_viewer_config(
+                text, _viewer_config_yaml(split_paths, jsonl_splits)
+            )
+            card.write_text(text, encoding="utf-8")
+
+        api.upload_file(
             path_or_fileobj=str(card),
             path_in_repo="README.md",
             repo_id=args.repo_id,
@@ -1213,6 +1905,9 @@ def push_to_hub(args: argparse.Namespace, stats: dict | None) -> None:
             commit_message="Add dataset card",
         )
         logger.info("Uploaded dataset card")
+        logger.info(
+            "View the rows at https://huggingface.co/datasets/%s/viewer", args.repo_id
+        )
 
     # Read back what the Hub now serves, so the upload is confirmed rather than assumed.
     try:
@@ -1266,11 +1961,52 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Upload to the Hub. Without --sample/--full, uploads an existing build from --output_dir.",
     )
     parser.add_argument("--repo-id", default=None, help="Target Hub repo, e.g. <user>/in-abs-section-aligned.")
+    parser.add_argument(
+        "--append", action="store_true",
+        help=(
+            "With --push-to-hub: merge this build INTO the existing Hub dataset "
+            "instead of replacing it. Rows whose (doc_id, chunk_id) already exist "
+            "are updated to the new values; anything else on the Hub is kept. "
+            "Use this to accumulate runs into one dataset instead of a new repo per run."
+        ),
+    )
+    parser.add_argument(
+        "--private", action="store_true",
+        help=(
+            "Create the Hub repo as private. Recommended until the licensing of the "
+            "source dataset (percins/IN-ABS, which declares no licence) is resolved. "
+            "Only takes effect when the repo does not already exist."
+        ),
+    )
     parser.add_argument("--redact-names", action="store_true", help="Also redact PERSON entities (spaCy).")
     parser.add_argument("--no-strip-preamble", action="store_true", help="Keep the case-caption preamble.")
     parser.add_argument("--threshold", type=float, default=None, help="Override the alignment threshold.")
     parser.add_argument("--relative-margin", type=float, default=None, help="Override the relative margin.")
     parser.add_argument("--no-multi-label", action="store_true", help="Force a single label per sentence.")
+    parser.add_argument(
+        "--evidence-mode", action="store_true",
+        help=(
+            "Enable the evidence-aware alignment layer (OFF by default and NOT "
+            "calibrated yet; run scripts/audit_alignment_evidence.py to choose the "
+            "settings, then pass them below). Without this flag the build is "
+            "byte-identical to the pure Cross-Encoder behaviour."
+        ),
+    )
+    parser.add_argument("--evidence-coverage-bound", type=float, default=None,
+                        help="Tier-3 coverage bound C (calibrated value).")
+    parser.add_argument("--evidence-ambiguity-margin", type=float, default=None,
+                        help="Ambiguity margin M applied to the continuous rank keys.")
+    parser.add_argument("--evidence-min-span", type=int, default=None,
+                        help="Minimum longest-common content-word span that counts as evidence.")
+    parser.add_argument("--evidence-max-rare-df", type=int, default=None,
+                        help="Max document-local chunk frequency still counted as 'rare'.")
+    parser.add_argument(
+        "--evidence-contradiction-mode", choices=["high_confidence", "off"], default=None,
+        help=(
+            "high_confidence applies the strong date/year/amount mismatch rules; "
+            "off records absence only (never a contradiction)."
+        ),
+    )
     parser.add_argument(
         "--allow-stub-encoder", action="store_true",
         help="Allow the meaningless mock encoder (plumbing tests only; blocks --push-to-hub).",
@@ -1278,6 +2014,64 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--overwrite", action="store_true",
         help="Allow writing into an output_dir that already contains dataset outputs.",
+    )
+    parser.add_argument(
+        "--resume", action="store_true",
+        help=(
+            "Continue an interrupted build in the same --output_dir. Every finished "
+            "document is checkpointed as it completes, so a crash, a killed job or a "
+            "disconnected Colab session costs at most one document. Documents already "
+            "checkpointed are not re-scored with the Cross-Encoder."
+        ),
+    )
+    parser.add_argument(
+        "--window-tokens", type=int, default=None,
+        help=(
+            "Estimated tokens per Cross-Encoder window (default from config: "
+            f"{ALIGNMENT_WINDOW_TOKENS}). The encoder truncates at 512 sub-word tokens, "
+            "so each chunk is scored as overlapping windows that fit instead of whole."
+        ),
+    )
+    parser.add_argument(
+        "--window-overlap-tokens", type=int, default=None,
+        help=f"Overlap between adjacent windows (default {ALIGNMENT_WINDOW_OVERLAP}).",
+    )
+    parser.add_argument(
+        "--top-k-candidates", type=int, default=None,
+        help=(
+            "Chunks per summary sentence scored by the Cross-Encoder, chosen by a cheap "
+            f"lexical prefilter (default {ALIGNMENT_TOP_K_CANDIDATES}). 0 means score every "
+            "chunk (slowest, highest recall)."
+        ),
+    )
+    parser.add_argument(
+        "--no-prefilter", action="store_true",
+        help="Score every sentence against every chunk (disables the lexical prefilter).",
+    )
+    parser.add_argument(
+        "--max-degenerate-rate", type=float, default=0.02,
+        help=(
+            "Fail the build when more than this share of would-be records carries an "
+            "impossible target (longer than its chunk, or no prose). Default 0.02: a few "
+            "such rows are dropped and reported, a systematic rate means the alignment "
+            "must be fixed before the dataset is used."
+        ),
+    )
+    parser.add_argument(
+        "--total-documents", type=int, default=0,
+        help=(
+            "Document count of the full corpus, used to extrapolate the printed runtime "
+            "estimate (default: the sizes of the selected IN-ABS splits, 7128 for all)."
+        ),
+    )
+    parser.add_argument(
+        "--upload-jsonl", action="store_true",
+        help=(
+            "With --push-to-hub: also upload the splits as raw JSONL under raw/ and "
+            "pin both formats in the dataset card's viewer config. Parquet stays the "
+            "default (it is what load_dataset returns and what the Hub viewer renders); "
+            "the JSONL copies are for reading the rows directly in the browser."
+        ),
     )
 
     args = parser.parse_args(argv)
@@ -1288,6 +2082,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         parser.error("Choose one of --sample N, --full, or --push-to-hub.")
     if args.push_to_hub and not args.repo_id:
         parser.error("--push-to-hub requires --repo-id, e.g. --repo-id <user>/in-abs-section-aligned.")
+    if args.append and not args.push_to_hub:
+        parser.error("--append only applies together with --push-to-hub.")
 
     if args.sample:
         args.mode = f"sample{args.sample}"
@@ -1305,6 +2101,37 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         args.threshold = cfg_threshold
     if args.relative_margin is None:
         args.relative_margin = cfg_margin
+
+    # Resolve the evidence knobs from the module's own defaults so the reported
+    # settings cannot drift from the values the aligner applies.
+    evidence_defaults = evidence_settings_from_config()
+    if args.evidence_coverage_bound is None:
+        args.evidence_coverage_bound = evidence_defaults.coverage_bound
+    if args.evidence_ambiguity_margin is None:
+        args.evidence_ambiguity_margin = evidence_defaults.ambiguity_margin
+    if args.evidence_min_span is None:
+        args.evidence_min_span = evidence_defaults.min_common_span
+    if args.evidence_max_rare_df is None:
+        args.evidence_max_rare_df = evidence_defaults.max_rare_df
+    if args.evidence_contradiction_mode is None:
+        args.evidence_contradiction_mode = evidence_defaults.contradiction_mode
+
+    # Evidence-matching knobs, resolved from config so the values reported in
+    # build_stats.json cannot drift from the values the aligner applies.
+    if args.window_tokens is None:
+        args.window_tokens = ALIGNMENT_WINDOW_TOKENS
+    if args.window_overlap_tokens is None:
+        args.window_overlap_tokens = ALIGNMENT_WINDOW_OVERLAP
+    if args.top_k_candidates is None:
+        args.top_k_candidates = ALIGNMENT_TOP_K_CANDIDATES
+    if args.no_prefilter:
+        args.top_k_candidates = 0
+    if args.window_tokens < 50:
+        parser.error("--window-tokens must be at least 50.")
+    if args.top_k_candidates < 0:
+        parser.error("--top-k-candidates must be >= 0 (0 = score every chunk).")
+    if not 0.0 <= args.max_degenerate_rate <= 1.0:
+        parser.error("--max-degenerate-rate must be between 0 and 1.")
 
     return args
 

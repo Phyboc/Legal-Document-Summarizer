@@ -1,0 +1,203 @@
+{
+  "evidence_settings_used_for_scoring": {
+    "coverage_bound": 0.5,
+    "ambiguity_margin": 0.02,
+    "min_common_span": 4,
+    "max_rare_df": 1,
+    "contradiction_mode": "high_confidence"
+  },
+  "corpus": {
+    "source": "already_built_dataset",
+    "pairs": 5583,
+    "positives": 2957,
+    "negatives": 259,
+    "unclear": 2367,
+    "contradicted_pairs": 259,
+    "pairs_with_checkable_tier1": 984,
+    "hard_evidence_mismatch_rate": 0.2632,
+    "coverage_distribution": {
+      "p10": 0.4444,
+      "p25": 0.6,
+      "p50": 0.8,
+      "p75": 1.0,
+      "p90": 1.0
+    },
+    "span_distribution": {
+      "p10": 2.0,
+      "p25": 4.0,
+      "p50": 6.0,
+      "p75": 10.0,
+      "p90": 15.0
+    },
+    "examples": {
+      "contradicted": [
+        {
+          "doc_id": "train_00000",
+          "sentence": "The Director General of Works is directed to make an order in terms of FR 25 allowing the appellant to cross the efficiency bar according to the decision of the Government of India, Ministry of Finance dated September 21, 1967 as later clarified by the Ministry of Home Affairs Memorandum dated April 6, 1979 and to re fix his pension accordingly.",
+          "chunk_index": 0,
+          "section": "facts",
+          "label": "negative",
+          "contradicted": true,
+          "contradiction_classes": [
+            "dates",
+            "years"
+          ],
+          "supported_classes": 0,
+          "longest_span": 4,
+          "coverage": 0.5862,
+          "rare_shared": 1,
+          "has_checkable_tier1": true
+        },
+        {
+          "doc_id": "train_00000",
+          "sentence": "The appellant, an Assistant Engineer in the Central Public Works Department was placed under suspension on September 3, 1959 pending a departmental enquiry.",
+          "chunk_index": 10,
+          "section": "reasoning",
+          "label": "negative",
+          "contradicted": true,
+          "contradiction_classes": [
+            "dates",
+            "years"
+          ],
+          "supported_classes": 0,
+          "longest_span": 6,
+          "coverage": 0.6923,
+          "rare_shared": 0,
+          "has_checkable_tier1": true
+        },
+        {
+          "doc_id": "train_00000",
+          "sentence": "Thereafter, the appellant was compulsorily retired by an order of the Chief Engineer dated April 25, 1972 under FR.",
+          "chunk_index": 10,
+          "section": "reasoning",
+          "label": "negative",
+          "contradicted": true,
+          "contradiction_classes": [
+            "dates"
+          ],
+          "supported_classes": 1,
+          "longest_span": 4,
+          "coverage": 0.6667,
+          "rare_shared": 0,
+          "has_checkable_tier1": true
+        },
+        {
+          "doc_id": "train_00000",
+          "sentence": "The Director General of Works is directed to make an order in terms of FR 25 allowing the appellant to cross the efficiency bar according to the decision of the Government of India, Ministry of Finance dated September 21, 1967 as later clarified by the Ministry of Home Affairs Memorandum dated April 6, 1979 and to re fix his pension accordingly.",
+          "chunk_index": 10,
+          "section": "reasoning",
+          "label": "negative",
+          "contradicted": true,
+          "contradiction_classes": [
+            "dates",
+            "years"
+          ],
+          "supported_classes": 0,
+          "longest_span": 9,
+          "coverage": 0.5517,
+          "rare_shared": 0,
+          "has_checkable_tier1": true
+        },
+        {
+          "doc_id": "train_00000",
+          "sentence": "[41G, 42B,C] 1.4 The note beneath Government of India, Ministry of Finance Memorandum dated April 23, 1962, as amended from time to time enjoins that the cases of government servants for crossing of the efficiency bar in the time scale of pay should be considered at the appropriate time and in case the decision is to enforce the bar against the government servant, he should be informed of the decision.",
+          "chunk_index": 13,
+          "section": "judgement",
+          "label": "negative",
+          "contradicted": true,
+          "contradiction_classes": [
+            "dates",
+            "years"
+          ],
+          "supported_classes": 0,
+          "longest_span": 7,
+          "coverage": 0.44,
+          "rare_shared": 0,
+          "has_checkable_tier1": true
+        }
+      ],
+      "positive": [
+        {
+          "doc_id": "train_00000",
+          "sentence": "The appellant, an Assistant Engineer in the Central Public Works Department was placed under suspension on September 3, 1959 pending a departmental enquiry.",
+          "chunk_index": 0,
+          "section": "facts",
+          "label": "positive",
+          "contradicted": false,
+          "contradiction_classes": [],
+          "supported_classes": 2,
+          "longest_span": 13,
+          "coverage": 1.0,
+          "rare_shared": 0,
+          "has_checkable_tier1": true
+        },
+        {
+          "doc_id": "train_00000",
+          "sentence": "That order was revoked by the Chief Engineer on May 8, 1970, and he was reinstated in service on May 25, 1970 but the departmental proceedings were kept alive.",
+          "chunk_index": 0,
+          "section": "facts",
+          "label": "positive",
+          "contradicted": false,
+          "contradiction_classes": [],
+          "supported_classes": 2,
+          "longest_span": 10,
+          "coverage": 1.0,
+          "rare_shared": 0,
+          "has_checkable_tier1": true
+        },
+        {
+          "doc_id": "train_00000",
+          "sentence": "Immediately thereafter, the appellant made a representation to the department to pass an order under FR.",
+          "chunk_index": 0,
+          "section": "facts",
+          "label": "positive",
+          "contradicted": false,
+          "contradiction_classes": [],
+          "supported_classes": 0,
+          "longest_span": 8,
+          "coverage": 1.0,
+          "rare_shared": 0,
+          "has_checkable_tier1": false
+        },
+        {
+          "doc_id": "train_00000",
+          "sentence": "54 for payment of full pay and allowances for the period of suspension, which was rejected on the ground that the departmental enquiry was still pending.",
+          "chunk_index": 0,
+          "section": "facts",
+          "label": "positive",
+          "contradicted": false,
+          "contradiction_classes": [],
+          "supported_classes": 0,
+          "longest_span": 12,
+          "coverage": 1.0,
+          "rare_shared": 1,
+          "has_checkable_tier1": false
+        },
+        {
+          "doc_id": "train_00000",
+          "sentence": "Thereafter, the appellant was compulsorily retired by an order of the Chief Engineer dated April 25, 1972 under FR.",
+          "chunk_index": 0,
+          "section": "facts",
+          "label": "positive",
+          "contradicted": false,
+          "contradiction_classes": [],
+          "supported_classes": 2,
+          "longest_span": 5,
+          "coverage": 0.7778,
+          "rare_shared": 0,
+          "has_checkable_tier1": true
+        }
+      ]
+    }
+  },
+  "sweep": null,
+  "recommendation": null,
+  "corpus_status": {
+    "positives": 2957,
+    "negatives": 259,
+    "min_positives": 200,
+    "min_negatives": 200,
+    "reason": "no_sweep_points"
+  },
+  "note": "Corpus-only audit: an existing dataset records the score of the chunk each sentence was attached to, not the full candidate matrix, so the (C, M) grid cannot be swept from it. Use --from-candidates with a precomputed candidate file for the sweep and the threshold recommendation."
+}

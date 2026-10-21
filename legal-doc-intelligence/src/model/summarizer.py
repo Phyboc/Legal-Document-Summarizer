@@ -27,6 +27,9 @@ GENERATION_PROFILES = {
     "arguments_respondent": {"min_new_tokens": 40, "max_new_tokens": 200},
     "reasoning": {"min_new_tokens": 60, "max_new_tokens": 400},
     "judgement": {"min_new_tokens": 20, "max_new_tokens": 160},
+    # Structure fallback: the whole judgment kept as one section (config.
+    # FALLBACK_SECTION_LABEL), in the same new-token budget scheme.
+    "full_document": {"min_new_tokens": 60, "max_new_tokens": 400},
     "default": {"min_new_tokens": 40, "max_new_tokens": 320},
 }
 

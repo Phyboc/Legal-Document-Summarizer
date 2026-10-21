@@ -26,6 +26,10 @@ def process_document(text: str, redact_names: bool = False,
     # Detect sections, promote the operative order to judgement, and group. The
     # grouping is shared with the training-data build so both see the same labels.
     para_objects = detect_sections(paragraphs)
+    # Group by section. build_section_groups promotes the trailing operative order
+    # to its own judgement section and, on a weak-structure fallback, keeps that
+    # order split out as judgement rather than folding it into one block - the
+    # outcome-preservation behaviour the deployed e3-outcome model was trained on.
     section_groups, _ = build_section_groups(para_objects)
 
     # Chunk

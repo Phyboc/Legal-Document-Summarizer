@@ -15,6 +15,7 @@ LAWYER_SECTION_TITLES = {
     "arguments_respondent": "RESPONDENT'S ARGUMENTS",
     "reasoning": "REASONING",
     "judgement": "JUDGEMENT",
+    "full_document": "FULL JUDGMENT",
 }
 
 CITIZEN_SECTION_TITLES = {
@@ -23,7 +24,13 @@ CITIZEN_SECTION_TITLES = {
     "arguments_respondent": "What The Other Side Said",
     "reasoning": "Why The Court Decided This Way",
     "judgement": "The Court's Decision",
+    "full_document": "The Whole Judgment",
 }
+
+SECTION_ORDER = [
+    "facts", "arguments_appellant", "arguments_respondent", "reasoning",
+    "judgement", "full_document",
+]
 
 
 def word_count(text: str) -> int:
@@ -90,7 +97,11 @@ def allocate_budget(section_summaries: dict[str, str], budget: int,
 
 def format_lawyer_mode(section_summaries: dict[str, str]) -> dict:
     """Build Lawyer Mode: structured, technical, 500-700 words."""
-    section_order = ["facts", "arguments_appellant", "arguments_respondent", "reasoning", "judgement"]
+    # main's SECTION_ORDER (which includes full_document) with the branch's
+    # allocate_budget, the shared helper citizen mode also uses - it apportions
+    # the word budget per section rather than trimming uniformly, protecting the
+    # judgement section from being scaled away.
+    section_order = SECTION_ORDER
     adjusted = allocate_budget(section_summaries, LAWYER_MODE_MAX_WORDS)
 
     sections_output = []
@@ -116,7 +127,7 @@ def format_lawyer_mode(section_summaries: dict[str, str]) -> dict:
 
 def format_citizen_mode(section_summaries: dict[str, str]) -> dict:
     """Build Citizen Mode: simplified, plain language, 150-250 words."""
-    section_order = ["facts", "arguments_appellant", "arguments_respondent", "reasoning", "judgement"]
+    section_order = SECTION_ORDER
 
     # Merge arguments into one for citizen mode
     combined = {}

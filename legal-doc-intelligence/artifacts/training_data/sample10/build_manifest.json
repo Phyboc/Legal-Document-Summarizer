@@ -1,0 +1,45 @@
+{
+  "build_id": "sample10-2026-10-16T18:36:11+00:00",
+  "generated_at": "2026-10-16T18:36:11+00:00",
+  "source_dataset": "percins/IN-ABS",
+  "mode": "sample10",
+  "alignment_backend": "CrossEncoder",
+  "alignment_mode": "cross_encoder",
+  "documents_per_split": {
+    "train": 10,
+    "validation": 10,
+    "test": 10
+  },
+  "records_per_split": {
+    "train": 70,
+    "validation": 58,
+    "test": 64
+  },
+  "total_records": 192,
+  "length_validation": {
+    "records": 192,
+    "max_input_tokens": 917,
+    "max_target_tokens": 435,
+    "input_violations": 0,
+    "target_violations": 0,
+    "violation_examples": [],
+    "ok": true
+  },
+  "output_hashes": {
+    "train.jsonl": "61e25c2a1c517214a2d0c12184d246d43df2d2e9f70ec84455965c82c980665e",
+    "validation.jsonl": "2e3202506e34b4e02e5b9613bf9c2f3696f7aef050bb6c44c9a88d8084e5598c",
+    "test.jsonl": "e4ca2709a3a28041164a2bb66bcf6dd4a290cb96222a69f94b8019ac60d08dbb",
+    "reference_summaries.jsonl": "b1fd0eaee57a3bf0abaee26254313c4dc9584a8beaecc4877266b031a6e7b2c2",
+    "unassigned.jsonl": "da8b7ee681ed3298641e274972c07c4a508d488054d32758dd7e271314d89cb8",
+    "ambiguous.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build_stats.json": "dc9f4914389dd88ec863e0fe683c8c3a0965bb84aa69d689e95903bfd24e2a11"
+  },
+  "evidence_mode": false,
+  "evidence_settings": {
+    "coverage_bound": 0.5,
+    "ambiguity_margin": 0.02,
+    "min_common_span": 4,
+    "max_rare_df": 1,
+    "contradiction_mode": "high_confidence"
+  }
+}

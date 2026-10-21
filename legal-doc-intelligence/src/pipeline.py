@@ -1,10 +1,9 @@
 """Main pipeline: orchestrates all stages from raw judgment to Lawyer/Citizen output."""
 import sys
 sys.path.insert(0, ".")
-from config import FALLBACK_SECTION_LABEL
 from src.data.cleaning import preprocess, split_paragraphs
 from src.data.pii_redaction import redact
-from src.data.section_detector import detect_sections, group_by_section, fallback_to_single_section
+from src.data.section_detector import detect_sections, build_section_groups
 from src.data.chunker import chunk_document
 from src.model.summarizer import get_summarizer
 from src.postprocess.aggregation import aggregate_by_section
@@ -24,16 +23,14 @@ def process_document(text: str, redact_names: bool = False,
     # Split into paragraphs
     paragraphs = split_paragraphs(redacted)
 
-    # Detect sections
+    # Detect sections, promote the operative order to judgement, and group. The
+    # grouping is shared with the training-data build so both see the same labels.
     para_objects = detect_sections(paragraphs)
-
-    # Group by section (or fallback to single section)
-    if fallback_to_single_section(para_objects):
-        # Must match scripts/build_dataset.py's FALLBACK_SECTION_LABEL, otherwise
-        # the model is trained on a section label inference never produces.
-        section_groups = {FALLBACK_SECTION_LABEL: para_objects}
-    else:
-        section_groups = group_by_section(para_objects)
+    # Group by section. build_section_groups promotes the trailing operative order
+    # to its own judgement section and, on a weak-structure fallback, keeps that
+    # order split out as judgement rather than folding it into one block - the
+    # outcome-preservation behaviour the deployed e3-outcome model was trained on.
+    section_groups, _ = build_section_groups(para_objects)
 
     # Chunk
     chunks = chunk_document(section_groups)

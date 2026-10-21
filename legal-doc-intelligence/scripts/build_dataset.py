@@ -84,9 +84,9 @@ from src.data.chunker import approximate_tokens, chunk_document  # noqa: E402
 from src.data.cleaning import preprocess, split_paragraphs  # noqa: E402
 from src.data.pii_redaction import redact  # noqa: E402
 from src.data.section_detector import (  # noqa: E402
+    build_section_groups,
     detect_sections,
-    fallback_to_single_section,
-    group_by_section,
+    is_operative_order,
 )
 from src.data.evidence_alignment import (  # noqa: E402
     DECISION_AMBIGUOUS,
@@ -127,11 +127,11 @@ TEXT_COLUMN_CANDIDATES = ("text", "judgment", "judgement", "document", "content"
 SUMMARY_COLUMN_CANDIDATES = ("summary", "reference_summary", "headnote", "abstract")
 FILE_COLUMN_CANDIDATES = ("file", "filename", "doc_name", "id", "doc_id")
 
-# Documents whose structure the detector cannot resolve are labelled
-# ``config.FALLBACK_SECTION_LABEL`` (``full_document``): labelling the whole
-# document is honest, whereas reusing a real section name such as ``reasoning``
-# would claim a structure the detector never found. It is imported from config so
-# the inference pipeline cannot drift from the labels this builder writes.
+# Documents whose structure the detector cannot resolve are grouped exactly as
+# inference groups them (``section_detector.build_section_groups``): remainder as
+# ``reasoning``, operative order as ``judgement``. Earlier builds labelled them
+# ``full_document``; that label is retired so training never sees a different
+# section structure from the one the summarizer is run on.
 
 CROSS_ENCODER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
@@ -169,6 +169,11 @@ class DocumentBuild:
     ambiguous: list[dict] = field(default_factory=list)
     pii_counts: dict = field(default_factory=dict)
     error: str | None = None
+    # Audit trail, never written to the dataset: the per-sentence alignment and
+    # the section label of every chunk, so outcome survival can be traced stage
+    # by stage (scripts/audit_outcome_survival.py).
+    alignment: object | None = None
+    chunk_sections: list[str] = field(default_factory=list)
 
     # Chunks whose real-tokenizer length exceeds MAX_INPUT_LENGTH are dropped
     # here, before alignment ever runs on them - never silently kept, never
@@ -386,7 +391,6 @@ def build_document(
     *,
     redact_names: bool = False,
     strip_preamble: bool = True,
-    fallback_label: str = FALLBACK_SECTION_LABEL,
     alignment_kwargs: dict | None = None,
     token_measure=None,
     max_target_tokens: int = MAX_TARGET_LENGTH,
@@ -399,7 +403,7 @@ def build_document(
     built from exactly the same text the inference path would see:
 
         preprocess -> redact -> split_paragraphs -> detect_sections ->
-        (group_by_section | fallback) -> chunk_document -> align
+        build_section_groups -> chunk_document -> align
     """
     result = DocumentBuild(doc_id=doc_id, split=split)
     _doc_started = time.perf_counter()
@@ -413,16 +417,12 @@ def build_document(
         #    is opt-in.
         redacted, result.pii_counts = redact(clean, redact_names_flag=redact_names)
 
-        # 4-5. Paragraph split and section detection (existing implementations).
+        # 4-6. Paragraph split, section detection, operative-order promotion and
+        #      fallback. Shared with the inference pipeline (build_section_groups),
+        #      so training and inference see identical section labels.
         paragraphs = split_paragraphs(redacted)
         paragraph_objects = detect_sections(paragraphs)
-
-        # 6. Fallback behaviour when the detector cannot resolve a structure.
-        result.structure_fallback = fallback_to_single_section(paragraph_objects)
-        if result.structure_fallback:
-            section_groups = {fallback_label: paragraph_objects}
-        else:
-            section_groups = group_by_section(paragraph_objects)
+        section_groups, result.structure_fallback = build_section_groups(paragraph_objects)
 
         # 7. Section-aware chunking (existing implementation).
         chunks = chunk_document(section_groups)
@@ -472,9 +472,13 @@ def build_document(
         alignment = align_summary_to_sections(
             section_chunks,
             summary or "",
+            is_operative=is_operative_order,
             chunk_positions=_chunk_positions(chunks),
             **(alignment_kwargs or {}),
         )
+
+        result.alignment = alignment
+        result.chunk_sections = [chunk.section for chunk in chunks]
         result.alignment_seconds = time.perf_counter() - _alignment_started
         # The real comparison count (sentences x candidate windows), not an
         # assumption: this is what the encoder actually paid for.
@@ -973,7 +977,7 @@ def build_stats(
         "preprocessing": {
             "strip_preamble": not args.no_strip_preamble,
             "redact_names": args.redact_names,
-            "fallback_section_label": FALLBACK_SECTION_LABEL,
+            "section_grouping": "section_detector.build_section_groups (shared with inference)",
             "pii_pattern_counts": dict(pii_counts),
             "chunk_size": None,  # recorded by config; see config.CHUNK_SIZE
             "max_chunks_per_doc": MAX_CHUNKS_PER_DOC,

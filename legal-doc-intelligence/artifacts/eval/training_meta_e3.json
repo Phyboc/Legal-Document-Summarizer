@@ -1,0 +1,63 @@
+{
+  "trained_at": "2026-10-06T13:54:51+00:00",
+  "base_model": "facebook/bart-base",
+  "data": "artifacts/training_data/full",
+  "args": {
+    "data": "artifacts/training_data/full",
+    "output_dir": "models/legallens-bart-base-e3",
+    "base_model": "facebook/bart-base",
+    "epochs": 3.0,
+    "lr": 3e-05,
+    "batch_size": 4,
+    "grad_accum": 8,
+    "eval_batch_size": 8,
+    "max_input_length": 1024,
+    "max_target_length": 448,
+    "warmup_ratio": 0.06,
+    "weight_decay": 0.01,
+    "label_smoothing": 0.1,
+    "patience": 2,
+    "max_train_samples": null,
+    "max_eval_samples": 500,
+    "no_gradient_checkpointing": false,
+    "seed": 42
+  },
+  "precision": "bf16",
+  "length_report": {
+    "train": {
+      "examples": 31029,
+      "inputs_truncated": 0,
+      "targets_truncated": 0,
+      "max_input_tokens": 1023,
+      "max_target_tokens": 448
+    },
+    "validation": {
+      "examples": 500,
+      "inputs_truncated": 0,
+      "targets_truncated": 0,
+      "max_input_tokens": 1018,
+      "max_target_tokens": 448
+    }
+  },
+  "train_metrics": {
+    "train_runtime": 7971.2488,
+    "train_samples_per_second": 11.678,
+    "train_steps_per_second": 0.365,
+    "total_flos": 4.403870872547328e+16,
+    "train_loss": 25.33146474517088,
+    "epoch": 3.0
+  },
+  "eval_metrics_chunk_level": {
+    "eval_loss": 2.9640018939971924,
+    "eval_rouge1": 38.74,
+    "eval_rouge2": 22.37,
+    "eval_rougeL": 34.72,
+    "eval_gen_len": 96.0,
+    "eval_runtime": 499.0673,
+    "eval_samples_per_second": 1.002,
+    "eval_steps_per_second": 0.126,
+    "epoch": 3.0
+  },
+  "best_checkpoint": "models\\legallens-bart-base-e3\\checkpoint-2910",
+  "note": "Validation ROUGE is chunk-level against pseudo-targets; report document-level numbers from src/eval."
+}

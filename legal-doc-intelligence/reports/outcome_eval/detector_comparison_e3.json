@@ -1,0 +1,12 @@
+{
+  "old_detector_HEAD": {
+    "outcome_present_pct": 11.0,
+    "outcome_recall_pct": 18.52,
+    "documents_with_reference_disposition": 15
+  },
+  "new_detector": {
+    "outcome_present_pct": 34.0,
+    "outcome_recall_pct": 15.71,
+    "documents_with_reference_disposition": 31
+  }
+}

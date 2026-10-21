@@ -27,3 +27,15 @@ dist-ssr
 __pycache__/
 *.py[cod]
 *.class
+
+# Fine-tuned BART checkpoints (large; publish to the Hub instead)
+legal-doc-intelligence/models/legallens-bart-*/
+legal-doc-intelligence/models/bart-*/
+legal-doc-intelligence/models/nli-*/
+# Full dataset build (308 MB; publish to the Hub instead)
+legal-doc-intelligence/artifacts/training_data/full/
+
+# Claude Code session tooling
+legal-doc-intelligence/.claude/
+# Stray runtime exports from the Gradio app
+lexnarrate_*.md

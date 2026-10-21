@@ -1,0 +1,18 @@
+metric,before (HEAD 37eeeef),after (fix 4daca2c)
+documents (validation sample),100,100
+documents with a reference outcome cue,40,40
+documents with judgement section detected,99,100
+outcome sentences total,69,69
+outcome sentences retained in a target,62,64
+outcome sentences unassigned,5,4
+outcome sentences lost to budget overflow,2,1
+retained %,89.86,92.75
+is_disposition misses (all outcome sentences),53,33
+final-order (non-lower-court) sentences,45,45
+"  of these, labelled judgement",8,18
+"  of these, primary chunk IS a judgement chunk",5,13
+"  of these, retained in a target",42,43
+"  of these, missed by is_disposition",35,22
+
+# sample,"100 IN-ABS validation documents, section-aligned build, CPU Cross-Encoder",
+# note,"outcome cues from scripts/audit_outcome_survival.py (independent of is_disposition); heuristic, provisional pending human review",

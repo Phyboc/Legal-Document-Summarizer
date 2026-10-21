@@ -1,0 +1,12 @@
+{
+  "zero_shot_bart": {
+    "outcome_present_pct": 78.0,
+    "outcome_recall_pct": 34.15,
+    "docs_with_ref_disposition": 31
+  },
+  "existing_finetuned_e3": {
+    "outcome_present_pct": 34.0,
+    "outcome_recall_pct": 15.71,
+    "docs_with_ref_disposition": 31
+  }
+}

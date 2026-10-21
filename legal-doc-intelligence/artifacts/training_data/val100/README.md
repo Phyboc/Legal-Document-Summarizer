@@ -42,7 +42,6 @@ BART summarizer that produces structured, section-aware judgments summaries.
   into a nearest neighbour.
 * Chunks with no aligned target are **excluded** from the supervised dataset.
 
-
 | Setting | Value |
 | --- | --- |
 | Alignment threshold | `0.4` |
@@ -51,9 +50,9 @@ BART summarizer that produces structured, section-aware judgments summaries.
 | Cross-Encoder | `cross-encoder/ms-marco-MiniLM-L-6-v2` |
 | Alignment backend | `CrossEncoder` |
 | Source documents | `100` |
-| Records | `validation`: 645 |
-| Chunks dropped (no target) | `226` |
-| Reference-summary sentences unassigned | `930` (28.6%) |
+| Records | `validation`: 613 |
+| Chunks dropped (no target) | `258` |
+| Reference-summary sentences unassigned | `287` (12.9%) |
 
 ## Leakage control
 

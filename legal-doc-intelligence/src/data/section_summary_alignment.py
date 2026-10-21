@@ -71,6 +71,7 @@ from __future__ import annotations
 import logging
 import re
 import sys
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 sys.path.insert(0, ".")
@@ -115,6 +116,9 @@ _INITIALISM = re.compile(r"(?:[A-Za-z]\.)+[A-Za-z]?")
 # Sub-section / pin cite such as ``56(j).`` or ``265(1)(a).``
 _SUBSECTION = re.compile(r"\d+\([A-Za-z0-9]+\)\.?")
 _TERMINAL = re.compile(r"[.!?][\"'\])]*$")
+# SCR headnote pinpoint markers - "[473 B C]", "[184E H; 185A]" - stripped from
+# reference summaries before splitting (see summary_sentences).
+_PAGE_MARKER = re.compile(r"[ \t]*\[\s*\d{1,4}\s*[A-H]\d?(?:[\s,;-]*(?:\d{1,4}\s*)?[A-H]\d?)*\s*\]")
 
 
 def _ends_with_abbreviation(text: str, period_index: int) -> bool:
@@ -203,6 +207,10 @@ def summary_sentences(full_summary: str) -> list[str]:
     if not full_summary or not full_summary.strip():
         return []
     text = re.sub(r"\s+", " ", full_summary).strip()
+    # SCR headnote pinpoint markers - "[473 B C]", "[184E H; 185A]" - point at
+    # pages of the printed report, not content; stripped so a model never learns
+    # to emit page references it cannot know.
+    text = _PAGE_MARKER.sub("", text)
     return _merge_fragments(_split_on_periods(text))
 
 # The historical config module carried these alongside ALIGNMENT_THRESHOLD and
@@ -281,6 +289,9 @@ class SentenceAlignment:
     evidence: dict | None = None
     evidence_reason: str | None = None
     ambiguity: dict | None = None
+    # True when the sentence states the court's operative order and was routed to
+    # a judgement chunk (see align_summary_to_sections). Provenance only.
+    operative: bool = False
 
     @property
     def best_label(self) -> str | None:
@@ -631,6 +642,7 @@ def align_summary_to_sections(
     allow_multi_label: bool | None = None,
     relative_margin: float | None = None,
     precomputed: tuple | None = None,
+    is_operative: Callable[[str], bool] | None = None,
     evidence_mode: bool | None = None,
     evidence_settings=None,
     chunk_positions: list[float] | None = None,
@@ -649,6 +661,13 @@ def align_summary_to_sections(
     section. A sentence that satisfies neither is left unassigned. Within each
     assigned section the sentence is attached to that section's best-matching
     chunk, which is what makes a chunk-level target possible at all.
+
+    ``is_operative`` marks sentences that state the court's final order. Relevance
+    alone does not place them: a Cross-Encoder scores a restated fact about as
+    highly as the order itself, so most orders landed in facts or reasoning chunks.
+    For an operative sentence the ``judgement`` label is added whenever a judgement
+    chunk clears ``threshold`` (the source must support it), and its primary chunk is
+    the best judgement chunk. Without a judgement chunk above threshold, nothing changes.
 
     ``precomputed`` allows reusing an existing ``score_summary_sentences``
     result instead of paying for the Cross-Encoder pass twice.
@@ -743,9 +762,25 @@ def align_summary_to_sections(
         else:
             record.assigned = [max(above, key=lambda lbl: per_label[lbl])]
 
+        # Operative-order routing (outcome preservation). When the sentence states
+        # the court's operative order and the judgement section cleared the
+        # threshold, force its training destination to a judgement chunk rather
+        # than wherever it happens to score best among its plausible sections.
+        record.operative = bool(
+            is_operative and "judgement" in above and is_operative(sentence)
+        )
+        if record.operative and "judgement" not in record.assigned:
+            record.assigned.append("judgement")
+
         candidate_indices = [
             j for j, (label, _) in enumerate(section_chunks) if label in record.assigned
         ]
+        if record.operative:
+            judgement_candidates = [
+                j for j in candidate_indices if section_chunks[j][0] == "judgement"
+            ]
+            if judgement_candidates:
+                candidate_indices = judgement_candidates
 
         # Attach at most ONE chunk. In evidence mode the evidence layer decides
         # whether this sentence is supported by any candidate at all; in the

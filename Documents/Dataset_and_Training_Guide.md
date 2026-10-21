@@ -16,20 +16,28 @@ Covers three things:
 
 | Item | State |
 | --- | --- |
-| `src/data/section_summary_alignment.py` | Committed (`92b07ca`) |
-| `scripts/build_dataset.py` | Committed (`92b07ca`) |
+| `src/data/section_summary_alignment.py` | Committed (`92b07ca`, revised `55efe36`) — per-chunk scoring, one primary chunk per sentence |
+| `scripts/build_dataset.py` | Committed (`92b07ca`, revised `55efe36`) |
+| `scripts/validate_section_alignment.py` | Ported to the new alignment API — now a readable wrapper around `build_dataset.build_document` |
 | `src/data/chunker.py` — oversized-paragraph fix | Committed (`b8c310c`) |
-| `tests/test_chunker.py` | Committed (`b8c310c`) — 10 tests pass |
-| `datasets`, `pyarrow`, `sentence-transformers` | **Not installed** |
-| `transformers`, `torch`, `accelerate`, `rouge_score`, `bert_score` | **Not installed** |
-| Hugging Face login | **Not authenticated** |
-| `src/model/train.py`, Colab notebook, `src/eval/` | **`[TO BUILD]` — do not exist** |
-| Dataset built / uploaded | **Not yet** |
+| Section classifier (`models/section_classifier.joblib`) | Merged from `review2` (`a76182d`) — MARRO + OpenNyAI InRhetoricalRoles, real appellant/respondent split |
+| Tests | `test_chunker.py`, `test_alignment.py`, `test_section_detector.py` — 27 pass, 1 skipped |
+| `training data/train.jsonl` | First sample build: 100 train documents → 1,287 records, 0 structure fallbacks. No `build_stats.json` committed with it |
+| `sentence-transformers` | **Install before building** — without it the Cross-Encoder silently falls back to a stub |
+| Hugging Face login | Needed only for upload |
+| `src/model/train.py` | Written and smoke-tested locally (RTX 5070 8 GB, bf16) — §3.3 |
+| `src/eval/evaluate.py` | Written and smoke-tested — document-level ROUGE vs IN-ABS, §3.4 |
+| Summary sentence splitter | Abbreviation-aware + strips SCR page markers — val100 unassigned rate 28.6% → 12.9% (§1.3) |
+| Colab notebook | Not built — local GPU is sufficient for `bart-base` |
+| Full dataset built / uploaded | **Not yet** |
 
-So the code side is done and committed; the work that remains is environment setup, then the
-build stages. Since the earlier deliverables were once lost to a merge because they were never
-committed, keep committing as you go — and note this repository tracks `__pycache__/*.pyc` files,
-so `git status` will show bytecode churn; exclude it from commits.
+So the code side is done and committed; the work that remains is the validation and full build
+stages, then training and evaluation. Keep committing as you go. `__pycache__/` is ignored and no
+longer tracked, so `git status` stays free of bytecode churn.
+
+**Retraining the section classifier** (`scripts/train_section_classifier.py`) needs the MARRO data
+under `artifacts/marro/`, which is no longer in the repository. The committed model works as-is;
+re-download MARRO only if you need to retrain.
 
 ---
 
@@ -96,6 +104,15 @@ Check `build_stats.json` after every stage:
 And open `inspect_sample.txt` (written for `--sample` runs). For each record confirm the
 `aligned_target` is genuinely *about* the `chunk_text` above it. **A non-empty target is not
 evidence by itself.**
+
+**Measured on `val100` (100 validation documents, 2.5 min on GPU):** backend `CrossEncoder`,
+split isolation verified, unassigned rate 12.9%, multi-label 23.5%, 0 length violations, 1
+structure fallback, 258 of 871 chunks dropped for lack of an aligned target. The first build gave
+28.6% unassigned; about half of those were fragments ("No.", "V.", "Cr.", "[315 G] T.") from a
+splitter that broke inside citations, which `summary_sentences` now avoids.
+
+Argument sections are thin: 23 of 613 records are `arguments_appellant`/`arguments_respondent`,
+so the model sees few argument targets. Carry this into the report.
 
 ### 1.4 What a build produces
 
@@ -342,9 +359,9 @@ product's assumptions, and §2.7 becomes a workstream of its own rather than a c
 | Chunk-level training data (`chunk_text` → `aligned_target`) | ✅ produced by the builder |
 | Document-level references for evaluation (`reference_summaries.jsonl`) | ✅ produced by the builder |
 | Zero-shot baseline for comparison (`artifacts/baselines/zero_shot.json`) | ✅ exists |
-| `src/model/train.py` | ❌ `[TO BUILD]` |
-| Colab notebook | ❌ `[TO BUILD]` |
-| Document-level evaluation script (`src/eval/`) | ❌ `[TO BUILD]` |
+| `src/model/train.py` | ✅ |
+| Colab notebook | ❌ not needed if a local GPU is available |
+| Document-level evaluation script (`src/eval/evaluate.py`) | ✅ |
 
 Training is **not** CPU-bound work you want to do locally; use Colab (T4) for the fine-tune.
 Dataset *creation* stays local/CPU.
@@ -377,7 +394,21 @@ rather than letting the tokenizer silently truncate. Use the target distribution
 
 ### 3.3 Training recipe
 
-`[TO BUILD]` — the following is the intended configuration, not existing code.
+Implemented in `src/model/train.py`:
+
+```bash
+cd legal-doc-intelligence
+python -m src.model.train --data artifacts/training_data/full --output_dir models/legallens-bart-base
+# quick plumbing check first:
+python -m src.model.train --data artifacts/training_data/full --output_dir models/bart-smoke     --max_train_samples 64 --max_eval_samples 16 --epochs 1
+```
+
+It reads a build directory (or a Hub dataset id), logs how many inputs/targets the length limits
+truncate, saves the best checkpoint at the top of `--output_dir` and writes `training_meta.json`.
+Differences from the plan below, for an 8 GB laptop GPU: per-device batch 4 × accumulation 8
+(effective 32), bf16 when supported, gradient checkpointing on, `max_target_length` =
+`config.MAX_TARGET_LENGTH` (448, what the builder enforces), and validation capped at 500 chunks
+(`--max_eval_samples`) because beam-search generation over every chunk each epoch is slow.
 
 - **Base model**: `facebook/bart-base` (i.e. `config.BART_MODEL`; `LEGAL_BART_MODEL` env var overrides).
 - **Task**: chunk-level abstractive summarization, `chunk_text` → `aligned_target`.
@@ -412,7 +443,20 @@ Time the `val100` build first and extrapolate instead of trusting any estimate.
 
 ### 3.4 Evaluation — document level
 
-`[TO BUILD]`: a script that scores the *product*, not the chunk stage:
+Implemented in `src/eval/evaluate.py`:
+
+```bash
+python -m src.eval.evaluate --models facebook/bart-base models/legallens-bart-base     --sample 100 --output artifacts/eval/test100.json      # add --bertscore if bert-score is installed
+```
+
+It runs `src.pipeline.process_document` with each model on the same test documents and scores two
+outputs against the published summary: `lawyer` (Lawyer Mode body, 700-word budget) and `full`
+(all chunk summaries, de-duplicated). The zero-shot baseline is simply `facebook/bart-base` in the
+same run — the committed `zero_shot.json` covers only 3 documents. Zero-shot `bart-base` already
+scores high (2-doc smoke test: lawyer ROUGE-L ≈ 42, full ≈ 54) because it mostly copies its input
+and IN-ABS summaries are largely extractive, so the fine-tune has a real bar to clear.
+
+The plan it implements:
 
 1. Load the IN-ABS **test** split (`text`, `summary`).
 2. Run the frozen pipeline: preprocessing → section detection → chunking (same modules the builder uses).
@@ -427,6 +471,51 @@ Time the `val100` build first and extrapolate instead of trusting any estimate.
 Report chunk-level and document-level numbers separately, and state the unassigned rate of the
 alignment pass so readers know how much of each reference summary was actually used as a target.
 
+### 3.4.1 Results — 1 epoch (`models/legallens-bart-base-e1`)
+
+Full build (`artifacts/training_data/full`): 5,346 / 712 / 1,070 documents → 31,029 / 4,198 / 6,133
+records; unassigned 17.9%, multi-label 21.5%, no length violations, 71 structure fallbacks (1%),
+10 cross-split duplicate documents inherited from IN-ABS. The build took ~2 h on an RTX 5070 laptop GPU.
+
+Training: 1 epoch, 970 steps, 27 min (bf16, batch 4 × accumulation 8). Chunk-level validation
+(500 chunks vs pseudo-targets): ROUGE-1/2/L 37.3 / 20.3 / 33.0, eval loss 3.09. The logged *train*
+loss (~25) is the sum over the 8 accumulation steps in this `transformers` version - divide by 8.
+
+Document-level, first 100 IN-ABS **test** documents, same documents for both models
+(`artifacts/eval/test100_e1.json`):
+
+| Model | Output | ROUGE-1 | ROUGE-2 | ROUGE-L | BERTScore F1 | Mean words |
+| --- | --- | --- | --- | --- | --- | --- |
+| `facebook/bart-base` (zero-shot) | lawyer | 50.93 | 24.96 | 44.65 | 83.51 | 592 |
+| fine-tuned, 1 epoch | lawyer | **53.86** | **29.48** | **48.03** | **84.92** | 543 |
+| `facebook/bart-base` (zero-shot) | full | 52.86 | 30.05 | 45.11 | 83.67 | 1,361 |
+| fine-tuned, 1 epoch | full | **57.53** | **32.54** | **49.68** | **85.00** | 730 |
+
+Reference summaries average 827 words. The fine-tune wins ROUGE-L on 69/100 documents (lawyer) and
+70/100 (full), and generation is ~2.5x faster (864 s vs 2,143 s for 100 documents) because it
+writes summaries rather than copying its input.
+
+### 3.4.2 Results — 3 epochs (`models/legallens-bart-base-e3`, recommended)
+
+Same data and recipe, 3 epochs (2,910 steps). Chunk-level validation ROUGE-L rose every epoch
+(33.2 → 34.6 → 34.7; eval loss 3.04 → 2.98 → 2.96), so the last checkpoint was the best and there
+is no sign of overfitting yet. Same 100 test documents (`artifacts/eval/test100_e3.json`):
+
+| Model | Output | ROUGE-1 | ROUGE-2 | ROUGE-L | BERTScore F1 |
+| --- | --- | --- | --- | --- | --- |
+| zero-shot | lawyer | 50.93 | 24.96 | 44.65 | 83.51 |
+| 1 epoch | lawyer | 53.86 | 29.48 | 48.03 | 84.92 |
+| **3 epochs** | lawyer | **55.15** | **30.75** | **49.64** | **85.04** |
+| zero-shot | full | 52.86 | 30.05 | 45.11 | 83.67 |
+| 1 epoch | full | 57.53 | 32.54 | 49.68 | 85.00 |
+| **3 epochs** | full | **58.80** | **34.04** | **51.07** | **85.13** |
+
+3 epochs beats 1 epoch on ROUGE-L for 65/100 (lawyer) and 64/100 (full) documents.
+
+Timing note: the run took 2 h 22 min instead of ~1 h because beam-search evaluation left the 8 GB GPU
+~96% full and Windows spilled training into shared memory (1.3 s → 2.4–4 s per step). `train.py` now
+frees the CUDA cache after each evaluation and no longer repeats the final evaluation.
+
 ### 3.5 Wiring the fine-tuned model back into inference
 
 ```bash
@@ -436,7 +525,7 @@ python cli.py summarize artifacts/sample_judgment.txt --mode both
 
 `config.BART_MODEL` reads that env var, so no code change is needed to *run* the fine-tuned model.
 
-Two known bugs will misreport it (small fixes, worth doing before any demo):
+Two bugs that used to misreport it — **both fixed** (the summarizer also runs on GPU when one is available):
 
 1. `Summarizer.is_finetuned` is `False` whenever `model_name is None` — which is always, since the
    API and CLI never pass one — so the API reports `is_finetuned: false` even when
@@ -454,20 +543,48 @@ Carry these into the report; all are measured, not speculative.
    section. On the 12.8k-word sample judgment: 27 bounded chunks are produced, 15 are kept, and the
    capped output covers 60% of the words. Options: leave it, stride-sample across the section, or
    raise the cap.
-2. **Structure fallback is common** (~30% of documents in the existing artifacts) → `full_document`
-   labels, i.e. no section signal for a third of the data.
+2. **Structure fallback** was ~30% of documents with the earlier regex detector → `full_document`
+   labels, i.e. no section signal for a third of the data. With the trained classifier the 100-document
+   sample in `training data/train.jsonl` shows 0 fallbacks; confirm on the full build.
 3. **Alignment is a proxy.** The unassigned rate has measured 13–19%, meaning that share of each
    reference summary is never used as a target; multi-label sentences are deliberately attached to
    more than one chunk.
-4. **The token estimator is word-based.** A paragraph containing no whitespace at all is
-   under-estimated and would still arrive as one chunk. Low risk on real judgments; the clean fix
-   is a character-length guard.
-5. **`Cite & Verify` does not currently discriminate.** Measured verified rate is ~98.5% at every
-   threshold from 0.30 to 0.65 (`artifacts/citation_distribution.json`), so it cannot support a
-   claim that citations are checked. This does not affect training, but do not present it as a
-   working hallucination guard until it is recalibrated.
-6. **Test sources are missing from the repo.** `tests/` contains only stale `.pyc` files whose
-   sources were never committed; `tests/test_chunker.py` is the only runnable test.
+4. **The token estimator is word-based — now guarded.** It under-counts citation-dense text
+   (~3 characters per BART token): the first full build found 21 chunks of 1,033–1,435 real
+   tokens and refused to write. `chunk_section` now measures each chunk with the real tokenizer
+   and re-splits only those over `MAX_INPUT_LENGTH`; normal chunk boundaries are unchanged.
+5. **`Cite & Verify` — fixed and calibrated.** The original verifier used the MS-MARCO
+   *relevance* cross-encoder, which rates every sentence of a summary relevant to its own judgement:
+   ~98.5% "verified" at every threshold (`artifacts/citation_distribution.json`). It now works in
+   two stages: MS-MARCO still picks the cited chunk; support is decided by
+   `cross-encoder/nli-deberta-v3-xsmall` (entailment, scored over ~180-word windows of the top-2
+   chunks), with verbatim or compressed copies (words dropped, none added or changed, no negation
+   dropped) accepted directly. Each citation carries `support` = supported / unsupported /
+   contradicted.
+
+   Calibrated by `scripts/calibrate_citations.py` on 634 sentences from 40 test judgements: the
+   3-epoch model's own summary sentences as positives, and the same sentences with a negation
+   inserted, a number changed, the outcome flipped, or taken from another judgement as negatives
+   (`artifacts/citation_calibration.json`):
+
+   | At the chosen threshold (0.45) | Old (MS-MARCO) | New |
+   | --- | --- | --- |
+   | AUC | 0.545 | **0.891** |
+   | Precision of "verified" | 0.41 | **0.84** |
+   | Hallucinated sentences marked verified | 81% | **9%** |
+   | Caught: negation / number / outcome / other case | 3% / 0% / 3% / 89% | **89% / 91% / 83% / 99%** |
+   | Genuine generated sentences verified | 94% | 77% |
+
+   Limits to state in the report: the negatives are synthetic perturbations, the positives are
+   model output assumed to be supported (some are genuine hallucinations, so true precision is
+   likely higher and recall lower than shown), and NLI still struggles with very long legal
+   sentences and lists of case names. Splitting at legal abbreviations ("Nos.", "Rs.") also
+   produced fragments in the summaries themselves; the formatter and de-duplication now use the
+   abbreviation-aware splitter.
+6. **Some targets may exceed `MAX_TARGET_LENGTH` (448).** In the sample `train.jsonl`, 73 of 1,287
+   records have an *estimated* target length above 448 (max ~1.7k). The builder measures real
+   tokenizer lengths and reports violations in `build_stats.json` → `length_validation`; check that
+   before training rather than relying on the estimate.
 
 ---
 
@@ -490,7 +607,12 @@ python scripts/build_dataset.py --push-to-hub \
     --output_dir artifacts/training_data/full
 
 # --- tests ---------------------------------------------------------------
-python -m pytest tests/test_chunker.py -q
+python -m pytest tests -q
+
+# --- alignment spot-check (same code path as the builder) ----------------
+python scripts/validate_section_alignment.py --sample-size 15 \
+    --output artifacts/alignment_validation/validation_15docs.json
+python scripts/validate_section_alignment.py --demo
 
 # --- run inference with a fine-tuned checkpoint --------------------------
 export LEGAL_BART_MODEL=<HF_USERNAME>/legalLens-bart-base

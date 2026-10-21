@@ -8,10 +8,10 @@ chunk_id         : 0  (index 0)
 split            : validation
 section          : facts
 para_range       : [0, 21]
-alignment_scores : [0.9986, 0.5464, 0.987, 0.998, 0.9841, 0.5464]
+alignment_scores : [0.9991, 0.9608, 0.9724]
 matched_labels   : ['facts', 'reasoning']
 chunk tokens~    : 683
-target tokens~   : 74
+target tokens~   : 179
 
 --- CHUNK_TEXT (source input) ----------------------------------------------------------------------
 SHAH, J.
@@ -30,14 +30,11 @@ Clause 23: The Agent shall pay to section K. F. the 144 net sales value of the s
 The order passed by the Income tax Officer was confirmed by the Appellate Assistant Commissioner and also by the Income tax Appellate Tribunal.
 
 --- ALIGNED_TARGET (pseudo-target) ------------------------------------------------------------------
-A Swedish company manufacturing ball bearing equipment entered into an agreement with the respondent, section K. F. Ball Bearing Co. registered under the Indian Companies Act, 1913, appointing the latter as its sole selling agent in India. The material portion of the Agreement ran thus: " Clause 23: The Agent shall pay to section K. F.
+A Swedish company manufacturing ball bearing equipment entered into an agreement with the respondent, section K. F. Ball Bearing Co. Ltd. registered under the Indian Companies Act, 1913, appointing the latter as its sole selling agent in India. The material portion of the Agreement ran thus: " Clause 23: The Agent shall pay to section K. F. net sales value of the said products that are sold each month, after deduction of the Commission that has been agreed upon and the import expenses that have been paid. During the second world war a corporation known as the Pan rope Corporation was incorporated in the Republic of Panama to take over the assets and business of the Swedish company and the said Panrope Corporation in its turn conveyed the property and business to the Swedish company.
 
-    [1] A Swedish company manufacturing ball bearing equipment entered into an agreement with the respondent, section K.
-    [2] F.
-    [3] Ball Bearing Co.
-    [4] registered under the Indian Companies Act, 1913, appointing the latter as its sole selling agent in India.
-    [5] The material portion of the Agreement ran thus: " Clause 23: The Agent shall pay to section K.
-    [6] F.
+    [1] A Swedish company manufacturing ball bearing equipment entered into an agreement with the respondent, section K. F. Ball Bearing Co. Ltd. registered under the Indian Companies Act, 1913, appointing the latter as its sole selling agent in India.
+    [2] The material portion of the Agreement ran thus: " Clause 23: The Agent shall pay to section K. F. net sales value of the said products that are sold each month, after deduction of the Commission that has been agreed upon and the import expenses that have been paid.
+    [3] During the second world war a corporation known as the Pan rope Corporation was incorporated in the Republic of Panama to take over the assets and business of the Swedish company and the said Panrope Corporation in its turn conveyed the property and business to the Swedish company.
 ====================================================================================================
 
 doc_id           : validation_00000
@@ -45,10 +42,10 @@ chunk_id         : 1  (index 1)
 split            : validation
 section          : reasoning
 para_range       : [7, 23]
-alignment_scores : [0.5484, 0.4035, 0.9746, 0.9985]
+alignment_scores : [0.9745, 0.9746, 0.9985]
 matched_labels   : ['facts', 'reasoning']
 chunk tokens~    : 795
-target tokens~   : 243
+target tokens~   : 139
 
 --- CHUNK_TEXT (source input) ----------------------------------------------------------------------
 A small quantity of goods was bought by the section K. F. 143 and sold by it in India, but no question arises in this appeal about the liability to pay income tax in respect, of sale of those goods and no reference is made herein in respect of those sales.
@@ -63,12 +60,11 @@ At the instance of the section K. F., the following questions were referred to t
 On the second question, the High Court opined that as the remittances by the section K. F. pursuant to the terms of cl. 23 of the agreement before the sale pro ceeds were realized from the buyers were received by the foreign corporations outside the taxable territory, the same could not be taken into account under section 4(1)(a) of the Indian Income tax Act in assessing the taxable income of the foreign corporations.
 
 --- ALIGNED_TARGET (pseudo-target) ------------------------------------------------------------------
-net sales value of the said products that are sold each month, after deduction of the Commission that has been agreed upon and the import expenses that have been paid. Payment shall be made in Sweden thirty days at the latest following the last day of the month in which the sales have been effected." During the second world war a corporation known as the Pan rope Corporation was incorporated in the Republic of Panama to take over the assets and business of the Swedish company and the said Panrope Corporation in its turn conveyed the property and business to the Swedish company. Thereafter the respondent company sold in India as the agent of the foreign Corporations goods manufactured by them, and in a majority of the sales the respondent company remitted the " sale value " to the foreign corporations after the goods were sold but before the sale proceeds were recovered from the buyers. In some cases remittances were made even before the goods were sold and in others remittances were made after the sale proceeds were realised from the buyers.
+Payment shall be made in Sweden thirty days at the latest following the last day of the month in which the sales have been effected." Thereafter the respondent company sold in India as the agent of the foreign Corporations goods manufactured by them, and in a majority of the sales the respondent company remitted the " sale value " to the foreign corporations after the goods were sold but before the sale proceeds were recovered from the buyers. In some cases remittances were made even before the goods were sold and in others remittances were made after the sale proceeds were realised from the buyers.
 
-    [1] net sales value of the said products that are sold each month, after deduction of the Commission that has been agreed upon and the import expenses that have been paid.
-    [2] Payment shall be made in Sweden thirty days at the latest following the last day of the month in which the sales have been effected." During the second world war a corporation known as the Pan rope Corporation was incorporated in the Republic of Panama to take over the assets and business of the Swedish company and the said Panrope Corporation in its turn conveyed the property and business to the Swedish company.
-    [3] Thereafter the respondent company sold in India as the agent of the foreign Corporations goods manufactured by them, and in a majority of the sales the respondent company remitted the " sale value " to the foreign corporations after the goods were sold but before the sale proceeds were recovered from the buyers.
-    [4] In some cases remittances were made even before the goods were sold and in others remittances were made after the sale proceeds were realised from the buyers.
+    [1] Payment shall be made in Sweden thirty days at the latest following the last day of the month in which the sales have been effected."
+    [2] Thereafter the respondent company sold in India as the agent of the foreign Corporations goods manufactured by them, and in a majority of the sales the respondent company remitted the " sale value " to the foreign corporations after the goods were sold but before the sale proceeds were recovered from the buyers.
+    [3] In some cases remittances were made even before the goods were sold and in others remittances were made after the sale proceeds were realised from the buyers.
 ====================================================================================================
 
 doc_id           : validation_00000

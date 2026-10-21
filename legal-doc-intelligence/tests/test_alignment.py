@@ -160,6 +160,31 @@ def test_short_operative_sentences_are_not_dropped():
     assert "Appeal dismissed." in sentences, "two-word order must be retained"
 
 
+def test_citation_abbreviations_are_not_emitted_as_standalone_sentences():
+    # The reporter citation must not be split off into its own fragment.
+    text = (
+        "Appeal No. 5 of 1950 was heard under section 561A, Cr. P. C. "
+        "Bhandari v. The District Magistrate, (1941) I.L.R. 65 Bom. 425, referred to. "
+        "The order stands."
+    )
+    sentences = summary_sentences(text)
+    # No fragment is just a citation stub; every sentence ends in terminal punctuation.
+    assert all(s.strip()[-1] in ".!?" for s in sentences), sentences
+    assert any("I.L.R. 65 Bom. 425" in s for s in sentences), sentences
+    assert "The order stands." in sentences
+
+
+def test_scr_page_markers_are_removed_from_sentences():
+    # SCR headnote pinpoint markers "[56 C]" / "[184E H; 185A]" are stripped; the
+    # sentence periods they sit before are preserved (not eaten by the removal).
+    joined = " ".join(
+        summary_sentences("The ambiguity [56 C] remains. It was held [184E H; 185A]. Done.")
+    )
+    assert "[" not in joined and "56 C" not in joined and "185A" not in joined
+    assert "The ambiguity remains." in joined
+    assert joined.strip().endswith("Done.")
+
+
 def test_legal_abbreviations_do_not_split_a_sentence():
     text = (
         "See A.I.R. 1936 P.C. 141 at 143 and Rylands vs Fletcher, "

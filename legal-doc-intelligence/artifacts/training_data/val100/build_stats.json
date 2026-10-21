@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17T08:50:53+00:00",
+  "generated_at": "2026-10-06T03:50:56+00:00",
   "mode": "sample100",
   "source_dataset": "percins/IN-ABS",
   "dataset": {
@@ -14,46 +14,46 @@
   },
   "chunks": {
     "created": 871,
-    "retained": 645,
-    "dropped_no_aligned_target": 226,
+    "retained": 613,
+    "dropped_no_aligned_target": 258,
     "retained_per_split": {
-      "validation": 645
+      "validation": 613
     },
     "retained_by_section": {
-      "facts": 173,
-      "reasoning": 387,
-      "judgement": 50,
-      "arguments_appellant": 16,
-      "full_document": 10,
+      "facts": 168,
+      "reasoning": 369,
+      "judgement": 44,
+      "arguments_appellant": 14,
+      "full_document": 9,
       "arguments_respondent": 9
     }
   },
   "summary_sentences": {
-    "total": 3248,
-    "aligned": 2318,
-    "unassigned": 930,
-    "unassigned_rate": 0.2863,
-    "multi_label": 588,
-    "multi_label_rate": 0.181,
-    "labels_per_sentence": 0.9193
+    "total": 2220,
+    "aligned": 1933,
+    "unassigned": 287,
+    "unassigned_rate": 0.1293,
+    "multi_label": 521,
+    "multi_label_rate": 0.2347,
+    "labels_per_sentence": 1.1383
   },
   "judgement": {
     "documents_by_outcome": {
-      "no_judgement_sentence": 43,
-      "retained": 50,
+      "no_judgement_sentence": 48,
+      "retained": 44,
       "no_judgement_section": 1,
-      "sentences_assigned_elsewhere": 6
+      "sentences_assigned_elsewhere": 7
     },
     "documents_with_judgement_section": 99,
     "documents_with_judgement_chunks": 99,
-    "judgement_sentences_assigned": 166,
-    "judgement_sentences_retained": 105,
-    "records_in_judgement_section": 50
+    "judgement_sentences_assigned": 137,
+    "judgement_sentences_retained": 82,
+    "records_in_judgement_section": 44
   },
   "targets": {
     "max_target_length": 448,
-    "records_with_overflow": 11,
-    "overflow_sentences_total": 27
+    "records_with_overflow": 14,
+    "overflow_sentences_total": 24
   },
   "alignment": {
     "cross_encoder_model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
@@ -62,34 +62,12 @@
     "relative_margin": 0.9,
     "allow_multi_label": true,
     "score_stats": {
-      "count": 2291,
-      "mean": 0.9291,
-      "median": 0.9872,
-      "p90": 0.9991,
+      "count": 1909,
+      "mean": 0.9384,
+      "median": 0.9891,
+      "p90": 0.9992,
       "max": 1.0
     }
-  },
-  "evidence": {
-    "mode": false,
-    "settings": {
-      "coverage_bound": 0.5,
-      "ambiguity_margin": 0.02,
-      "min_common_span": 4,
-      "max_rare_df": 1,
-      "contradiction_mode": "high_confidence"
-    },
-    "calibrated": false,
-    "decision_counts": {},
-    "decisions_total": 0,
-    "supported": 0,
-    "ambiguous": 0,
-    "unsupported": 0,
-    "not_summary_content": 0,
-    "supported_rate": 0.0,
-    "ambiguous_rate": 0.0,
-    "unsupported_rate": 0.0,
-    "not_summary_content_rate": 0.0,
-    "ambiguous_sentences": 0
   },
   "preprocessing": {
     "strip_preamble": true,
@@ -106,20 +84,20 @@
   },
   "lengths_estimated_with_approximate_tokens": {
     "aligned_target": {
-      "mean": 146.6,
-      "median": 114.0,
-      "p90": 324.0,
+      "mean": 157.3,
+      "median": 125.0,
+      "p90": 335.0,
       "max": 543.0
     },
     "chunk_text": {
-      "mean": 653.5,
+      "mean": 656.5,
       "median": 799.0,
-      "p90": 843.0,
+      "p90": 844.0,
       "max": 850.0
     }
   },
   "length_validation": {
-    "records": 645,
+    "records": 613,
     "max_input_tokens": 1018,
     "max_target_tokens": 448,
     "input_violations": 0,
@@ -131,9 +109,9 @@
     "max_input_length_limit": 1024,
     "max_target_length_limit": 448,
     "records_with_target_over_model_input": 0,
-    "records_with_target_longer_than_chunk": 18,
-    "records_with_target_overflow": 11,
-    "target_overflow_sentences_total": 27,
+    "records_with_target_longer_than_chunk": 24,
+    "records_with_target_overflow": 14,
+    "target_overflow_sentences_total": 24,
     "documents_with_single_chunk": 0
   },
   "split_isolation": {
@@ -156,7 +134,6 @@
     ],
     "reference_summaries": "reference_summaries.jsonl",
     "unassigned_report": "unassigned.jsonl",
-    "ambiguous_report": "ambiguous.jsonl",
     "inspection_sample": "inspect_sample.txt",
     "dataset_card": "README.md",
     "manifest": "build_manifest.json"

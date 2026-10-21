@@ -39,3 +39,5 @@ legal-doc-intelligence/artifacts/training_data/full/
 legal-doc-intelligence/.claude/
 # Stray runtime exports from the Gradio app
 lexnarrate_*.md
+
+.vercel

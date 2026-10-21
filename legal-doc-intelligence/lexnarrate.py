@@ -28,17 +28,24 @@ def _local(name):
     p = os.path.join(HERE, "models", name)
     return p if os.path.exists(os.path.join(p, "model.safetensors")) else None
 
+# Each checkpoint prefers a local copy under models/; when the weights aren't
+# present (e.g. a fresh clone, which never carries the 9.7 GB of weights) it
+# falls back to the published Hub repo so the app still runs. e3-outcome stays
+# first, so it remains the default whether loaded locally or from the Hub.
 MODEL_CHOICES = {}
-for label, folder in [
-    ("e3-outcome (outcome-preserving, recommended)", "legallens-bart-base-e3-outcome"),
-    ("e3", "legallens-bart-base-e3"),
-    ("e1", "legallens-bart-base-e1"),
+for label, folder, hub in [
+    ("e3-outcome (outcome-preserving, recommended)", "legallens-bart-base-e3-outcome",
+     "fakechamp24/legallens-bart-base-e3-outcome"),
+    ("e3", "legallens-bart-base-e3", "fakechamp24/legallens-bart-base"),
+    ("e1", "legallens-bart-base-e1", None),
 ]:
     path = _local(folder)
     if path:
         MODEL_CHOICES[label] = path
+    elif hub:
+        MODEL_CHOICES[label + " · Hub"] = hub
 MODEL_CHOICES["Hub: fakechamp24/legallens-bart-base"] = "fakechamp24/legallens-bart-base"
-DEFAULT_MODEL = next(iter(MODEL_CHOICES))  # e3-outcome when present
+DEFAULT_MODEL = next(iter(MODEL_CHOICES))  # e3-outcome (local if present, else Hub)
 
 SAMPLE_TEXT = """The Judgment of the Court was delivered by SAHAI, J.
 

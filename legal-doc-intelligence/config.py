@@ -6,16 +6,27 @@ import os
 # can tell base from fine-tuned, and so LEGAL_BART_MODEL=facebook/bart-base is an
 # explicit, supported way to run the original zero-shot behaviour.
 BASE_BART_MODEL = "facebook/bart-base"
-_LOCAL_BART = os.path.join(os.path.dirname(__file__), "models", "legallens-bart-base-e3")
-# Fine-tuned LegalLens summarizer. Prefer a local checkpoint (models/
-# legallens-bart-base-e3) when present, otherwise the published Hub repo; override
-# with LEGAL_BART_MODEL. The default is the fine-tuned model, not the base model,
-# so CLI/API/Gradio all run the fine-tune unless explicitly told otherwise.
-BART_MODEL = os.getenv(
-    "LEGAL_BART_MODEL",
-    _LOCAL_BART if os.path.exists(os.path.join(_LOCAL_BART, "model.safetensors"))
-    else "fakechamp24/legallens-bart-base",
-)
+# Published Hub repo for the latest (outcome-preserving) fine-tune, used as the
+# fallback when no local weights are present.
+HUB_BART_MODEL = "fakechamp24/legallens-bart-base-e3-outcome"
+_MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
+_LOCAL_OUTCOME = os.path.join(_MODELS_DIR, "legallens-bart-base-e3-outcome")
+_LOCAL_BART = os.path.join(_MODELS_DIR, "legallens-bart-base-e3")
+
+
+def _resolve_bart():
+    """Prefer the local outcome checkpoint, then local e3, then the Hub repo."""
+    for p in (_LOCAL_OUTCOME, _LOCAL_BART):
+        if os.path.exists(os.path.join(p, "model.safetensors")):
+            return p
+    return HUB_BART_MODEL
+
+
+# Fine-tuned LegalLens summarizer. Prefer a local checkpoint (the outcome-
+# preserving e3-outcome, then e3) when present, otherwise the published Hub repo;
+# override with LEGAL_BART_MODEL. The default is the fine-tuned model, not the
+# base model, so CLI/API/Gradio all run the fine-tune unless told otherwise.
+BART_MODEL = os.getenv("LEGAL_BART_MODEL", _resolve_bart())
 CROSS_ENCODER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 SPACY_MODEL = "en_core_web_sm"
 

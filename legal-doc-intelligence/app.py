@@ -12,9 +12,9 @@ Hub checkpoint ``fakechamp24/legallens-bart-base`` (and the NLI model to
 is present, which is the case on a fresh Space. Only the small rule-based section
 classifier (``models/section_classifier.joblib``, ~11 MB) is in the repo.
 """
-from gradio_app import demo
+from gradio_app import demo, LEXNARRATE_THEME, CUSTOM_CSS
 
 demo.queue(max_size=8)
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(theme=LEXNARRATE_THEME, css=CUSTOM_CSS)

@@ -166,6 +166,7 @@ export default function UploadInterface({ currentLang, onChangeLang }) {
       size: formatBytes(incoming.size),
       isSample: false,
       sampleId: null,
+      blob: incoming,
     });
     setMode('upload');
     resetOutput();
@@ -234,43 +235,71 @@ export default function UploadInterface({ currentLang, onChangeLang }) {
     }, 600);
   };
 
-  const runTextThroughModel = async () => {
-    const firstLine = text.trim().split(/\n/)[0].slice(0, 80);
+  const runModelRequest = async (label, requestPromise, fallback) => {
     setStatus('');
     setModelError('');
     setShowResult(false);
     setStepIndex(0);
     setLoadingKind('model');
     setIsLoading(true);
-    // Cycle the loading steps on a loop while the model runs (60–90s on CPU).
     if (modelTimer.current) window.clearInterval(modelTimer.current);
     modelTimer.current = window.setInterval(() => {
       setStepIndex((current) => (current + 1) % LOADING_STEPS.length);
     }, 1200);
 
     try {
-      const response = await fetch(`${API_BASE}/summarize`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, redact_names: false, strip_preamble: true, mode: 'both' }),
-      });
+      const response = await requestPromise;
       if (!response.ok) {
         const detail = await response.json().catch(() => ({}));
         throw new Error(detail.detail || `API returned ${response.status}`);
       }
       const data = await response.json();
-      setSubmission({ kind: 'model', name: firstLine || 'Pasted document', data });
+      setSubmission({ kind: 'model', name: label, data });
     } catch (error) {
       setModelError(
         `Could not reach the LegalLens model API at ${API_BASE}. Start it with ` +
-          `"python api.py" in legal-doc-intelligence/, or set VITE_API_BASE. Falling back to the browser preview. (${error.message})`,
+          `"python api.py" in legal-doc-intelligence/, or set VITE_API_BASE. (${error.message})`,
       );
-      setSubmission({ kind: 'text', text, name: firstLine || 'Pasted document' });
+      if (fallback) {
+        setSubmission(fallback);
+      } else {
+        setShowResult(false);
+        setIsLoading(false);
+        if (modelTimer.current) window.clearInterval(modelTimer.current);
+        return;
+      }
     } finally {
       if (modelTimer.current) window.clearInterval(modelTimer.current);
       setIsLoading(false);
       setShowResult(true);
     }
+  };
+
+  const runTextThroughModel = () => {
+    const firstLine = text.trim().split(/\n/)[0].slice(0, 80);
+    const name = firstLine || 'Pasted document';
+    return runModelRequest(
+      name,
+      fetch(`${API_BASE}/summarize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, redact_names: false, strip_preamble: true, mode: 'both' }),
+      }),
+      { kind: 'text', text, name },
+    );
+  };
+
+  const runFileThroughModel = () => {
+    const form = new FormData();
+    form.append('file', file.blob, file.name);
+    form.append('redact_names', 'false');
+    form.append('strip_preamble', 'true');
+    form.append('mode', 'both');
+    return runModelRequest(
+      file.name,
+      fetch(`${API_BASE}/summarize/upload`, { method: 'POST', body: form }),
+      { kind: 'upload', name: file.name },
+    );
   };
 
   const startAnalysis = () => {
@@ -279,6 +308,11 @@ export default function UploadInterface({ currentLang, onChangeLang }) {
       runTextThroughModel();
       return;
     }
+    if (mode === 'upload' && file && !file.isSample && file.blob) {
+      runFileThroughModel();
+      return;
+    }
+    // Sample documents and camera captures stay on the curated/mock path.
     setSubmission(
       file.isSample
         ? { kind: 'sample', sampleId: file.sampleId }

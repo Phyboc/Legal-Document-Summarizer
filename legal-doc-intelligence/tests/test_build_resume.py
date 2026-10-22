@@ -104,6 +104,51 @@ def _args(output_dir: Path, extra: list[str] | None = None) -> "bd.argparse.Name
     return bd.parse_args(argv)
 
 
+def test_second_builder_on_the_same_directory_is_refused(tmp_path, patched):
+    # Two builders sharing one --output_dir interleave their append-only journals.
+    # This is asserted rather than described: the first lock is held while the
+    # second is attempted.
+    with bd.BuildLock(tmp_path):
+        with pytest.raises(SystemExit) as excinfo:
+            bd.run_build(_args(tmp_path))
+        assert "Another build already holds" in str(excinfo.value)
+
+    # Released: the same directory is usable again, and the lock file left behind
+    # by the earlier holder does not block a later run.
+    assert list(tmp_path.glob(".build.lock"))
+    bd.run_build(_args(tmp_path))
+    records = [
+        json.loads(line)
+        for line in (tmp_path / "train.jsonl").read_text(encoding="utf-8").splitlines()
+    ]
+    assert [r["doc_id"] for r in records] == ["train_00000", "train_00001", "train_00002"]
+
+
+def test_duplicate_journal_entries_are_collapsed(tmp_path, patched):
+    # Reproduces the observed corruption: 15 journal lines for a 10-document split.
+    journal = tmp_path / ".train.checkpoint.jsonl"
+    build = _fake_build_document("train_00000", "train", "body", "summary")
+    entry = json.dumps(bd.asdict(build), ensure_ascii=False)
+    journal.parent.mkdir(parents=True, exist_ok=True)
+    journal.write_text("\n".join([entry, entry, entry]) + "\n", encoding="utf-8")
+
+    entries = bd.read_checkpoint_journal(journal)
+    assert len(entries) == 1
+    assert entries[0]["doc_id"] == "train_00000"
+
+    # And a resumed build must not double the records of a duplicated document.
+    bd.run_build(_args(tmp_path, ["--resume"]))
+    records = [
+        json.loads(line)
+        for line in (tmp_path / "train.jsonl").read_text(encoding="utf-8").splitlines()
+    ]
+    reappeared = [r for r in records if r["doc_id"] == "train_00000"]
+    assert len(reappeared) == 1, reappeared
+    assert sorted(r["doc_id"] for r in records) == [
+        "train_00000", "train_00001", "train_00002"
+    ]
+
+
 def test_completed_documents_are_journaled_and_journals_are_cleaned(
     tmp_path, patched
 ):

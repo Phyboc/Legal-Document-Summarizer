@@ -1,550 +1,668 @@
-import React, { useState, useEffect } from 'react';
-import { LANGUAGES, LOADING_STEPS, MOCK_DOCUMENTS, CUSTOM_DOCUMENT_FALLBACK } from '../mockData';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { LANGUAGES, LOADING_STEPS, MOCK_DOCUMENTS, CUSTOM_DOCUMENT_FALLBACK, TEXT_SAMPLES } from '../mockData';
+import { analyzeText, countWords } from '../lib/analyzeText';
+import { exportSummaryPdf } from '../lib/exportPdf';
 import FadeInSection from './FadeInSection';
 
+const MODES = [
+  { id: 'upload', label: 'Upload file' },
+  { id: 'text', label: 'Paste text' },
+  { id: 'scan', label: 'Scan page' },
+];
+
+const MIN_TEXT_LENGTH = 100;
+const MAX_FILE_BYTES = 15 * 1024 * 1024;
+const ACCEPTED_TYPES = /\.(pdf|docx?|jpe?g|png)$/i;
+
+function formatBytes(bytes) {
+  if (!bytes) return '0 KB';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  return `${parseFloat((bytes / 1024 ** index).toFixed(1))} ${units[index]}`;
+}
+
+function languageName(code) {
+  return LANGUAGES.find((language) => language.code === code)?.label || 'English';
+}
+
+function buildResult(submission, lang) {
+  if (!submission) return null;
+
+  if (submission.kind === 'text') {
+    const analysis = analyzeText(submission.text, languageName(lang));
+    return {
+      name: submission.name || analysis.name,
+      summary: analysis.summary,
+      clauses: analysis.clauses,
+      words: analysis.words,
+      isHeuristic: true,
+    };
+  }
+
+  if (submission.kind === 'sample') {
+    const doc = MOCK_DOCUMENTS.find((entry) => entry.id === submission.sampleId);
+    if (!doc) return null;
+    const data = doc.data[lang] || doc.data.en;
+    const words = countWords(`${data.summary} ${data.clauses.map((clause) => clause.original).join(' ')}`);
+    return { name: doc.name, summary: data.summary, clauses: data.clauses, words, isHeuristic: false };
+  }
+
+  const data = CUSTOM_DOCUMENT_FALLBACK.data[lang] || CUSTOM_DOCUMENT_FALLBACK.data.en;
+  const words = countWords(`${data.summary} ${data.clauses.map((clause) => clause.original).join(' ')}`);
+  return { name: submission.name, summary: data.summary, clauses: data.clauses, words, isHeuristic: false };
+}
+
 export default function UploadInterface({ currentLang, onChangeLang }) {
+  const [mode, setMode] = useState('upload');
   const [file, setFile] = useState(null);
-  const [isDragActive, setIsDragActive] = useState(false);
-  
-  // Camera mock states
+  const [fileError, setFileError] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const [text, setText] = useState('');
+
   const [isScanning, setIsScanning] = useState(false);
-  const [cameraCountdown, setCameraCountdown] = useState(null);
+  const [countdown, setCountdown] = useState(null);
 
-  // Loading states
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingStepIdx, setLoadingStepIdx] = useState(0);
-  
-  // Output states
+  const [stepIndex, setStepIndex] = useState(0);
+  const [submission, setSubmission] = useState(null);
   const [showResult, setShowResult] = useState(false);
-  const [activeTab, setActiveTab] = useState('explainer'); // 'explainer', 'risks', 'insights'
+  const [activeTab, setActiveTab] = useState('explainer');
+  const [status, setStatus] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
 
-  // Ref for file input
-  const fileInputRef = React.useRef(null);
+  const fileInputRef = useRef(null);
+  const scanTimer = useRef(null);
 
-  // Cycle through loading steps when loading is active
+  const result = useMemo(() => buildResult(submission, currentLang), [submission, currentLang]);
+  const words = countWords(text);
+  const canRun =
+    !isLoading && ((mode === 'upload' && Boolean(file)) || (mode === 'text' && text.trim().length >= MIN_TEXT_LENGTH));
+
   useEffect(() => {
-    let interval;
-    if (isLoading) {
-      interval = setInterval(() => {
-        setLoadingStepIdx((prevIdx) => {
-          if (prevIdx < LOADING_STEPS.length - 1) {
-            return prevIdx + 1;
-          } else {
-            clearInterval(interval);
-            setIsLoading(false);
-            setShowResult(true);
-            return 0;
-          }
-        });
-      }, 700);
-    }
-    return () => clearInterval(interval);
+    if (!isLoading) return undefined;
+    const interval = window.setInterval(() => {
+      setStepIndex((current) => {
+        if (current >= LOADING_STEPS.length - 1) {
+          window.clearInterval(interval);
+          setIsLoading(false);
+          setShowResult(true);
+          return current;
+        }
+        return current + 1;
+      });
+    }, 700);
+    return () => window.clearInterval(interval);
   }, [isLoading]);
 
-  // Drag and drop handlers
-  const handleDrag = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setIsDragActive(true);
-    } else if (e.type === "dragleave") {
-      setIsDragActive(false);
+  useEffect(() => () => {
+    if (scanTimer.current) window.clearInterval(scanTimer.current);
+  }, []);
+
+  const resetOutput = () => {
+    setShowResult(false);
+    setSubmission(null);
+    setStatus('');
+  };
+
+  const acceptFile = (incoming) => {
+    setFileError('');
+    if (!incoming) return;
+    if (!ACCEPTED_TYPES.test(incoming.name)) {
+      setFileError('That file type is not supported. Use PDF, Word, JPG or PNG.');
+      return;
     }
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragActive(false);
-
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const droppedFile = e.dataTransfer.files[0];
-      setFile({
-        name: droppedFile.name,
-        size: formatBytes(droppedFile.size),
-        isSample: false,
-        id: 'custom_upload'
-      });
-      setShowResult(false);
+    if (incoming.size > MAX_FILE_BYTES) {
+      setFileError('That file is over 15 MB. Split it or compress it first.');
+      return;
     }
+    setFile({
+      name: incoming.name,
+      size: formatBytes(incoming.size),
+      isSample: false,
+      sampleId: null,
+    });
+    setMode('upload');
+    resetOutput();
   };
 
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0];
-      setFile({
-        name: selectedFile.name,
-        size: formatBytes(selectedFile.size),
-        isSample: false,
-        id: 'custom_upload'
-      });
-      setShowResult(false);
-    }
+  const handleDrag = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragging(event.type === 'dragenter' || event.type === 'dragover');
   };
 
-  const triggerFileSelect = () => {
-    fileInputRef.current.click();
+  const handleDrop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragging(false);
+    acceptFile(event.dataTransfer.files?.[0]);
   };
 
-  // Helper to format bytes
-  const formatBytes = (bytes, decimals = 1) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-  };
-
-  // Select a mock sample agreement
   const selectSample = (sampleId) => {
-    const sample = MOCK_DOCUMENTS.find(doc => doc.id === sampleId);
-    if (sample) {
-      setFile({
-        name: sample.filename,
-        size: sample.size,
-        isSample: true,
-        id: sample.id
-      });
-      setShowResult(false);
-    }
-  };
-
-  // Simulated Camera Scanner trigger
-  const startCameraScan = () => {
-    setIsScanning(true);
-    setCameraCountdown(null);
-  };
-
-  const captureCameraDoc = () => {
-    setCameraCountdown(3);
-    const counter = setInterval(() => {
-      setCameraCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(counter);
-          setFile({
-            name: "Camera_Scan_Agreement_" + Math.floor(Math.random() * 900 + 100) + ".jpg",
-            size: "1.4 MB",
-            isSample: false,
-            id: 'custom_upload'
-          });
-          setIsScanning(false);
-          setShowResult(false);
-          return null;
-        }
-        return prev - 1;
-      });
-    }, 600);
+    const sample = MOCK_DOCUMENTS.find((doc) => doc.id === sampleId);
+    if (!sample) return;
+    setFileError('');
+    setFile({ name: sample.filename, size: sample.size, isSample: true, sampleId });
+    setMode('upload');
+    resetOutput();
   };
 
   const removeFile = () => {
     setFile(null);
-    setShowResult(false);
+    setFileError('');
+    resetOutput();
+  };
+
+  const startScan = () => {
+    setMode('scan');
+    setIsScanning(true);
+    setCountdown(null);
+  };
+
+  const cancelScan = () => {
+    setIsScanning(false);
+    setCountdown(null);
+    setMode('upload');
+  };
+
+  const captureScan = () => {
+    setCountdown(3);
+    scanTimer.current = window.setInterval(() => {
+      setCountdown((current) => {
+        if (current <= 1) {
+          window.clearInterval(scanTimer.current);
+          setFile({
+            name: `Camera_scan_${Math.floor(Math.random() * 900 + 100)}.jpg`,
+            size: '1.4 MB',
+            isSample: false,
+            sampleId: null,
+          });
+          setIsScanning(false);
+          setMode('upload');
+          setCountdown(null);
+          resetOutput();
+          return null;
+        }
+        return current - 1;
+      });
+    }, 600);
   };
 
   const startAnalysis = () => {
-    if (!file) return;
-    setIsLoading(true);
+    if (!canRun) return;
+    if (mode === 'upload') {
+      setSubmission(
+        file.isSample
+          ? { kind: 'sample', sampleId: file.sampleId }
+          : { kind: 'upload', name: file.name },
+      );
+    } else {
+      const firstLine = text.trim().split(/\n/)[0].slice(0, 80);
+      setSubmission({ kind: 'text', text, name: firstLine || 'Pasted document' });
+    }
+    setStatus('');
     setShowResult(false);
-    setLoadingStepIdx(0);
+    setStepIndex(0);
+    setIsLoading(true);
   };
 
-  // Get active translation data
-  const getDocumentData = () => {
-    if (!file) return null;
-    if (file.isSample) {
-      const doc = MOCK_DOCUMENTS.find(d => d.id === file.id);
-      return doc ? doc.data[currentLang] || doc.data['en'] : null;
-    } else {
-      return CUSTOM_DOCUMENT_FALLBACK.data[currentLang] || CUSTOM_DOCUMENT_FALLBACK.data['en'];
+  const handleExport = () => {
+    if (!result) return;
+    setIsExporting(true);
+    // Pasted text is summarised in English in this build, so label the PDF as
+    // English rather than the interface language selected for translation.
+    const outputLanguage = result.isHeuristic && currentLang !== 'en' ? 'en' : currentLang;
+    exportSummaryPdf({
+      docName: result.name,
+      languageLabel: languageName(outputLanguage),
+      languageCode: outputLanguage,
+      summary: result.summary,
+      clauses: result.clauses,
+      wordCount: result.words,
+      generatedAt: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+    });
+    window.setTimeout(() => {
+      setIsExporting(false);
+      setStatus('Print dialog opened — choose “Save as PDF” in the destination list.');
+    }, 900);
+  };
+
+  const handleCopy = async () => {
+    if (!result) return;
+    const body = [
+      result.name,
+      '',
+      result.summary,
+      '',
+      ...result.clauses.map(
+        (clause, index) => `${index + 1}. ${clause.title}\nOriginal: ${clause.original}\nPlain language: ${clause.simplified}`,
+      ),
+      '',
+      'Summary from Legal Lens. General information, not legal advice.',
+    ].join('\n');
+
+    try {
+      await navigator.clipboard.writeText(body);
+      setStatus('Summary copied to the clipboard.');
+    } catch {
+      setStatus('This browser blocked clipboard access. Select the text and copy it instead.');
     }
   };
 
-  const data = getDocumentData();
-
   return (
-    <section id="upload-tool" className="upload-section-container">
-      <div className="container">
-        
+    <section id="upload-tool" className="section">
+      <div className="shell">
         <FadeInSection>
-          <div className="section-header text-center">
-            <span className="legal-accent">Secure Legal Console</span>
-            <h2 className="section-title">Decode your documents instantly</h2>
-            <p className="section-desc">
-              Upload a scan, photo, PDF or Word document. Legal Lens analyzes standard clauses and explains obligations in your primary language.
+          <div className="section-head">
+            <h2>Paste it. Upload it. Photograph it.</h2>
+            <p>
+              The console reads contracts, judgments and notices, then sets every clause beside the plain-language
+              version, ready to export.
             </p>
           </div>
         </FadeInSection>
 
-        <div className="upload-console-layout">
-          {/* LEFT: Upload controls */}
-          <div className="upload-controls-card card">
-            
-            {/* Camera Viewport Overlay */}
-            {isScanning ? (
-              <div className="camera-viewfinder">
-                <div className="scanner-line"></div>
-                <div className="camera-corners">
-                  <div className="corner top-left"></div>
-                  <div className="corner top-right"></div>
-                  <div className="corner bottom-left"></div>
-                  <div className="corner bottom-right"></div>
-                </div>
-                
-                <div className="camera-content">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" strokeWidth="1.5" className="animate-pulse">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                    <circle cx="12" cy="13" r="4" />
-                  </svg>
-                  <p className="camera-hint">Align your document page within borders</p>
-                  
-                  {cameraCountdown !== null ? (
-                    <div className="camera-countdown">{cameraCountdown}</div>
-                  ) : (
-                    <div className="camera-actions">
-                      <button className="btn-primary" onClick={captureCameraDoc}>
-                        Capture Page
-                      </button>
-                      <button className="btn-secondary" onClick={() => setIsScanning(false)}>
-                        Cancel
-                      </button>
-                    </div>
-                  )}
-                </div>
+        <div className="console-grid">
+          <FadeInSection>
+            <div className="console-controls">
+              <div className="modes" role="tablist" aria-label="Input method">
+                {MODES.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={mode === item.id}
+                    className={`mode ${mode === item.id ? 'is-active' : ''}`}
+                    onClick={() => {
+                      if (item.id === 'scan') {
+                        startScan();
+                      } else {
+                        setIsScanning(false);
+                        setMode(item.id);
+                      }
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                ))}
               </div>
-            ) : (
-              /* Standard Dropzone */
-              <div 
-                className={`dropzone ${isDragActive ? 'drag-active' : ''} ${file ? 'has-file' : ''}`}
-                onDragEnter={handleDrag}
-                onDragOver={handleDrag}
-                onDragLeave={handleDrag}
-                onDrop={handleDrop}
-                onClick={!file ? triggerFileSelect : undefined}
-                role="button"
-                tabIndex={!file ? 0 : -1}
-                aria-label="Upload document area"
-                onKeyDown={(e) => {
-                  if (!file && (e.key === 'Enter' || e.key === ' ')) {
-                    e.preventDefault();
-                    triggerFileSelect();
-                  }
-                }}
-              >
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  onChange={handleFileChange} 
-                  accept=".pdf,.docx,.doc,.jpg,.jpeg,.png"
-                  style={{ display: 'none' }}
-                />
 
-                {!file ? (
-                  <div className="dropzone-content">
-                    <div className="upload-icon-container">
-                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <polyline points="14 2 14 8 20 8" />
-                        <line x1="12" y1="18" x2="12" y2="12" />
-                        <polyline points="9 15 12 12 15 15" />
-                      </svg>
+              {mode === 'upload' && (
+                <div className="mode-panel">
+                  {!file ? (
+                    <div
+                      className={`dropzone ${isDragging ? 'is-dragging' : ''}`}
+                      onDragEnter={handleDrag}
+                      onDragOver={handleDrag}
+                      onDragLeave={handleDrag}
+                      onDrop={handleDrop}
+                      onClick={() => fileInputRef.current?.click()}
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Upload a document"
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          fileInputRef.current?.click();
+                        }
+                      }}
+                    >
+                      <strong>Drop the document here</strong>
+                      <span className="small">PDF, Word, JPG or PNG, up to 15 MB</span>
+                      <span className="choose">Choose a file</span>
                     </div>
-                    <h3>Drag & drop document</h3>
-                    <p className="dropzone-sub">Supports PDF, DOCX, or Image (Max 15MB)</p>
-                    <button className="btn-ghost dropzone-browse-btn" type="button">
-                      or browse files
-                    </button>
-                  </div>
-                ) : (
-                  <div className="selected-file-container" onClick={(e) => e.stopPropagation()}>
-                    <div className="file-detail-row">
-                      <div className="file-icon-box">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" strokeWidth="2">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                          <polyline points="14 2 14 8 20 8" />
-                        </svg>
+                  ) : (
+                    <div className="file-row">
+                      <div className="file-text">
+                        <span className="file-name" title={file.name}>
+                          {file.name}
+                        </span>
+                        <span className="file-meta small">
+                          {file.size} · {file.isSample ? 'sample document' : 'ready to read'}
+                        </span>
                       </div>
-                      <div className="file-info-text">
-                        <span className="file-name" title={file.name}>{file.name}</span>
-                        <span className="file-size">{file.size}</span>
-                      </div>
-                      <button 
-                        className="file-remove-btn" 
-                        onClick={removeFile}
-                        aria-label="Remove uploaded file"
-                      >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <button type="button" className="icon-button" onClick={removeFile} aria-label="Remove file">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                           <line x1="18" y1="6" x2="6" y2="18" />
                           <line x1="6" y1="6" x2="18" y2="18" />
                         </svg>
                       </button>
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
+                  )}
 
-            {/* Alternative Scanner & Quick Demos */}
-            {!file && !isScanning && (
-              <div className="upload-alternatives">
-                <button className="btn-secondary scan-camera-btn" onClick={startCameraScan}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                    <circle cx="12" cy="13" r="4" />
-                  </svg>
-                  <span>Scan with Camera</span>
-                </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.docx,.doc,.jpg,.jpeg,.png"
+                    onChange={(event) => acceptFile(event.target.files?.[0])}
+                    hidden
+                  />
 
-                <div className="quick-samples">
-                  <span className="sample-label">Or try a sample agreement:</span>
-                  <div className="sample-buttons">
-                    <button 
-                      className="sample-btn"
-                      onClick={() => selectSample('rental_agreement')}
-                    >
-                      Rental Agreement
+                  {fileError && (
+                    <p className="small" role="alert" style={{ marginTop: 10 }}>
+                      {fileError}
+                    </p>
+                  )}
+
+                  <div className="samples">
+                    <span className="field-label">Or open a sample document</span>
+                    <button type="button" className="sample" onClick={() => selectSample('rental_agreement')}>
+                      <span>Residential rental agreement</span>
+                      <span>11 months</span>
                     </button>
-                    <button 
-                      className="sample-btn"
-                      onClick={() => selectSample('employment_agreement')}
-                    >
-                      Employment & NDA
+                    <button type="button" className="sample" onClick={() => selectSample('employment_agreement')}>
+                      <span>Employment and NDA</span>
+                      <span>Probation</span>
                     </button>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Language Selection & Execution Panel */}
-            {file && (
-              <div className="action-panel">
-                <div className="action-lang-row">
-                  <label htmlFor="upload-lang-select" className="input-label">Translate & Explain In:</label>
-                  <select 
-                    id="upload-lang-select"
-                    className="premium-select"
-                    value={currentLang}
-                    onChange={(e) => onChangeLang(e.target.value)}
-                  >
-                    {LANGUAGES.map(lang => (
-                      <option key={lang.code} value={lang.code}>
-                        {lang.native} ({lang.label})
-                      </option>
+              {mode === 'text' && (
+                <div className="mode-panel">
+                  <label className="field-label" htmlFor="console-text">
+                    Document text
+                  </label>
+                  <textarea
+                    id="console-text"
+                    className="text-input"
+                    value={text}
+                    onChange={(event) => {
+                      setText(event.target.value);
+                      resetOutput();
+                    }}
+                    placeholder={'Paste a clause, a notice or a full agreement…\n\nFor example: “The Tenant shall deposit with the Landlord a sum of Rs. 1,00,000 as an interest-free security deposit…”'}
+                    spellCheck="false"
+                  />
+                  <div className="input-meta">
+                    <span className="small" aria-live="polite">
+                      {words.toLocaleString('en-IN')} words · {text.length.toLocaleString('en-IN')} characters
+                    </span>
+                    <button type="button" className="meta-link" onClick={() => setText('')}>
+                      Clear
+                    </button>
+                  </div>
+                  {text.length > 0 && text.trim().length < MIN_TEXT_LENGTH && (
+                    <p className="small hint">Add a little more text — at least {MIN_TEXT_LENGTH} characters — so the clauses have something to work with.</p>
+                  )}
+
+                  <div className="samples">
+                    <span className="field-label">Or try a sample clause</span>
+                    {TEXT_SAMPLES.map((sample) => (
+                      <button
+                        key={sample.id}
+                        type="button"
+                        className="sample"
+                        onClick={() => {
+                          setText(sample.text);
+                          resetOutput();
+                        }}
+                      >
+                        <span>{sample.label}</span>
+                        <span>{countWords(sample.text)} words</span>
+                      </button>
                     ))}
-                  </select>
+                  </div>
                 </div>
-                
-                <button 
-                  className="btn-primary run-analysis-btn"
-                  onClick={startAnalysis}
-                  disabled={isLoading}
+              )}
+
+              {mode === 'scan' && (
+                <div className="mode-panel">
+                  <div className="scanner">
+                    <div className="scanner-line" aria-hidden="true" />
+                    {countdown === null ? (
+                      <>
+                        <strong>Fit the page inside the frame</strong>
+                        <span className="small">Hold the phone steady. Text is read straight from the page.</span>
+                        <div className="scanner-actions">
+                          <button type="button" className="btn btn-on-field" onClick={captureScan}>
+                            Capture page
+                          </button>
+                          <button type="button" className="btn btn-quiet" style={{ color: '#f2efe6' }} onClick={cancelScan}>
+                            Cancel
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <span className="count" aria-live="polite">
+                        {countdown}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="settings">
+                <label className="field-label" htmlFor="console-language">
+                  Explain in
+                </label>
+                <select
+                  id="console-language"
+                  className="select"
+                  value={currentLang}
+                  onChange={(event) => onChangeLang(event.target.value)}
                 >
-                  {isLoading ? "Processing..." : "Generate AI Summary"}
+                  {LANGUAGES.map((language) => (
+                    <option key={language.code} value={language.code}>
+                      {language.native} — {language.label}
+                    </option>
+                  ))}
+                </select>
+
+                <button type="button" className="btn btn-primary run-btn" onClick={startAnalysis} disabled={!canRun}>
+                  {isLoading ? 'Reading the document…' : 'Explain this document'}
                   {!isLoading && (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <polygon points="5 3 19 12 5 21 5 3" fill="currentColor" />
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M5 12h13" />
+                      <polyline points="12 5 19 12 12 19" />
                     </svg>
                   )}
                 </button>
+
+                {mode === 'text' && text.trim().length < MIN_TEXT_LENGTH && (
+                  <p className="small hint">Paste at least {MIN_TEXT_LENGTH} characters to enable the button.</p>
+                )}
+                {mode === 'scan' && !isScanning && (
+                  <p className="small hint">Switch to “Scan page” and capture a page first.</p>
+                )}
               </div>
-            )}
-          </div>
+            </div>
+          </FadeInSection>
 
-          {/* RIGHT: Results / Loading Sandboxes */}
-          <div className="result-console-panel">
-            
-            {/* Idle State */}
-            {!file && !isLoading && !showResult && (
-              <div className="idle-result-state card">
-                <div className="idle-globe-icon">
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.5">
-                    <rect x="2" y="2" width="20" height="20" rx="5" />
-                    <path d="M12 2v20M2 12h20" />
-                    <circle cx="12" cy="12" r="6" strokeDasharray="3 3" />
-                  </svg>
-                </div>
-                <h3>Analysis Output Terminal</h3>
-                <p>Upload a document or choose a sample to begin. Your document will be parsed in secure local containers and simplified clause-by-clause.</p>
-              </div>
-            )}
+          <FadeInSection delay={120}>
+            <div className="console-output">
+              {!isLoading && !showResult && (
+                <div className="idle">
+                  <h3>A clause, the way it comes back</h3>
+                  <p className="small">
+                    Every passage keeps its original wording beside the plain-language note, so you can check the
+                    source before you rely on the summary.
+                  </p>
 
-            {/* Loading Pulse State */}
-            {isLoading && (
-              <div className="loading-result-state card">
-                <div className="pulse-loader-ring">
-                  <div className="ring-pulse"></div>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 6v6l4 2" />
-                  </svg>
+                  <div className="fragment" data-ui>
+                    <span className="fragment-label">Original clause</span>
+                    <p className="legalese">
+                      The Tenant shall deposit with the Landlord a sum of ₹1,00,000 as an interest-free security
+                      deposit, returnable upon peaceful vacant possession of the demised premises, subject to
+                      deductions for damages.
+                    </p>
+                    <div className="plain">
+                      <p>
+                        You pay ₹1,00,000 up front. It comes back when you move out, minus the cost of any damage
+                        beyond normal wear.
+                      </p>
+                    </div>
+                  </div>
+                  <p className="small fragment-note">
+                    From the rental agreement sample. Nothing has been read yet — upload a file or paste text to fill
+                    this panel.
+                  </p>
                 </div>
-                <h4 className="loading-status-text animate-pulse">
-                  {LOADING_STEPS[loadingStepIdx]}
-                </h4>
-                
-                <div className="skeleton-container">
-                  <div className="skeleton skeleton-title"></div>
-                  <div className="skeleton skeleton-text long"></div>
-                  <div className="skeleton skeleton-text medium"></div>
-                  <div className="skeleton skeleton-text short"></div>
-                </div>
-              </div>
-            )}
+              )}
 
-            {/* Result State */}
-            {showResult && data && (
-              <div className="results-wrapper">
-                
-                {/* Result Tabs (Supports Phase 2 extensions) */}
-                <div className="result-tab-bar">
-                  <button 
-                    className={`tab-btn ${activeTab === 'explainer' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('explainer')}
+              {isLoading && (
+                <div className="loading" aria-live="polite">
+                  <h3>Reading the document</h3>
+                  <p className="small">
+                    Paragraphs are read in order: first the structure, then each clause, then the plain-language
+                    version in {languageName(currentLang)}.
+                  </p>
+                  <div
+                    className="progress"
+                    role="progressbar"
+                    aria-valuemin={0}
+                    aria-valuemax={LOADING_STEPS.length}
+                    aria-valuenow={stepIndex + 1}
                   >
-                    Clause Explainer
-                  </button>
-                  
-                  {/* Phase 2 Stubs */}
-                  <button 
-                    className={`tab-btn disabled-tab ${activeTab === 'risks' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('risks')}
-                    title="Risk Alerts (Coming in Phase 2)"
-                  >
-                    Risk Alerts
-                    <span className="tab-pill-beta">Phase 2</span>
-                  </button>
-
-                  <button 
-                    className={`tab-btn disabled-tab ${activeTab === 'insights' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('insights')}
-                    title="Key Obligations (Coming in Phase 2)"
-                  >
-                    Key Insights
-                    <span className="tab-pill-beta">Phase 2</span>
-                  </button>
+                    <span style={{ width: `${((stepIndex + 1) / LOADING_STEPS.length) * 100}%` }} />
+                  </div>
+                  <ul className="steps">
+                    {LOADING_STEPS.map((step, index) => (
+                      <li
+                        key={step}
+                        className={index === stepIndex ? 'is-current' : index < stepIndex ? 'is-done' : ''}
+                      >
+                        <span>{step}</span>
+                        <span className="state">
+                          {index < stepIndex ? 'done' : index === stepIndex ? 'working' : 'queued'}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
+              )}
 
-                {/* Tab Content: Explainer */}
-                {activeTab === 'explainer' && (
-                  <div className="explainer-content-animation">
-                    {/* A. Simple Summary Card */}
-                    <div className="summary-result-card card">
-                      <div className="card-badge-row">
-                        <span className="legal-accent">Simple Summary</span>
-                        <span className="badge lang-badge">{LANGUAGES.find(l => l.code === currentLang)?.native}</span>
+              {showResult && result && (
+                <div>
+                  <div className="output-head">
+                    <div>
+                      <h3>{result.name}</h3>
+                      <div className="result-meta">
+                        <span>{languageName(currentLang)}</span>
+                        <span>{result.words.toLocaleString('en-IN')} words</span>
+                        <span>{result.clauses.length} clauses</span>
+                        {result.isHeuristic && <span>Browser preview</span>}
                       </div>
-                      <p className="summary-text serif-quote">"{data.summary}"</p>
                     </div>
-
-                    {/* B. Clause Explanations */}
-                    <div className="clause-breakdowns-header">
-                      <h3>Explained in Simple Terms</h3>
-                      <p className="clause-breakdown-sub">Review original legal covenants alongside simple translations</p>
+                    <div className="output-actions">
+                      <button type="button" className="btn btn-primary" onClick={handleExport} disabled={isExporting}>
+                        {isExporting ? 'Preparing…' : 'Export PDF'}
+                      </button>
+                      <button type="button" className="btn btn-quiet" onClick={handleCopy}>
+                        Copy
+                      </button>
                     </div>
+                  </div>
 
-                    <div className="clause-list">
-                      {data.clauses.map((clause, idx) => (
-                        <div className="clause-card card" key={idx}>
-                          <div className="clause-card-title-row">
-                            <span className="clause-number">0{idx + 1}</span>
+                  <div className="tabs" role="tablist" aria-label="Summary views">
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={activeTab === 'explainer'}
+                      className={`tab ${activeTab === 'explainer' ? 'is-active' : ''}`}
+                      onClick={() => setActiveTab('explainer')}
+                    >
+                      Clause explainer
+                    </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={activeTab === 'risks'}
+                      className={`tab ${activeTab === 'risks' ? 'is-active' : ''}`}
+                      onClick={() => setActiveTab('risks')}
+                    >
+                      Risk alerts <span className="phase">Phase 2</span>
+                    </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={activeTab === 'insights'}
+                      className={`tab ${activeTab === 'insights' ? 'is-active' : ''}`}
+                      onClick={() => setActiveTab('insights')}
+                    >
+                      Key insights <span className="phase">Phase 2</span>
+                    </button>
+                  </div>
+
+                  {activeTab === 'explainer' && (
+                    <div>
+                      <div className="summary-card">
+                        <span className="fragment-label">Summary</span>
+                        <p>{result.summary}</p>
+                      </div>
+
+                      {result.isHeuristic && currentLang !== 'en' && (
+                        <p className="small" style={{ marginTop: 12 }}>
+                          Pasted text is summarised in English in this build. The sample documents show the full
+                          eight-language output.
+                        </p>
+                      )}
+
+                      <div className="clause-list">
+                        {result.clauses.map((clause) => (
+                          <article className="clause" key={`${clause.title}-${clause.original.slice(0, 24)}`}>
                             <h4>{clause.title}</h4>
-                          </div>
-
-                          <div className="clause-comparison-layout">
-                            {/* Original legalese */}
-                            <div className="clause-pane legalese-pane">
-                              <span className="pane-tag">Original Contract Covenants</span>
-                              <div className="legalese-text-box">
-                                <p className="original-text">{clause.original}</p>
+                            <div className="clause-pair">
+                              <div className="pane pane-original">
+                                <span className="fragment-label">Original clause</span>
+                                <p>{clause.original}</p>
+                              </div>
+                              <div className="pane pane-plain">
+                                <span className="fragment-label">Plain language</span>
+                                <p>{clause.simplified}</p>
                               </div>
                             </div>
-
-                            {/* Arrow divider */}
-                            <div className="clause-connection-arrow">
-                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" strokeWidth="2.5">
-                                <line x1="5" y1="12" x2="19" y2="12" />
-                                <polyline points="12 5 19 12 12 19" />
-                              </svg>
-                            </div>
-
-                            {/* Simplified explanation */}
-                            <div className="clause-pane simplified-pane">
-                              <span className="pane-tag accent-tag">Plain Language Explanation</span>
-                              <div className="simplified-text-box">
-                                <p className="simplified-text">{clause.simplified}</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Future Extension: Q&A panel plug-in point */}
-                    {/* 
-                      STUDENT TEAM NOTE: 
-                      Place Q&A chat panel or feedback form here in Phase 2.
-                      Recommended Structure:
-                      <div className="qa-chat-section card mt-6">
-                        <h4>Ask Legal Lens Chatbot</h4>
-                        ...
+                          </article>
+                        ))}
                       </div>
-                    */}
-                    <div className="future-placeholder-banner card">
-                      <div className="placeholder-content">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" strokeWidth="2">
-                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                        </svg>
-                        <div>
-                          <h5>Interactive Q&A Chat Panel</h5>
-                          <p>In Phase 2, a conversational interface will appear here allowing you to query specific clauses directly.</p>
-                        </div>
+
+                      <div className="result-foot">
+                        <p className="small">
+                          The PDF carries this summary, every clause pair and the disclaimer, in{' '}
+                          {languageName(currentLang)}.
+                        </p>
+                        <p className="disclaimer">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="16" x2="12" y2="11" />
+                            <line x1="12" y1="8" x2="12.01" y2="8" />
+                          </svg>
+                          Legal Lens explains documents for general understanding. It is not legal advice, and it does
+                          not replace a qualified lawyer.
+                        </p>
                       </div>
                     </div>
+                  )}
 
-                    {/* C. Legal Disclaimer */}
-                    <div className="legal-disclaimer">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <circle cx="12" cy="12" r="10" />
-                        <line x1="12" y1="16" x2="12" y2="12" />
-                        <line x1="12" y1="8" x2="12.01" y2="8" />
-                      </svg>
-                      <span>Legal Lens provides simplified explanations for general informational guidance, not formal professional legal advice.</span>
+                  {activeTab === 'risks' && (
+                    <div className="empty-tab">
+                      <h4>Risk alerts are in Phase 2</h4>
+                      <p>
+                        This view will flag high-risk terms, missing disclosures and unusually broad indemnities,
+                        ranked by how much they expose you. The current build keeps the original and plain clauses
+                        side by side instead.
+                      </p>
                     </div>
+                  )}
 
-                  </div>
-                )}
+                  {activeTab === 'insights' && (
+                    <div className="empty-tab">
+                      <h4>Key insights are in Phase 2</h4>
+                      <p>
+                        This view will pull out dates, notice periods, payment milestones and the obligations that
+                        fall due first. For now, scan the clause headings in the explainer.
+                      </p>
+                    </div>
+                  )}
 
-                {/* Tab Content: Risk Alerts Stub */}
-                {activeTab === 'risks' && (
-                  <div className="coming-soon-tab card">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" strokeWidth="2" className="mb-4">
-                      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                      <line x1="12" y1="9" x2="12" y2="13" />
-                      <line x1="12" y1="17" x2="12.01" y2="17" />
-                    </svg>
-                    <h4>Risk Alert Identification (Phase 2)</h4>
-                    <p>This panel will flag high-risk terms, missing disclosures, and severe indemnification guidelines automatically.</p>
-                  </div>
-                )}
-
-                {/* Tab Content: Key Insights Stub */}
-                {activeTab === 'insights' && (
-                  <div className="coming-soon-tab card">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" strokeWidth="2" className="mb-4">
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="2" y1="12" x2="22" y2="12" />
-                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                    </svg>
-                    <h4>Extracted Key Obligations (Phase 2)</h4>
-                    <p>This panel will summarize critical milestones, key dates, notice deadlines, and monetary payouts automatically.</p>
-                  </div>
-                )}
-
-              </div>
-            )}
-          </div>
+                  <p className="status" role="status">
+                    {status}
+                  </p>
+                </div>
+              )}
+            </div>
+          </FadeInSection>
         </div>
-
       </div>
     </section>
   );

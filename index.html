@@ -2,10 +2,32 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Legal Lens is an AI-powered contract explainer and translator. Upload contracts, agreements, or notices and get clause-by-clause summaries in Telugu, Hindi, Tamil, Kannada, Malayalam, Marathi, Bengali, and English." />
-    <title>Legal Lens - AI-Powered Legal Document Simplifier</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#f2efe6" />
+    <meta
+      name="description"
+      content="Legal Lens reads contracts, agreements and judgments and explains them clause by clause in eight Indian languages. Upload a PDF, paste text or scan a page, then export the summary as a PDF."
+    />
+    <title>Legal Lens — read the fine print</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=Public+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      try {
+        var forcedTheme = new URLSearchParams(window.location.search).get('theme');
+        if (forcedTheme === 'dark' || forcedTheme === 'light') {
+          document.documentElement.dataset.theme = forcedTheme;
+        } else if (localStorage.getItem('legallens-theme') === 'dark') {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      } catch (error) {
+        /* storage can be unavailable in private modes */
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

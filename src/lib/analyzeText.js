@@ -169,14 +169,14 @@ export function analyzeText(raw, languageLabel = 'English') {
       title: 'Key passage',
       original: truncate(paragraphs[0] || text, EXCERPT_LIMIT),
       simplified:
-        'This is the working text of the document. Legal Lens keeps each passage beside a plain-language note so you can check the original wording.',
+        'This is the working text of the document. LegalLens keeps each passage beside a plain-language note so you can check the original wording.',
     });
   }
 
   const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
   const opening = truncate(sentences.slice(0, 2).join(' ').trim(), 340);
   const areas = detected.map((clause) => clause.title.toLowerCase());
-  const summary = `${opening} Legal Lens flagged ${detected.length} ${
+  const summary = `${opening} LegalLens flagged ${detected.length} ${
     detected.length === 1 ? 'passage' : 'passages'
   } to read closely${areas.length ? `: ${areas.join(', ')}` : ''}.`;
 

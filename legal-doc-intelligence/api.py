@@ -1,11 +1,24 @@
 """FastAPI endpoint for LegalLens."""
+import os
 import sys
 sys.path.insert(0, ".")
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from src.pipeline import process_document
 
 app = FastAPI(title="LegalLens API", version="1.0")
+
+# Allow the browser front ends (static page on Vercel / localhost, React dev
+# server) to call the model API directly. CORS_ORIGINS can narrow this in
+# production; the default is permissive for local development.
+_origins = os.environ.get("CORS_ORIGINS", "*").split(",")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[o.strip() for o in _origins],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class SummarizeRequest(BaseModel):

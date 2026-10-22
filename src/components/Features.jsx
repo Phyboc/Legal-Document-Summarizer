@@ -44,7 +44,7 @@ function ExportVisual() {
     <div className="feature-visual">
       <div className="export-mini" data-ui>
         <div className="export-sheet">
-          <span className="wordmark-mini">Legal Lens</span>
+          <span className="wordmark-mini">LegalLens</span>
           <p className="sheet-title" style={{ marginTop: 10 }}>
             Residential Rental Agreement
           </p>
@@ -99,7 +99,7 @@ export default function Features() {
               <div>
                 <h3>Old legalese, said plainly.</h3>
                 <p>
-                  Covenants, demised premises, hereinafter, notwithstanding. Legal Lens reads the dense forms that
+                  Covenants, demised premises, hereinafter, notwithstanding. LegalLens reads the dense forms that
                   contracts are still written in and says what each one means in a sentence.
                 </p>
               </div>

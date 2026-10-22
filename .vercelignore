@@ -1,0 +1,11 @@
+# Only the root React + Vite static site is deployed to Vercel.
+# Exclude the Python/Gradio backend, model weights, datasets and docs.
+legal-doc-intelligence/
+node_modules/
+dist/
+training data/
+Documents/
+*.docx
+*.pptx
+*.MD
+LegalLens_Paper.docx

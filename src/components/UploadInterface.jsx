@@ -238,7 +238,7 @@ export default function UploadInterface({ currentLang, onChangeLang }) {
         (clause, index) => `${index + 1}. ${clause.title}\nOriginal: ${clause.original}\nPlain language: ${clause.simplified}`,
       ),
       '',
-      'Summary from Legal Lens. General information, not legal advice.',
+      'Summary from LegalLens. General information, not legal advice.',
     ].join('\n');
 
     try {
@@ -627,7 +627,7 @@ export default function UploadInterface({ currentLang, onChangeLang }) {
                             <line x1="12" y1="16" x2="12" y2="11" />
                             <line x1="12" y1="8" x2="12.01" y2="8" />
                           </svg>
-                          Legal Lens explains documents for general understanding. It is not legal advice, and it does
+                          LegalLens explains documents for general understanding. It is not legal advice, and it does
                           not replace a qualified lawyer.
                         </p>
                       </div>

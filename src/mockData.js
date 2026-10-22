@@ -1,4 +1,4 @@
-// Language definitions supported by Legal Lens
+// Language definitions supported by LegalLens
 export const LANGUAGES = [
   { code: 'en', label: 'English', native: 'English' },
   { code: 'te', label: 'Telugu', native: 'తెలుగు' },
@@ -15,7 +15,7 @@ export const LOADING_STEPS = [
   "Uploading legal document to secure sandbox...",
   "Running optical character recognition (OCR) on scans...",
   "Parsing complex legal terminology and definitions...",
-  "Applying Legal Lens AI semantic models...",
+  "Applying LegalLens AI semantic models...",
   "Extracting key clauses and obligation variables...",
   "Generating simple summaries and translating definitions..."
 ];

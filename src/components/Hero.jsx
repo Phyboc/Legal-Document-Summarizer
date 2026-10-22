@@ -40,7 +40,7 @@ export default function Hero({ onScrollToUpload, onScrollToHowItWorks }) {
         <div className="hero-foot">
           <FadeInSection delay={120}>
             <p className="lead">
-              Legal Lens turns contracts, agreements and judgments into plain-language summaries, clause by
+              LegalLens turns contracts, agreements and judgments into plain-language summaries, clause by
               clause, in eight Indian languages.
             </p>
             <p className="small hero-plain">

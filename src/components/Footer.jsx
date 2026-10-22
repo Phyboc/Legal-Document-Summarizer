@@ -36,12 +36,12 @@ export default function Footer({ onScrollToUpload }) {
         <div className="shell">
           <div className="footer-top">
             <div className="footer-brand">
-              <a href="#" className="wordmark" aria-label="Legal Lens home">
+              <a href="#" className="wordmark" aria-label="LegalLens home">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
                   <circle cx="10.5" cy="10.5" r="6.5" />
                   <line x1="15.4" y1="15.4" x2="21" y2="21" />
                 </svg>
-                Legal Lens
+                LegalLens
               </a>
               <p>
                 A plain-language reader for contracts, agreements and judgments. Built for the people who have to
@@ -95,15 +95,15 @@ export default function Footer({ onScrollToUpload }) {
             </p>
 
             <div className="footer-legal" id="disclaimer">
-              <span>© 2026 Legal Lens. All rights reserved.</span>
+              <span>© 2026 LegalLens. All rights reserved.</span>
               <span>
-                Legal Lens is an AI utility and does not constitute a substitute for professional legal advice.
+                LegalLens is an AI utility and does not constitute a substitute for professional legal advice.
               </span>
             </div>
           </div>
         </div>
 
-        <p className="footer-mark" aria-hidden="true">Legal Lens</p>
+        <p className="footer-mark" aria-hidden="true">LegalLens</p>
       </footer>
     </>
   );

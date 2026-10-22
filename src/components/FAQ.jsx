@@ -3,8 +3,8 @@ import FadeInSection from './FadeInSection';
 
 const QUESTIONS = [
   {
-    q: 'Is Legal Lens a lawyer?',
-    a: 'No. Legal Lens is a reading tool. It explains what a document says in plain language, but it does not give legal advice, represent you, or predict how a dispute would end. For a specific problem, take the summary to a qualified lawyer.',
+    q: 'Is LegalLens a lawyer?',
+    a: 'No. LegalLens is a reading tool. It explains what a document says in plain language, but it does not give legal advice, represent you, or predict how a dispute would end. For a specific problem, take the summary to a qualified lawyer.',
     note: 'The same disclaimer travels with every PDF you export.',
   },
   {

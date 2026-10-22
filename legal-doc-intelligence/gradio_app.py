@@ -100,7 +100,7 @@ def _print_document(title: str, result: dict, generated_at: str) -> str:
 
     return f"""
     <div id="ll-print">
-      <div class="p-brand">Legal Lens</div>
+      <div class="p-brand">LegalLens</div>
       <h1>{html.escape(title)}</h1>
       <p class="p-meta">{html.escape(generated_at)} &middot; {result['n_paragraphs']} paragraphs &middot;
         {result['n_chunks']} chunks &middot; Sections: {html.escape(sections)}</p>
@@ -116,7 +116,7 @@ def _print_document(title: str, result: dict, generated_at: str) -> str:
       <h2>Citations</h2>
       <ol class="p-cites">{citation_rows}</ol>
 
-      <p class="p-note">Legal Lens explains documents for general understanding. It is not legal advice
+      <p class="p-note">LegalLens explains documents for general understanding. It is not legal advice
       and does not replace a qualified lawyer. Generated {html.escape(generated_at)}.</p>
     </div>
     """
@@ -433,12 +433,12 @@ with gr.Blocks(title="LegalLens — plain-language legal summaries", theme=THEME
     gr.HTML(
         """
         <div class="ll-head">
-          <div class="ll-wordmark">Legal Lens</div>
+          <div class="ll-wordmark">LegalLens</div>
           <div class="ll-head-note">Structured and plain-language summaries for Indian legal documents</div>
         </div>
         <div class="ll-hero">
           <h1>Read the <em>fine print</em>.</h1>
-          <p>Paste a judgment or upload a document. Legal Lens returns two readings of it: a structured
+          <p>Paste a judgment or upload a document. LegalLens returns two readings of it: a structured
           legal summary for the lawyer, and a plain-language summary for the person it binds.</p>
         </div>
         <div class="ll-strip">
@@ -515,7 +515,7 @@ with gr.Blocks(title="LegalLens — plain-language legal summaries", theme=THEME
     print_html = gr.HTML("")
 
     gr.HTML(
-        '<p class="ll-note" style="margin-top:32px">Legal Lens explains documents for general '
+        '<p class="ll-note" style="margin-top:32px">LegalLens explains documents for general '
         'understanding. It is not legal advice and does not replace a qualified lawyer.</p>'
     )
 

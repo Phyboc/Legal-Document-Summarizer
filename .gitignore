@@ -36,7 +36,7 @@ legal-doc-intelligence/models/nli-*/
 legal-doc-intelligence/artifacts/training_data/full/
 
 # Claude Code session tooling
-.claude/
+.claude/launch.json
 legal-doc-intelligence/.claude/
 # Stray runtime exports from the Gradio app
 lexnarrate_*.md

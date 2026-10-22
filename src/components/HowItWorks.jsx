@@ -1,78 +1,140 @@
-import React from 'react';
+import React, { useState } from 'react';
 import FadeInSection from './FadeInSection';
 
-export default function HowItWorks() {
-  const steps = [
-    {
-      num: "01",
-      title: "Upload or Scan",
-      desc: "Drag and drop your legal contract, upload a PDF/Word file, or snap a photo of a notice with your mobile camera.",
-      icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-          <polyline points="17 8 12 3 7 8" />
-          <line x1="12" y1="3" x2="12" y2="15" />
-        </svg>
-      )
-    },
-    {
-      num: "02",
-      title: "Choose Language",
-      desc: "Select from 8 Indian languages (Telugu, Hindi, Tamil, Kannada, Malayalam, Marathi, Bengali, English) for localized summaries.",
-      icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="10" />
-          <line x1="2" y1="12" x2="22" y2="12" />
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-        </svg>
-      )
-    },
-    {
-      num: "03",
-      title: "Decode Covenants",
-      desc: "Get an instantaneous simple summary and view complex legalese side-by-side with clear, human-readable explanations.",
-      icon: (
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="2" />
-          <line x1="9" y1="9" x2="15" y2="9" />
-          <line x1="9" y1="13" x2="15" y2="13" />
-          <line x1="9" y1="17" x2="11" y2="17" />
-        </svg>
-      )
-    }
-  ];
+const STAGES = [
+  {
+    title: 'Give it the document',
+    copy:
+      'A PDF, a Word file, a photograph of a page, or text pasted straight into the console. Nothing needs to be retyped, and the file stays in this session.',
+    label: 'Step one',
+  },
+  {
+    title: 'Choose the language',
+    copy:
+      'English, Hindi, Telugu, Tamil, Kannada, Malayalam, Marathi and Bengali. Every clause is explained in the script you actually read.',
+    label: 'Step two',
+  },
+  {
+    title: 'Read it, then keep it',
+    copy:
+      'The summary and every clause pair are yours to check, copy, or export as a PDF you can carry to a lawyer or keep with the agreement.',
+    label: 'Step three',
+  },
+];
+
+function StageVisual({ index }) {
+  if (index === 0) {
+    return (
+      <div className="stage-card" data-ui>
+        <span className="fragment-label">Console · document</span>
+        <div className="stage-file">
+          <span>Standard_Residential_Rental_Agreement.pdf</span>
+          <span>245 KB</span>
+        </div>
+        <span className="stage-tag">Ready to read</span>
+      </div>
+    );
+  }
+
+  if (index === 1) {
+    return (
+      <div className="stage-card" data-ui>
+        <span className="fragment-label">Console · output language</span>
+        <div className="stage-langs">
+          <span className="stage-lang">English</span>
+          <span className="stage-lang">हिन्दी</span>
+          <span className="stage-lang is-picked">తెలుగు</span>
+          <span className="stage-lang">தமிழ்</span>
+          <span className="stage-lang">ಕನ್ನಡ</span>
+          <span className="stage-lang">മലയാളം</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <section id="how-it-works" className="how-it-works-section">
-      <div className="container">
-        
+    <div className="stage-card" data-ui>
+      <span className="fragment-label">Export · summary</span>
+      <div className="stage-sheet">
+        <p className="sheet-title">Residential Rental Agreement</p>
+        <p className="sheet-meta">Telugu · 11 clauses · A4 PDF</p>
+        <div className="sheet-plain">
+          మీరు ₹1,00,000 అడ్వాన్స్ కట్టాలి. ఇల్లు ఖాళీ చేసేటప్పుడు, నష్టాల ఖర్చులు మినహాయించి
+          యజమాని డబ్బును తిరిగి ఇవ్వాలి.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function HowItWorks() {
+  const [stage, setStage] = useState(0);
+  const current = STAGES[stage];
+
+  return (
+    <section id="how-it-works" className="section">
+      <div className="shell">
         <FadeInSection>
-          <div className="section-header text-center">
-            <span className="legal-accent">Three-Step Process</span>
-            <h2 className="section-title">Democratizing Legalese</h2>
-            <p className="section-desc">
-              Understand binding obligations in three straightforward actions. No legal background required.
+          <div className="section-head">
+            <h2>From document to plain language.</h2>
+            <p>
+              Three steps, no legal training required. Move through them here to see what the console holds at each
+              point.
             </p>
           </div>
         </FadeInSection>
 
-        <div className="steps-grid">
-          {steps.map((step, idx) => (
-            <FadeInSection key={idx} delay={idx * 150}>
-              <div className="step-card card">
-                <div className="step-card-header">
-                  <div className="step-icon-circle">
-                    {step.icon}
-                  </div>
-                  <span className="step-number">{step.num}</span>
-                </div>
-                <h3 className="step-card-title">{step.title}</h3>
-                <p className="step-card-desc">{step.desc}</p>
+        <FadeInSection delay={100}>
+          <div className="process">
+            <div className="process-copy">
+              <div key={`copy-${stage}`}>
+                <h3>{current.title}</h3>
+                <p style={{ marginTop: 16 }}>{current.copy}</p>
               </div>
-            </FadeInSection>
-          ))}
-        </div>
+              <span className="small" style={{ color: 'inherit', opacity: 0.72 }}>
+                {current.label} of three
+              </span>
+            </div>
+            <div className="process-visual">
+              <div key={`visual-${stage}`}>
+                <StageVisual index={stage} />
+              </div>
+            </div>
+          </div>
 
+          <div className="slider-wrap">
+            <div className="range">
+              <div className="range-track" />
+              <div
+                className="range-fill"
+                style={{ width: `calc(${(stage / (STAGES.length - 1)) * 100}% )` }}
+              />
+              <input
+                type="range"
+                min="0"
+                max={STAGES.length - 1}
+                step="1"
+                value={stage}
+                onChange={(event) => setStage(Number(event.target.value))}
+                aria-label="Walk through the three steps"
+                aria-valuetext={current.title}
+              />
+            </div>
+            <div className="stage-labels">
+              {STAGES.map((item, index) => (
+                <button
+                  key={item.title}
+                  type="button"
+                  className={`stage-label ${index === stage ? 'is-active' : ''}`}
+                  onClick={() => setStage(index)}
+                  aria-current={index === stage ? 'step' : undefined}
+                >
+                  {item.title}
+                </button>
+              ))}
+            </div>
+          </div>
+        </FadeInSection>
       </div>
     </section>
   );

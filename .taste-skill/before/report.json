@@ -1,0 +1,2385 @@
+{
+ "url": "http://localhost:5173",
+ "at": "2026-10-22T05:28:50.618Z",
+ "allow": [],
+ "viewports": [
+  {
+   "width": 1440,
+   "height": 900,
+   "load": "load",
+   "screens": 5,
+   "filled": [
+    0.32,
+    0.87,
+    0.69,
+    0.5,
+    0.66
+   ],
+   "motion": {
+    "elements": 35,
+    "css": 0,
+    "transitions": 35,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "page": {
+     "height": 4124,
+     "screens": 4.6,
+     "words": 503,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 18,
+     "sections": 4,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Justice begins with understanding.",
+     "words": 4,
+     "chars": 34,
+     "lines": 2,
+     "size": 64,
+     "vw": 4.4,
+     "font": "Inter",
+     "weight": 800,
+     "tracking": -0.02,
+     "leading": 1.1,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "center",
+     "position": "center",
+     "widthRatio": 0.41,
+     "top": 236,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Justice begins with understanding.",
+     "words": 4,
+     "lines": 2,
+     "size": 64,
+     "font": "Inter"
+    },
+    "headings": [
+     {
+      "text": "Justice begins with understanding.",
+      "words": 4,
+      "chars": 34,
+      "lines": 2,
+      "size": 64,
+      "vw": 4.4,
+      "font": "Inter",
+      "weight": 800,
+      "tracking": -0.02,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.41,
+      "top": 236,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "Decode your documents instantly",
+      "words": 4,
+      "chars": 31,
+      "lines": 1,
+      "size": 40,
+      "vw": 2.8,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.02,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.8,
+      "top": 905,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Democratizing Legalese",
+      "words": 2,
+      "chars": 22,
+      "lines": 1,
+      "size": 40,
+      "vw": 2.8,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.02,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.8,
+      "top": 1835,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "01",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 28,
+      "vw": 1.9,
+      "font": "Share Tech Mono",
+      "weight": 800,
+      "tracking": 0,
+      "leading": 1.6,
+      "upper": false,
+      "italic": false,
+      "mono": true,
+      "align": "left",
+      "position": "left",
+      "widthRatio": 0.22,
+      "top": 2042,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "02",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 28,
+      "vw": 1.9,
+      "font": "Share Tech Mono",
+      "weight": 800,
+      "tracking": 0,
+      "leading": 1.6,
+      "upper": false,
+      "italic": false,
+      "mono": true,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.22,
+      "top": 2042,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "03",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 28,
+      "vw": 1.9,
+      "font": "Share Tech Mono",
+      "weight": 800,
+      "tracking": 0,
+      "leading": 1.6,
+      "upper": false,
+      "italic": false,
+      "mono": true,
+      "align": "left",
+      "position": "right",
+      "widthRatio": 0.22,
+      "top": 2042,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "Legal insights, simplified",
+      "words": 3,
+      "chars": 26,
+      "lines": 1,
+      "size": 40,
+      "vw": 2.8,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.02,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.8,
+      "top": 2492,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Got questions? We have answers.",
+      "words": 5,
+      "chars": 31,
+      "lines": 1,
+      "size": 40,
+      "vw": 2.8,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.02,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.8,
+      "top": 3163,
+      "tag": "h2",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 8,
+     "maxLines": 2,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 5,
+     "medianWords": 2,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Inter",
+       "share": 0.95,
+       "mono": false
+      },
+      {
+       "family": "Share Tech Mono",
+       "share": 0.05,
+       "mono": true
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      12,
+      13,
+      14,
+      15,
+      18,
+      19,
+      20,
+      28,
+      40,
+      64
+     ],
+     "sizeCount": 10,
+     "notLoaded": [],
+     "body": {
+      "font": "Inter",
+      "size": 15.2,
+      "leading": 1.6,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 6
+     },
+     "measureChars": 88,
+     "max": {
+      "size": 64,
+      "vw": 4.4,
+      "font": "Inter",
+      "text": "Justice begins with"
+     },
+     "monoShare": 0.05,
+     "monoProseShare": 0.05,
+     "monoFamilies": [
+      "Share Tech Mono"
+     ],
+     "monoSamples": [
+      "AI-Powered Legal Clarity",
+      "Supported Standards:",
+      "Secure Legal Console",
+      "Or try a sample agreement:",
+      "Three-Step Process",
+      "01"
+     ],
+     "microLabels": 9,
+     "microLabelShare": 0.042,
+     "microSamples": [
+      "AI-Powered Legal Clarity",
+      "Supported Standards:",
+      "Secure Legal Console",
+      "Three-Step Process",
+      "Core Capabilities",
+      "Frequently Asked Questions"
+     ],
+     "upperShare": 0.04,
+     "centerShare": 0.36,
+     "smallText": 9
+    },
+    "eyebrows": [
+     {
+      "text": "AI-Powered Legal Clarity",
+      "above": "Justice begins with understanding.",
+      "upper": true,
+      "tracked": true,
+      "mono": true,
+      "pill": true,
+      "size": 12,
+      "top": 186
+     },
+     {
+      "text": "Secure Legal Console",
+      "above": "Decode your documents instantly",
+      "upper": true,
+      "tracked": true,
+      "mono": true,
+      "pill": false,
+      "size": 12,
+      "top": 874
+     },
+     {
+      "text": "Three-Step Process",
+      "above": "Democratizing Legalese",
+      "upper": true,
+      "tracked": true,
+      "mono": true,
+      "pill": false,
+      "size": 12,
+      "top": 1805
+     },
+     {
+      "text": "Core Capabilities",
+      "above": "Legal insights, simplified",
+      "upper": true,
+      "tracked": true,
+      "mono": true,
+      "pill": false,
+      "size": 12,
+      "top": 2462
+     },
+     {
+      "text": "Frequently Asked Questions",
+      "above": "Got questions? We have answers.",
+      "upper": true,
+      "tracked": true,
+      "mono": true,
+      "pill": false,
+      "size": 12,
+      "top": 3133
+     }
+    ],
+    "numbered": [
+     {
+      "text": "01",
+      "size": 28,
+      "top": 2048
+     },
+     {
+      "text": "02",
+      "size": 28,
+      "top": 2048
+     },
+     {
+      "text": "03",
+      "size": 28,
+      "top": 2048
+     }
+    ],
+    "color": {
+     "bodyBg": "#14151a",
+     "bodyBgHsl": {
+      "h": 230,
+      "s": 0.13,
+      "l": 0.09
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#0b0b0e",
+       "top": 3757,
+       "hsl": {
+        "h": 240,
+        "s": 0.12,
+        "l": 0.05
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#9a9a9e",
+       "share": 0.76
+      },
+      {
+       "color": "#f5f5f2",
+       "share": 0.13
+      },
+      {
+       "color": "#646469",
+       "share": 0.06
+      },
+      {
+       "color": "#e8b84b",
+       "share": 0.05
+      },
+      {
+       "color": "#14151a",
+       "share": 0
+      }
+     ],
+     "button": {
+      "bg": "#24252d",
+      "hsl": {
+       "h": 233,
+       "s": 0.11,
+       "l": 0.16
+      },
+      "fg": "#9a9a9e"
+     },
+     "lowContrast": [
+      {
+       "text": "Supports PDF, DOCX, or Image (Max 15MB)",
+       "ratio": 2.9,
+       "need": 4.5,
+       "size": 12.8,
+       "fg": "#646469",
+       "bg": "#1c1d24"
+      },
+      {
+       "text": "© 2026 Legal Lens. All rights reserved.",
+       "ratio": 3.3,
+       "need": 4.5,
+       "size": 12.8,
+       "fg": "#646469",
+       "bg": "#0b0b0e"
+      },
+      {
+       "text": "Legal Lens is an AI utility and does not",
+       "ratio": 3.3,
+       "need": 4.5,
+       "size": 12,
+       "fg": "#646469",
+       "bg": "#0b0b0e"
+      }
+     ]
+    },
+    "buttons": {
+     "count": 6,
+     "inHero": 3,
+     "radius": "pill",
+     "height": 48,
+     "withShadow": 1,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "English",
+      "Upload a document",
+      "See how it works"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 1,
+     "shadowOverlay": 0,
+     "shadowSamples": [
+      "button.btn-primary.hero-cta-primary → rgba(232, 184, 75, 0.15) 0px 4px 14px 0px"
+     ],
+     "gradients": 2,
+     "scrims": 0,
+     "gradientSamples": [
+      "div.hero-glow-1 → radial-gradient(circle, rgba(232, 184, 75, 0.08) 0%, rgba(20, 21, 26, 0) 70%)",
+      "div.hero-glow-2 → radial-gradient(circle, rgba(61, 90, 254, 0.04) 0%, rgba(20, 21, 26, 0) 70%)"
+     ],
+     "gradientText": 0,
+     "hairlines": 8,
+     "hairlineSamples": [
+      "nav.navbar 1440px",
+      "section#upload-tool.upload-section-container 1440px",
+      "div.quick-samples 361px",
+      "section#how-it-works.how-it-works-section 1440px",
+      "section#features.features-section 1440px"
+     ],
+     "outlinedBoxes": 8,
+     "dashed": 1,
+     "blurred": 1,
+     "roundedBoxes": 9,
+     "boxRadius": 16,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 4,
+     "fixed": true,
+     "height": 72,
+     "floatingPill": false,
+     "blur": true
+    },
+    "fontsLoaded": [
+     "inter",
+     "share tech mono"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 1440,
+     "h": 900
+    },
+    "pageH": 4124,
+    "margins": {
+     "left": 144,
+     "right": 144
+    },
+    "sections": [
+     {
+      "sel": "header.hero-section",
+      "tag": "header",
+      "top": 72,
+      "height": 714,
+      "words": 54,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Justice begins with",
+       "size": 64,
+       "tag": "h1"
+      },
+      "left": 417,
+      "right": 417,
+      "textLeft": 417,
+      "textRight": 417,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section#upload-tool.upload-section-container",
+      "tag": "section",
+      "top": 786,
+      "height": 910,
+      "words": 85,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Decode your documents instantly",
+       "size": 40,
+       "tag": "h2"
+      },
+      "left": 169,
+      "right": 301,
+      "textLeft": 169,
+      "textRight": 301,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section#how-it-works.how-it-works-section",
+      "tag": "section",
+      "top": 1697,
+      "height": 657,
+      "words": 86,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Democratizing Legalese",
+       "size": 40,
+       "tag": "h2"
+      },
+      "left": 169,
+      "right": 169,
+      "textLeft": 169,
+      "textRight": 169,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section#features.features-section",
+      "tag": "section",
+      "top": 2354,
+      "height": 671,
+      "words": 88,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Legal insights, simplified",
+       "size": 40,
+       "tag": "h2"
+      },
+      "left": 169,
+      "right": 195,
+      "textLeft": 169,
+      "textRight": 195,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section#faq.faq-section",
+      "tag": "section",
+      "top": 3025,
+      "height": 733,
+      "words": 189,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Got questions? We have answers.",
+       "size": 40,
+       "tag": "h2"
+      },
+      "left": 361,
+      "right": 361,
+      "textLeft": 385,
+      "textRight": 395,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "footer.footer-section",
+      "tag": "footer",
+      "top": 3757,
+      "height": 366,
+      "words": 48,
+      "media": 0,
+      "middle": 428,
+      "heading": {
+       "text": "Product",
+       "size": 14,
+       "tag": "h4"
+      },
+      "left": 144,
+      "right": 144,
+      "textLeft": 144,
+      "textRight": 144,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Justice begins with understanding.",
+      "size": 64,
+      "top": 236,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 169,
+      "n": 4
+     },
+     {
+      "x": 385,
+      "n": 4
+     },
+     {
+      "x": 561,
+      "n": 4
+     },
+     {
+      "x": 953,
+      "n": 4
+     }
+    ],
+    "leftBlocks": 16,
+    "bodySize": 15,
+    "stage": false,
+    "explains": true,
+    "slivers": [],
+    "voidShare": 0.22,
+    "voidBox": {
+     "x": 0,
+     "y": 120,
+     "w": 360,
+     "h": 780
+    }
+   },
+   "app": null,
+   "consoleErrors": []
+  },
+  {
+   "width": 768,
+   "height": 1024,
+   "load": "load",
+   "screens": 6,
+   "filled": [
+    0.52,
+    1,
+    0.64,
+    0.93,
+    0.63,
+    0.88
+   ],
+   "motion": {
+    "elements": 35,
+    "css": 0,
+    "transitions": 35,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "page": {
+     "height": 5549,
+     "screens": 5.4,
+     "words": 497,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 18,
+     "sections": 4,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Justice begins with understanding.",
+     "words": 4,
+     "chars": 34,
+     "lines": 2,
+     "size": 44,
+     "vw": 5.7,
+     "font": "Inter",
+     "weight": 800,
+     "tracking": -0.02,
+     "leading": 1.1,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "center",
+     "position": "center",
+     "widthRatio": 0.53,
+     "top": 236,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Justice begins with understanding.",
+     "words": 4,
+     "lines": 2,
+     "size": 44,
+     "font": "Inter"
+    },
+    "headings": [
+     {
+      "text": "Justice begins with understanding.",
+      "words": 4,
+      "chars": 34,
+      "lines": 2,
+      "size": 44,
+      "vw": 5.7,
+      "font": "Inter",
+      "weight": 800,
+      "tracking": -0.02,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.53,
+      "top": 236,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "Decode your documents instantly",
+      "words": 4,
+      "chars": 31,
+      "lines": 1,
+      "size": 40,
+      "vw": 5.2,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.02,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 825,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Democratizing Legalese",
+      "words": 2,
+      "chars": 22,
+      "lines": 1,
+      "size": 40,
+      "vw": 5.2,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.02,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 2272,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "01",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 28,
+      "vw": 3.6,
+      "font": "Share Tech Mono",
+      "weight": 800,
+      "tracking": 0,
+      "leading": 1.6,
+      "upper": false,
+      "italic": false,
+      "mono": true,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.87,
+      "top": 2479,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "02",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 28,
+      "vw": 3.6,
+      "font": "Share Tech Mono",
+      "weight": 800,
+      "tracking": 0,
+      "leading": 1.6,
+      "upper": false,
+      "italic": false,
+      "mono": true,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.87,
+      "top": 2712,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "03",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 28,
+      "vw": 3.6,
+      "font": "Share Tech Mono",
+      "weight": 800,
+      "tracking": 0,
+      "leading": 1.6,
+      "upper": false,
+      "italic": false,
+      "mono": true,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.87,
+      "top": 2945,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "Legal insights, simplified",
+      "words": 3,
+      "chars": 26,
+      "lines": 1,
+      "size": 40,
+      "vw": 5.2,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.02,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 3372,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Got questions? We have answers.",
+      "words": 5,
+      "chars": 31,
+      "lines": 1,
+      "size": 40,
+      "vw": 5.2,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.02,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.94,
+      "top": 4445,
+      "tag": "h2",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 8,
+     "maxLines": 2,
+     "over2Lines": 0,
+     "statements": 0,
+     "centered": 5,
+     "medianWords": 2,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Inter",
+       "share": 0.95,
+       "mono": false
+      },
+      {
+       "family": "Share Tech Mono",
+       "share": 0.05,
+       "mono": true
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      19,
+      20,
+      28,
+      40,
+      44
+     ],
+     "sizeCount": 11,
+     "notLoaded": [],
+     "body": {
+      "font": "Inter",
+      "size": 15.2,
+      "leading": 1.6,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 6
+     },
+     "measureChars": 88,
+     "max": {
+      "size": 44,
+      "vw": 5.7,
+      "font": "Inter",
+      "text": "Justice begins with"
+     },
+     "monoShare": 0.05,
+     "monoProseShare": 0.05,
+     "monoFamilies": [
+      "Share Tech Mono"
+     ],
+     "monoSamples": [
+      "AI-Powered Legal Clarity",
+      "Supported Standards:",
+      "Secure Legal Console",
+      "Or try a sample agreement:",
+      "Three-Step Process",
+      "01"
+     ],
+     "microLabels": 9,
+     "microLabelShare": 0.042,
+     "microSamples": [
+      "AI-Powered Legal Clarity",
+      "Supported Standards:",
+      "Secure Legal Console",
+      "Three-Step Process",
+      "Core Capabilities",
+      "Frequently Asked Questions"
+     ],
+     "upperShare": 0.04,
+     "centerShare": 0.4,
+     "smallText": 9
+    },
+    "eyebrows": [
+     {
+      "text": "AI-Powered Legal Clarity",
+      "above": "Justice begins with understanding.",
+      "upper": true,
+      "tracked": true,
+      "mono": true,
+      "pill": true,
+      "size": 12,
+      "top": 186
+     },
+     {
+      "text": "Secure Legal Console",
+      "above": "Decode your documents instantly",
+      "upper": true,
+      "tracked": true,
+      "mono": true,
+      "pill": false,
+      "size": 12,
+      "top": 794
+     },
+     {
+      "text": "Three-Step Process",
+      "above": "Democratizing Legalese",
+      "upper": true,
+      "tracked": true,
+      "mono": true,
+      "pill": false,
+      "size": 12,
+      "top": 2241
+     },
+     {
+      "text": "Core Capabilities",
+      "above": "Legal insights, simplified",
+      "upper": true,
+      "tracked": true,
+      "mono": true,
+      "pill": false,
+      "size": 12,
+      "top": 3342
+     },
+     {
+      "text": "Frequently Asked Questions",
+      "above": "Got questions? We have answers.",
+      "upper": true,
+      "tracked": true,
+      "mono": true,
+      "pill": false,
+      "size": 12,
+      "top": 4415
+     }
+    ],
+    "numbered": [
+     {
+      "text": "01",
+      "size": 28,
+      "top": 2485
+     },
+     {
+      "text": "02",
+      "size": 28,
+      "top": 2718
+     },
+     {
+      "text": "03",
+      "size": 28,
+      "top": 2951
+     }
+    ],
+    "color": {
+     "bodyBg": "#14151a",
+     "bodyBgHsl": {
+      "h": 230,
+      "s": 0.13,
+      "l": 0.09
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#1c1d24",
+       "top": 1007,
+       "hsl": {
+        "h": 233,
+        "s": 0.13,
+        "l": 0.13
+       }
+      },
+      {
+       "color": "#0b0b0e",
+       "top": 5040,
+       "hsl": {
+        "h": 240,
+        "s": 0.12,
+        "l": 0.05
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#9a9a9e",
+       "share": 0.76
+      },
+      {
+       "color": "#f5f5f2",
+       "share": 0.13
+      },
+      {
+       "color": "#646469",
+       "share": 0.06
+      },
+      {
+       "color": "#e8b84b",
+       "share": 0.05
+      },
+      {
+       "color": "#14151a",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#24252d",
+      "hsl": {
+       "h": 233,
+       "s": 0.11,
+       "l": 0.16
+      },
+      "fg": "#9a9a9e"
+     },
+     "lowContrast": [
+      {
+       "text": "Supports PDF, DOCX, or Image (Max 15MB)",
+       "ratio": 2.9,
+       "need": 4.5,
+       "size": 12.8,
+       "fg": "#646469",
+       "bg": "#1c1d24"
+      },
+      {
+       "text": "© 2026 Legal Lens. All rights reserved.",
+       "ratio": 3.3,
+       "need": 4.5,
+       "size": 12.8,
+       "fg": "#646469",
+       "bg": "#0b0b0e"
+      },
+      {
+       "text": "Legal Lens is an AI utility and does not",
+       "ratio": 3.3,
+       "need": 4.5,
+       "size": 12,
+       "fg": "#646469",
+       "bg": "#0b0b0e"
+      }
+     ]
+    },
+    "buttons": {
+     "count": 5,
+     "inHero": 2,
+     "radius": "pill",
+     "height": 49,
+     "withShadow": 1,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Upload a document",
+      "See how it works"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 1,
+     "shadowOverlay": 0,
+     "shadowSamples": [
+      "button.btn-primary.hero-cta-primary → rgba(232, 184, 75, 0.15) 0px 4px 14px 0px"
+     ],
+     "gradients": 2,
+     "scrims": 0,
+     "gradientSamples": [
+      "div.hero-glow-1 → radial-gradient(circle, rgba(232, 184, 75, 0.08) 0%, rgba(20, 21, 26, 0) 70%)",
+      "div.hero-glow-2 → radial-gradient(circle, rgba(61, 90, 254, 0.04) 0%, rgba(20, 21, 26, 0) 70%)"
+     ],
+     "gradientText": 0,
+     "hairlines": 8,
+     "hairlineSamples": [
+      "nav.navbar 768px",
+      "section#upload-tool.upload-section-container 768px",
+      "div.quick-samples 670px",
+      "section#how-it-works.how-it-works-section 768px",
+      "section#features.features-section 768px"
+     ],
+     "outlinedBoxes": 8,
+     "dashed": 1,
+     "blurred": 1,
+     "roundedBoxes": 9,
+     "boxRadius": 16,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 1,
+     "fixed": true,
+     "height": 72,
+     "floatingPill": false,
+     "blur": true
+    },
+    "fontsLoaded": [
+     "inter",
+     "share tech mono"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 768,
+     "h": 1024
+    },
+    "pageH": 5549,
+    "margins": {
+     "left": 24,
+     "right": 25
+    },
+    "sections": [
+     {
+      "sel": "header.hero-section",
+      "tag": "header",
+      "top": 72,
+      "height": 634,
+      "words": 54,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Justice begins with",
+       "size": 44,
+       "tag": "h1"
+      },
+      "left": 61,
+      "right": 61,
+      "textLeft": 61,
+      "textRight": 61,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section#upload-tool.upload-section-container",
+      "tag": "section",
+      "top": 706,
+      "height": 1427,
+      "words": 85,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Decode your documents instantly",
+       "size": 40,
+       "tag": "h2"
+      },
+      "left": 49,
+      "right": 49,
+      "textLeft": 49,
+      "textRight": 67,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section#how-it-works.how-it-works-section",
+      "tag": "section",
+      "top": 2133,
+      "height": 1100,
+      "words": 86,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Democratizing Legalese",
+       "size": 40,
+       "tag": "h2"
+      },
+      "left": 49,
+      "right": 49,
+      "textLeft": 49,
+      "textRight": 49,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section#features.features-section",
+      "tag": "section",
+      "top": 3234,
+      "height": 1073,
+      "words": 88,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Legal insights, simplified",
+       "size": 40,
+       "tag": "h2"
+      },
+      "left": 49,
+      "right": 85,
+      "textLeft": 49,
+      "textRight": 85,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section#faq.faq-section",
+      "tag": "section",
+      "top": 4307,
+      "height": 733,
+      "words": 189,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Got questions? We have answers.",
+       "size": 40,
+       "tag": "h2"
+      },
+      "left": 25,
+      "right": 25,
+      "textLeft": 49,
+      "textRight": 59,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "footer.footer-section",
+      "tag": "footer",
+      "top": 5040,
+      "height": 510,
+      "words": 48,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Product",
+       "size": 14,
+       "tag": "h4"
+      },
+      "left": 24,
+      "right": 121,
+      "textLeft": 24,
+      "textRight": 121,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Justice begins with understanding.",
+      "size": 44,
+      "top": 236,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 49,
+      "n": 16
+     }
+    ],
+    "leftBlocks": 16,
+    "bodySize": 15,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": null,
+   "consoleErrors": []
+  },
+  {
+   "width": 390,
+   "height": 844,
+   "load": "load",
+   "screens": 8,
+   "filled": [
+    0.51,
+    1,
+    0.93,
+    0.77,
+    0.84,
+    1,
+    0.68,
+    0.95
+   ],
+   "motion": {
+    "elements": 35,
+    "css": 0,
+    "transitions": 35,
+    "scripted": 0,
+    "videos": 0,
+    "playingVideos": 0
+   },
+   "metrics": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "page": {
+     "height": 6501,
+     "screens": 7.7,
+     "words": 497,
+     "img": 0,
+     "video": 0,
+     "canvas": 0,
+     "svg": 18,
+     "sections": 4,
+     "horizontalOverflow": 0,
+     "overflowCulprits": [],
+     "uiFragments": 0,
+     "uiAbuse": false,
+     "realPictures": 0,
+     "videoCount": 0,
+     "uiPictures": 0,
+     "pictureSamples": [],
+     "blendText": 0,
+     "sideScrollers": 0,
+     "brokenImages": [],
+     "emoji": [],
+     "videosNoPoster": 0
+    },
+    "hero": {
+     "text": "Justice begins with understanding.",
+     "words": 4,
+     "chars": 34,
+     "lines": 3,
+     "size": 44,
+     "vw": 11.3,
+     "font": "Inter",
+     "weight": 800,
+     "tracking": -0.02,
+     "leading": 1.1,
+     "upper": false,
+     "italic": false,
+     "mono": false,
+     "align": "center",
+     "position": "center",
+     "widthRatio": 0.88,
+     "top": 236,
+     "tag": "h1",
+     "kind": "heading"
+    },
+    "h1": {
+     "text": "Justice begins with understanding.",
+     "words": 4,
+     "lines": 3,
+     "size": 44,
+     "font": "Inter"
+    },
+    "headings": [
+     {
+      "text": "Justice begins with understanding.",
+      "words": 4,
+      "chars": 34,
+      "lines": 3,
+      "size": 44,
+      "vw": 11.3,
+      "font": "Inter",
+      "weight": 800,
+      "tracking": -0.02,
+      "leading": 1.1,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 236,
+      "tag": "h1",
+      "kind": "heading"
+     },
+     {
+      "text": "Decode your documents instantly",
+      "words": 4,
+      "chars": 31,
+      "lines": 3,
+      "size": 40,
+      "vw": 10.3,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.02,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 1017,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Democratizing Legalese",
+      "words": 2,
+      "chars": 22,
+      "lines": 2,
+      "size": 40,
+      "vw": 10.3,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.02,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 2640,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "01",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 28,
+      "vw": 7.2,
+      "font": "Share Tech Mono",
+      "weight": 800,
+      "tracking": 0,
+      "leading": 1.6,
+      "upper": false,
+      "italic": false,
+      "mono": true,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.75,
+      "top": 2925,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "02",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 28,
+      "vw": 7.2,
+      "font": "Share Tech Mono",
+      "weight": 800,
+      "tracking": 0,
+      "leading": 1.6,
+      "upper": false,
+      "italic": false,
+      "mono": true,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.75,
+      "top": 3181,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "03",
+      "words": 1,
+      "chars": 2,
+      "lines": 1,
+      "size": 28,
+      "vw": 7.2,
+      "font": "Share Tech Mono",
+      "weight": 800,
+      "tracking": 0,
+      "leading": 1.6,
+      "upper": false,
+      "italic": false,
+      "mono": true,
+      "align": "left",
+      "position": "center",
+      "widthRatio": 0.75,
+      "top": 3437,
+      "tag": "div",
+      "kind": "heading"
+     },
+     {
+      "text": "Legal insights, simplified",
+      "words": 3,
+      "chars": 26,
+      "lines": 2,
+      "size": 40,
+      "vw": 10.3,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.02,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 3887,
+      "tag": "h2",
+      "kind": "heading"
+     },
+     {
+      "text": "Got questions? We have answers.",
+      "words": 5,
+      "chars": 31,
+      "lines": 3,
+      "size": 40,
+      "vw": 10.3,
+      "font": "Inter",
+      "weight": 700,
+      "tracking": -0.02,
+      "leading": 1.25,
+      "upper": false,
+      "italic": false,
+      "mono": false,
+      "align": "center",
+      "position": "center",
+      "widthRatio": 0.88,
+      "top": 5182,
+      "tag": "h2",
+      "kind": "heading"
+     }
+    ],
+    "headingSummary": {
+     "count": 8,
+     "maxLines": 3,
+     "over2Lines": 3,
+     "statements": 0,
+     "centered": 5,
+     "medianWords": 2,
+     "mixedFontHeadings": 0
+    },
+    "type": {
+     "families": [
+      {
+       "family": "Inter",
+       "share": 0.95,
+       "mono": false
+      },
+      {
+       "family": "Share Tech Mono",
+       "share": 0.05,
+       "mono": true
+      }
+     ],
+     "familyCount": 2,
+     "sizes": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      18,
+      19,
+      20,
+      28,
+      40,
+      44
+     ],
+     "sizeCount": 11,
+     "notLoaded": [],
+     "body": {
+      "font": "Inter",
+      "size": 15.2,
+      "leading": 1.6,
+      "weight": 400,
+      "tracking": 0,
+      "contrast": 6
+     },
+     "measureChars": 38,
+     "max": {
+      "size": 44,
+      "vw": 11.3,
+      "font": "Inter",
+      "text": "Justice begins with"
+     },
+     "monoShare": 0.05,
+     "monoProseShare": 0.05,
+     "monoFamilies": [
+      "Share Tech Mono"
+     ],
+     "monoSamples": [
+      "AI-Powered Legal Clarity",
+      "Supported Standards:",
+      "Secure Legal Console",
+      "Or try a sample agreement:",
+      "Three-Step Process",
+      "01"
+     ],
+     "microLabels": 9,
+     "microLabelShare": 0.042,
+     "microSamples": [
+      "AI-Powered Legal Clarity",
+      "Supported Standards:",
+      "Secure Legal Console",
+      "Three-Step Process",
+      "Core Capabilities",
+      "Frequently Asked Questions"
+     ],
+     "upperShare": 0.04,
+     "centerShare": 0.4,
+     "smallText": 9
+    },
+    "eyebrows": [
+     {
+      "text": "AI-Powered Legal Clarity",
+      "above": "Justice begins with understanding.",
+      "upper": true,
+      "tracked": true,
+      "mono": true,
+      "pill": true,
+      "size": 12,
+      "top": 186
+     },
+     {
+      "text": "Secure Legal Console",
+      "above": "Decode your documents instantly",
+      "upper": true,
+      "tracked": true,
+      "mono": true,
+      "pill": false,
+      "size": 12,
+      "top": 986
+     },
+     {
+      "text": "Three-Step Process",
+      "above": "Democratizing Legalese",
+      "upper": true,
+      "tracked": true,
+      "mono": true,
+      "pill": false,
+      "size": 12,
+      "top": 2609
+     },
+     {
+      "text": "Core Capabilities",
+      "above": "Legal insights, simplified",
+      "upper": true,
+      "tracked": true,
+      "mono": true,
+      "pill": false,
+      "size": 12,
+      "top": 3857
+     },
+     {
+      "text": "Frequently Asked Questions",
+      "above": "Got questions? We have answers.",
+      "upper": true,
+      "tracked": true,
+      "mono": true,
+      "pill": false,
+      "size": 12,
+      "top": 5151
+     }
+    ],
+    "numbered": [
+     {
+      "text": "01",
+      "size": 28,
+      "top": 2931
+     },
+     {
+      "text": "02",
+      "size": 28,
+      "top": 3187
+     },
+     {
+      "text": "03",
+      "size": 28,
+      "top": 3443
+     }
+    ],
+    "color": {
+     "bodyBg": "#14151a",
+     "bodyBgHsl": {
+      "h": 230,
+      "s": 0.13,
+      "l": 0.09
+     },
+     "dark": true,
+     "sectionBgs": [
+      {
+       "color": "#1c1d24",
+       "top": 1355,
+       "hsl": {
+        "h": 233,
+        "s": 0.13,
+        "l": 0.13
+       }
+      },
+      {
+       "color": "#0b0b0e",
+       "top": 5940,
+       "hsl": {
+        "h": 240,
+        "s": 0.12,
+        "l": 0.05
+       }
+      }
+     ],
+     "textColors": [
+      {
+       "color": "#9a9a9e",
+       "share": 0.76
+      },
+      {
+       "color": "#f5f5f2",
+       "share": 0.13
+      },
+      {
+       "color": "#646469",
+       "share": 0.06
+      },
+      {
+       "color": "#e8b84b",
+       "share": 0.05
+      },
+      {
+       "color": "#14151a",
+       "share": 0.01
+      }
+     ],
+     "button": {
+      "bg": "#24252d",
+      "hsl": {
+       "h": 233,
+       "s": 0.11,
+       "l": 0.16
+      },
+      "fg": "#9a9a9e"
+     },
+     "lowContrast": [
+      {
+       "text": "Supports PDF, DOCX, or Image (Max 15MB)",
+       "ratio": 2.9,
+       "need": 4.5,
+       "size": 12.8,
+       "fg": "#646469",
+       "bg": "#1c1d24"
+      }
+     ]
+    },
+    "buttons": {
+     "count": 5,
+     "inHero": 2,
+     "radius": 30,
+     "height": 68,
+     "withShadow": 1,
+     "withGradient": 0,
+     "mono": 0,
+     "upper": 0,
+     "heroLabels": [
+      "Upload a document",
+      "See how it works"
+     ]
+    },
+    "surfaces": {
+     "shadowStatic": 1,
+     "shadowOverlay": 0,
+     "shadowSamples": [
+      "button.btn-primary.hero-cta-primary → rgba(232, 184, 75, 0.15) 0px 4px 14px 0px"
+     ],
+     "gradients": 2,
+     "scrims": 0,
+     "gradientSamples": [
+      "div.hero-glow-1 → radial-gradient(circle, rgba(232, 184, 75, 0.08) 0%, rgba(20, 21, 26, 0) 70%)",
+      "div.hero-glow-2 → radial-gradient(circle, rgba(61, 90, 254, 0.04) 0%, rgba(20, 21, 26, 0) 70%)"
+     ],
+     "gradientText": 0,
+     "hairlines": 8,
+     "hairlineSamples": [
+      "nav.navbar 390px",
+      "section#upload-tool.upload-section-container 390px",
+      "div.quick-samples 292px",
+      "section#how-it-works.how-it-works-section 390px",
+      "section#features.features-section 390px"
+     ],
+     "outlinedBoxes": 10,
+     "dashed": 1,
+     "blurred": 1,
+     "roundedBoxes": 11,
+     "boxRadius": 16,
+     "squareMedia": 0,
+     "roundedMedia": 0,
+     "mediaRadius": 0,
+     "textShadow": 0,
+     "cardRows": []
+    },
+    "heroMedia": [],
+    "nav": {
+     "links": 1,
+     "fixed": true,
+     "height": 72,
+     "floatingPill": false,
+     "blur": true
+    },
+    "fontsLoaded": [
+     "inter",
+     "share tech mono"
+    ]
+   },
+   "layout": {
+    "viewport": {
+     "w": 390,
+     "h": 844
+    },
+    "pageH": 6501,
+    "margins": {
+     "left": 24,
+     "right": 25
+    },
+    "sections": [
+     {
+      "sel": "header.hero-section",
+      "tag": "header",
+      "top": 72,
+      "height": 826,
+      "words": 54,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Justice begins with",
+       "size": 44,
+       "tag": "h1"
+      },
+      "left": 24,
+      "right": 24,
+      "textLeft": 33,
+      "textRight": 33,
+      "fullBleed": false,
+      "footer": false,
+      "hero": true,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section#upload-tool.upload-section-container",
+      "tag": "section",
+      "top": 898,
+      "height": 1603,
+      "words": 85,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Decode your documents instantly",
+       "size": 40,
+       "tag": "h2"
+      },
+      "left": 25,
+      "right": 25,
+      "textLeft": 25,
+      "textRight": 25,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section#how-it-works.how-it-works-section",
+      "tag": "section",
+      "top": 2501,
+      "height": 1247,
+      "words": 86,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Democratizing Legalese",
+       "size": 40,
+       "tag": "h2"
+      },
+      "left": 31,
+      "right": 31,
+      "textLeft": 31,
+      "textRight": 31,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section#features.features-section",
+      "tag": "section",
+      "top": 3749,
+      "height": 1295,
+      "words": 88,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Legal insights, simplified",
+       "size": 40,
+       "tag": "h2"
+      },
+      "left": 35,
+      "right": 35,
+      "textLeft": 35,
+      "textRight": 35,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "section#faq.faq-section",
+      "tag": "section",
+      "top": 5043,
+      "height": 897,
+      "words": 164,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Got questions? We have answers.",
+       "size": 40,
+       "tag": "h2"
+      },
+      "left": 25,
+      "right": 25,
+      "textLeft": 38,
+      "textRight": 38,
+      "fullBleed": false,
+      "footer": false,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     },
+     {
+      "sel": "footer.footer-section",
+      "tag": "footer",
+      "top": 5940,
+      "height": 561,
+      "words": 48,
+      "media": 0,
+      "middle": 0,
+      "heading": {
+       "text": "Product",
+       "size": 14,
+       "tag": "h4"
+      },
+      "left": 24,
+      "right": 33,
+      "textLeft": 24,
+      "textRight": 33,
+      "fullBleed": false,
+      "footer": true,
+      "hero": false,
+      "continues": false,
+      "pinned": false
+     }
+    ],
+    "gaps": [],
+    "h1s": [
+     {
+      "text": "Justice begins with understanding.",
+      "size": 44,
+      "top": 236,
+      "firstScreen": true
+     }
+    ],
+    "edgeText": [],
+    "edges": [
+     {
+      "x": 49,
+      "n": 16
+     }
+    ],
+    "leftBlocks": 16,
+    "bodySize": 15,
+    "stage": false,
+    "explains": false,
+    "slivers": [],
+    "voidShare": 0,
+    "voidBox": null
+   },
+   "app": null,
+   "consoleErrors": []
+  }
+ ],
+ "findings": [
+  {
+   "level": "FAIL",
+   "id": "eyebrow",
+   "width": 1440,
+   "message": "5 eyebrow/kicker label(s) above headings: \"AI-Powered Legal Clarity\" (pill) above \"Justice begins with understanding.\"; \"Secure Legal Console\" above \"Decode your documents instantly\"; \"Three-Step Process\" above \"Democratizing Legalese\"; \"Core Capabilities\" above \"Legal insights, simplified\"; \"Frequently Asked Questions\" above \"Got questions? We have answers.\"",
+   "fix": "Delete them. If the label carried real information, fold it into the headline or the supporting sentence.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "mono",
+   "width": 1440,
+   "message": "Monospace type outside code: Share Tech Mono — e.g. \"AI-Powered Legal Clarity\", \"Supported Standards:\", \"Secure Legal Console\", \"Or try a sample agreement:\"",
+   "fix": "Set it in the text face. Monospace is for literal code inside <pre>/<code> only.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "numbering",
+   "width": 1440,
+   "message": "Decorative index numbers: \"01\", \"02\", \"03\"",
+   "fix": "Remove them. If order truly matters, write it into the words (\"First, …\") or use a real <ol>.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "micro-label",
+   "width": 1440,
+   "message": "9 tiny uppercase letter-spaced labels (e.g. \"AI-Powered Legal Clarity\", \"Supported Standards:\", \"Secure Legal Console\", \"Three-Step Process\").",
+   "fix": "Use sentence-case text at a readable size, or delete the label.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "gradient",
+   "width": 1440,
+   "message": "2 gradient fill(s): div.hero-glow-1 → radial-gradient(circle, rgba(232, 184, 75, 0.08) 0%, rgba(20, 21, 26, 0) 70%) | div.hero-glow-2 → radial-gradient(circle, rgba(61, 90, 254, 0.04) 0%, rgba(20, 21, 26, 0) 70%)",
+   "fix": "Use a flat colour or a real image. The only gradient allowed by default is a neutral scrim over a photo for legibility.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "shadow",
+   "width": 1440,
+   "message": "1 box-shadow(s) on elements at rest: button.btn-primary.hero-cta-primary → rgba(232, 184, 75, 0.15) 0px 4px 14px 0px",
+   "fix": "Remove. Separate surfaces with a tone step or space. Shadows are for things that really float (menus, dialogs, sticky bars).",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "button-fx",
+   "width": 1440,
+   "message": "Buttons with shadow/glow.",
+   "fix": "Flat fill, one colour.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "hairline",
+   "width": 1440,
+   "message": "8 thin rule(s)/divider line(s): nav.navbar 1440px | section#upload-tool.upload-section-container 1440px | div.quick-samples 361px | section#how-it-works.how-it-works-section 1440px",
+   "fix": "Delete. Separate with space, a tone change, or scale. Lines are only for real tables and form fields.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "outlined-box",
+   "width": 1440,
+   "message": "8 boxes drawn with a 1px outline.",
+   "fix": "Define a surface by its fill (one tone step from the page) or leave the content unboxed.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "dashed",
+   "width": 1440,
+   "message": "1 dashed/dotted border(s).",
+   "fix": "Remove unless it is a real drop zone.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "contrast",
+   "width": 1440,
+   "message": "Low-contrast text: \"Supports PDF, DOCX, or Image (Max 15MB)\" 2.9:1 needs 4.5:1; \"© 2026 Legal Lens. All rights reserved.\" 3.3:1 needs 4.5:1; \"Legal Lens is an AI utility and does not\" 3.3:1 needs 4.5:1",
+   "fix": "Darken or lighten the text colour.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "size-count",
+   "width": 1440,
+   "message": "10 different font sizes (12, 13, 14, 15, 18, 19, 20, 28, 40, 64).",
+   "fix": "A page needs about five: display, heading, lead, body, small.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "body-size",
+   "width": 1440,
+   "message": "Body text is 15.2px.",
+   "fix": "Body copy 16–20px.",
+   "alsoAt": [
+    768
+   ]
+  },
+  {
+   "level": "WARN",
+   "id": "grey-body",
+   "width": 1440,
+   "message": "The running text is a soft grey on its ground (6:1).",
+   "fix": "Set body copy in the full ink (7:1 or more). Keep the muted ink for secondary notes; pages read thin and unfinished when everything is grey.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "few-pictures",
+   "width": 1440,
+   "message": "Only 0 picture(s) on the page (0 photographs, footage or raster images, 0 interface fragments). Drawings in SVG do not count.",
+   "fix": "Find real pictures of the subject's world with scripts/assets.mjs (photographs, archival images, maps, engravings, footage), download them to assets/ and give them room: a hero picture, one per section that has a subject, a full-width band. At least four, usually six to twelve."
+  },
+  {
+   "level": "WARN",
+   "id": "no-footage",
+   "width": 1440,
+   "message": "No video anywhere on the page.",
+   "fix": "Look for one honest clip with scripts/assets.mjs --video (the place, the material, the process) and use it as a muted loop with a poster frame. Defend its absence only if no clip fits the subject."
+  },
+  {
+   "level": "FAIL",
+   "id": "small-text",
+   "width": 1440,
+   "message": "9 text blocks under 13px.",
+   "fix": "Nothing meant to be read goes below 13px.",
+   "alsoAt": [
+    768,
+    390
+   ]
+  },
+  {
+   "level": "FAIL",
+   "id": "focal-point",
+   "width": 1440,
+   "message": "The first screen has no dominant element: the largest type is 64px (4.4vw) and no single picture holds a third of the viewport.",
+   "fix": "Make one thing lead: the headline at display size, or one large picture. A grid of many small pictures is not one thing; in blind tests jurors marked a first screen without a headline down every time. On the strongest studied sites the largest type has a median of 8.4vw."
+  },
+  {
+   "level": "WARN",
+   "id": "font-not-dealt",
+   "width": 1440,
+   "message": "The sheet dealt Barlow Condensed and Barlow, but the page renders Inter, Share Tech Mono.",
+   "fix": "Load the dealt face (the link on the sheet) and put it first in font-family. A build that falls back to a default face lands on the default look."
+  },
+  {
+   "level": "FAIL",
+   "id": "headline-lines",
+   "width": 390,
+   "message": "3 headline(s) wrap past two lines at 390px: \"Justice begins with understanding.\" → 3 lines (4 words, 44px); \"Decode your documents instantly\" → 3 lines (4 words, 40px); \"Got questions? We have answers.\" → 3 lines (5 words, 40px)",
+   "fix": "Cut words first (a headline is a title, not a sentence). Then give it a wider measure. Lower the size only as a last resort and never below the scale you chose. A real statement paragraph belongs in a <p> or <blockquote> at 24px or less."
+  }
+ ],
+ "images": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "fold": "D:\\Studies\\projects\\LegalDocumentSummarizer\\Legal-Document-Summarizer\\.taste-skill\\before\\desktop-fold.jpg",
+   "pages": [
+    "D:\\Studies\\projects\\LegalDocumentSummarizer\\Legal-Document-Summarizer\\.taste-skill\\before\\desktop-page-01.jpg",
+    "D:\\Studies\\projects\\LegalDocumentSummarizer\\Legal-Document-Summarizer\\.taste-skill\\before\\desktop-page-02.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "tablet",
+   "width": 768,
+   "fold": "D:\\Studies\\projects\\LegalDocumentSummarizer\\Legal-Document-Summarizer\\.taste-skill\\before\\tablet-fold.jpg",
+   "pages": [
+    "D:\\Studies\\projects\\LegalDocumentSummarizer\\Legal-Document-Summarizer\\.taste-skill\\before\\tablet-page-01.jpg"
+   ],
+   "film": []
+  },
+  {
+   "viewport": "mobile",
+   "width": 390,
+   "fold": "D:\\Studies\\projects\\LegalDocumentSummarizer\\Legal-Document-Summarizer\\.taste-skill\\before\\mobile-fold.jpg",
+   "pages": [
+    "D:\\Studies\\projects\\LegalDocumentSummarizer\\Legal-Document-Summarizer\\.taste-skill\\before\\mobile-page-01.jpg"
+   ],
+   "film": []
+  }
+ ]
+}

@@ -1,74 +1,151 @@
 import React from 'react';
 import FadeInSection from './FadeInSection';
 
-export default function Features() {
-  const features = [
-    {
-      title: "Simple Document Summary",
-      desc: "Distill lengthy agreements and notifications into short 3-4 sentence summaries outlining core themes and purposes.",
-      icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-          <polyline points="14 2 14 8 20 8" />
-          <line x1="16" y1="13" x2="8" y2="13" />
-          <line x1="16" y1="17" x2="8" y2="17" />
-          <polyline points="10 9 9 9 8 9" />
-        </svg>
-      )
-    },
-    {
-      title: "Explain in Simple Language",
-      desc: "Compare original convoluted legal clauses side-by-side with easily comprehensible everyday translations.",
-      icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M17 6.1H3a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-12a1 1 0 0 0-1-1z" />
-          <path d="M22 4.1H8a1 1 0 0 0-1 1v1h10a2 2 0 0 1 2 2v10h3a1 1 0 0 0 1-1v-12a1 1 0 0 0-1-1z" />
-          <line x1="6" y1="11" x2="14" y2="11" />
-          <line x1="6" y1="15" x2="12" y2="15" />
-        </svg>
-      )
-    },
-    {
-      title: "Multilingual Local Output",
-      desc: "Supports translation and clause-by-clause explanation across Telugu, Hindi, Tamil, Kannada, Malayalam, Marathi, Bengali, and English.",
-      icon: (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m5 8 6 6" />
-          <path d="m4 14 6-6 2-3" />
-          <path d="M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6" />
-        </svg>
-      )
-    }
-  ];
+const LANGUAGES = ['English', 'हिन्दी', 'తెలుగు', 'தமிழ்', 'ಕನ್ನಡ', 'മലയാളം', 'मराठी', 'বাংলা'];
 
+function ClauseVisual() {
   return (
-    <section id="features" className="features-section">
-      <div className="container">
-        
+    <div className="feature-visual">
+      <div className="clause-mini" data-ui>
+        <span className="mini-label">Original clause</span>
+        <p className="mini-original">
+          The Lessee shall bear all minor maintenance repairs defined as any individual repair job costing less than
+          ₹2,000, whereas major structural repairs shall remain the liability of the Lessor.
+        </p>
+        <div className="mini-plain">
+          You pay for small fixes under ₹2,000. Structural repairs are the landlord’s cost.
+        </div>
+        <p className="mini-hint">Both versions stay together, with the source clause highlighted.</p>
+      </div>
+    </div>
+  );
+}
+
+function LanguageVisual() {
+  return (
+    <div className="feature-visual">
+      <div className="clause-mini" data-ui>
+        <span className="mini-label">Output language</span>
+        <div className="lang-grid">
+          {LANGUAGES.map((language, index) => (
+            <span key={language} className={`lang-cell ${index === 2 ? 'is-picked' : ''}`}>
+              {language}
+            </span>
+          ))}
+        </div>
+        <p className="mini-hint">The same clause, in the script you read at home.</p>
+      </div>
+    </div>
+  );
+}
+
+function ExportVisual() {
+  return (
+    <div className="feature-visual">
+      <div className="export-mini" data-ui>
+        <div className="export-sheet">
+          <span className="wordmark-mini">Legal Lens</span>
+          <p className="sheet-title" style={{ marginTop: 10 }}>
+            Residential Rental Agreement
+          </p>
+          <p className="sheet-row">English · 11 clauses · A4</p>
+          <div className="sheet-block">
+            You pay ₹1,00,000 up front. It comes back when you move out, minus the cost of any damage beyond normal
+            wear.
+          </div>
+          <p className="sheet-row">
+            Security deposit · Rent escalation · Maintenance and repairs
+          </p>
+        </div>
+        <div className="export-actions">
+          <span className="small">Print-ready A4</span>
+          <span className="small">PDF</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Features() {
+  return (
+    <section id="features" className="section">
+      <div className="shell">
         <FadeInSection>
-          <div className="section-header text-center">
-            <span className="legal-accent">Core Capabilities</span>
-            <h2 className="section-title">Legal insights, simplified</h2>
-            <p className="section-desc">
-              Legal Lens handles the heavy reading. Review summaries, compare side-by-side breakdowns, and change output languages instantly.
+          <div className="section-head">
+            <h2>What the summary gives you.</h2>
+            <p>
+              Not a wall of rewritten text. The parts of a document that decide what you owe, when, and what happens
+              if something goes wrong.
             </p>
           </div>
         </FadeInSection>
 
-        <div className="features-grid">
-          {features.map((feat, idx) => (
-            <FadeInSection key={idx} delay={idx * 150}>
-              <div className="feature-card card">
-                <div className="feature-icon-container">
-                  {feat.icon}
-                </div>
-                <h3 className="feature-card-title">{feat.title}</h3>
-                <p className="feature-card-desc">{feat.desc}</p>
+        <div className="feature-list">
+          <FadeInSection>
+            <div className="feature-row">
+              <div>
+                <h3>The original stays in view.</h3>
+                <p>
+                  Each plain-language note sits beside the exact clause it came from. Nothing asks you to take the
+                  summary on trust, and nothing hidden gets paraphrased away.
+                </p>
               </div>
-            </FadeInSection>
-          ))}
-        </div>
+              <ClauseVisual />
+            </div>
+          </FadeInSection>
 
+          <FadeInSection>
+            <div className="feature-row">
+              <div>
+                <h3>Old legalese, said plainly.</h3>
+                <p>
+                  Covenants, demised premises, hereinafter, notwithstanding. Legal Lens reads the dense forms that
+                  contracts are still written in and says what each one means in a sentence.
+                </p>
+              </div>
+              <figure className="feature-visual is-photo">
+                <img
+                  src="/images/coke-institutes-1628.jpg"
+                  width="1792"
+                  height="2928"
+                  loading="lazy"
+                  decoding="async"
+                  alt="Title page of Edward Coke's Institutes of the Lawes of England, printed in 1628"
+                />
+                <figcaption className="feature-cap">
+                  Edward Coke, <em>The First Part of the Institutes of the Lawes of England</em>, 1628. The wording
+                  outlived the courthouse it was written in.
+                </figcaption>
+              </figure>
+            </div>
+          </FadeInSection>
+
+          <FadeInSection>
+            <div className="feature-row">
+              <div>
+                <h3>Eight languages, one document.</h3>
+                <p>
+                  An agreement signed in English can be understood in Telugu, Tamil, Bengali or Hindi, clause by
+                  clause, without a translator in the room.
+                </p>
+              </div>
+              <LanguageVisual />
+            </div>
+          </FadeInSection>
+
+          <FadeInSection>
+            <div className="feature-row">
+              <div>
+                <h3>Take the summary with you.</h3>
+                <p>
+                  Export the summary, the clause pairs and the disclaimer as a print-ready PDF. Keep it with the
+                  agreement, send it on, or read it again before the meeting.
+                </p>
+              </div>
+              <ExportVisual />
+            </div>
+          </FadeInSection>
+        </div>
       </div>
     </section>
   );

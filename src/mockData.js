@@ -486,3 +486,26 @@ export const CUSTOM_DOCUMENT_FALLBACK = {
     }
   }
 };
+
+// Short passages used by the paste-text mode, so the console can be tried
+// without a file on hand.
+export const TEXT_SAMPLES = [
+  {
+    id: 'rental_deposit',
+    label: 'Rental deposit clause',
+    text: `SECURITY DEPOSIT AND REFUND
+
+The Tenant shall deposit with the Landlord a sum of Rs. 1,00,000 as an interest-free security deposit for the due performance of covenants and obligations hereunder, returnable upon peaceful vacant possession of the demised premises, subject to deductions for damages, unpaid rent and any other sums due. The Landlord shall refund the balance within thirty (30) days of the date on which possession is handed back.
+
+The Tenant shall bear all minor maintenance repairs and day-to-day upkeep defined as any single repair job costing less than Rs. 2,000, whereas major structural repairs shall remain the liability of the Lessor.`,
+  },
+  {
+    id: 'employment_notice',
+    label: 'Employment notice clause',
+    text: `TERM, NOTICE AND CONFIDENTIALITY
+
+The Employee shall serve a probation period of three (3) months from the date of joining, during which either party may terminate this agreement by giving fifteen (15) days written notice. Upon confirmation, the notice period shall stand revised to sixty (60) days for either party.
+
+The Employee agrees to maintain strict confidentiality of all proprietary information disclosed by TechNova Solutions and shall not disclose the same to any third party without prior written consent. All work product created in the course of employment, including source code and designs, shall vest exclusively with the Company.`,
+  },
+];

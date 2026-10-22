@@ -402,7 +402,7 @@ def export_markdown(doc_text, json_path):
     if not json_path or not os.path.exists(json_path):
         return None
     data = json.load(open(json_path, encoding="utf-8"))
-    md = [f"# LexNarrate Analysis\n", f"**Outcome:** {data['outcome']}  ",
+    md = [f"# LegalLens Analysis\n", f"**Outcome:** {data['outcome']}  ",
           f"**Document type:** {data['document_type']}  ",
           f"**Model:** {data['model']}\n", "## Executive Summary\n",
           data["executive_summary"], "\n## Lawyer Summary\n", data["lawyer_summary"],
@@ -635,7 +635,7 @@ AUTHORS_HTML = """
   <div class="about-band">
     <div class="team-tag">Team 4 · NLP Case Study</div>
     <p class="slogan">Justice begins with understanding.</p>
-    <p>LexNarrate is the inference interface for <b>LegalLens</b>, a research project on
+    <p><b>LegalLens</b> is a research project on
     hallucination-safe summarization of Indian court judgments — trained on the IN-ABS dataset,
     with source-grounded Cite &amp; Verify to keep every summary accountable to the document.</p>
   </div>
@@ -705,13 +705,13 @@ FORCE_DARK = """
 </script>
 """
 
-with gr.Blocks(title="LexNarrate", head=FORCE_DARK) as demo:
+with gr.Blocks(title="LegalLens", head=FORCE_DARK) as demo:
     doc_state = gr.State("")
     json_state = gr.State(None)
 
     gr.HTML("""
     <div class="lx-nav">
-      <div class="brand">Lex<span>Narrate</span></div>
+      <div class="brand">Legal<span>Lens</span></div>
       <a href="#analyze">Analyze</a>
       <a href="#features">Features</a>
       <a href="#guide">How it works</a>
@@ -785,7 +785,7 @@ with gr.Blocks(title="LexNarrate", head=FORCE_DARK) as demo:
 
     gr.HTML("""
     <div class="lx-foot">
-      <b>LexNarrate</b><br>
+      <b>LegalLens</b><br>
       Legal intelligence · Clear explanations · Source-grounded analysis<br>
       Built with Python + Gradio · Team 4 — LegalLens<br>
       <i>AI-generated summaries should be reviewed by a qualified legal professional.</i>

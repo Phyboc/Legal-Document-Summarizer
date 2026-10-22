@@ -60,7 +60,7 @@ def summarize_ui(text: str, redact_names: bool, strip_preamble: bool):
     return stats, lawyer_text, citizen_text, citations_md
 
 
-# --- Brand: dark charcoal + gold, matching the LexNarrate web front end ---
+# --- Brand: dark charcoal + gold, matching the LegalLens web front end ---
 LEXNARRATE_THEME = gr.themes.Soft(
     primary_hue=gr.themes.colors.amber,
     secondary_hue=gr.themes.colors.yellow,
@@ -115,12 +115,12 @@ button.primary, #ln-run { font-weight:600 !important; }
 .tab-nav button.selected { color: var(--ln-gold) !important; border-bottom-color: var(--ln-gold) !important; }
 """
 
-with gr.Blocks(title="LexNarrate · LegalLens") as demo:
+with gr.Blocks(title="LegalLens") as demo:
     gr.HTML(
         """
         <div id="ln-hero">
           <div class="eyebrow">⚖ Source-grounded legal summarization</div>
-          <h1>Lex<span class="gold">Narrate</span></h1>
+          <h1>Legal<span class="gold">Lens</span></h1>
           <p>Turn a dense court judgment into two clear summaries — a section-aware
           <b>Lawyer Mode</b> and a plain-language <b>Citizen Mode</b> — with every
           claim checked against the source document, never invented.</p>

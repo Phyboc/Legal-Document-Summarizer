@@ -416,7 +416,7 @@ def export_markdown(doc_text, json_path):
 
 # ---- CSS ----------------------------------------------------------------
 CSS = """
-:root{--bg:#faf8f4;--ink:#1a1a1a;--muted:#6b6b6b;--line:#e3ddd3;--accent:#1f3a5f;--card:#fffdf9;}
+:root{--bg:#121214;--ink:#f3efe8;--muted:#9b958b;--line:#2a2a2f;--accent:#d9a94e;--accent-soft:#3a2f1c;--card:#1a1a1e;--card2:#202026;}
 .gradio-container{background:var(--bg)!important;font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif!important;max-width:1180px!important;margin:0 auto!important;color:var(--ink);}
 footer{display:none!important;}
 .lx-hero{padding:56px 8px 20px;}
@@ -434,17 +434,17 @@ footer{display:none!important;}
 .lx-card-body{font-size:16px;line-height:1.65;color:var(--ink);}
 .outcome-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:6px 0 4px;}
 .outcome-badge{font-size:13px;font-weight:700;letter-spacing:1px;padding:8px 16px;border-radius:8px;}
-.outcome-badge.ok{background:#e7f0e9;color:#1e5631;}
-.outcome-badge.warn{background:#fbf0dd;color:#8a5a12;}
-.outcome-badge.bad{background:#f6e3e0;color:#7d2a22;}
-.outcome-badge.na-badge{background:#eceae4;color:var(--muted);}
+.outcome-badge.ok{background:#1f3a24;color:#86d49c;}
+.outcome-badge.warn{background:#3a2f14;color:#e0b45e;}
+.outcome-badge.bad{background:#3a1f1c;color:#e4907f;}
+.outcome-badge.na-badge{background:#26262b;color:var(--muted);}
 .doc-type{font-size:15px;font-weight:600;}
 .verif{font-size:13px;color:var(--muted);}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:10px;}
 .two-col.args{align-items:start;}
 .src-col,.sum-col{min-width:0;}
 .src-meta{font-size:12px;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;}
-.src-text{font-family:'Georgia',serif;font-size:14.5px;line-height:1.7;color:#2b2b2b;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-height:460px;overflow:auto;white-space:pre-wrap;}
+.src-text{font-family:'Georgia',serif;font-size:14.5px;line-height:1.7;color:#cfc8bb;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:18px 20px;max-height:460px;overflow:auto;white-space:pre-wrap;}
 .plain{font-size:18px;line-height:1.7;color:var(--ink);background:var(--card);border-left:3px solid var(--accent);border-radius:0 12px 12px 0;padding:18px 24px;}
 .disclaimer{font-size:12.5px;color:var(--muted);font-style:italic;margin-top:10px;}
 .kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
@@ -470,7 +470,7 @@ footer{display:none!important;}
 .arg-card ul{margin:0;padding-left:18px;}
 .arg-card li{font-size:14.5px;line-height:1.6;margin-bottom:8px;}
 .hit{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:8px 0;font-size:14px;line-height:1.6;font-family:'Georgia',serif;}
-.hit mark,.hits mark{background:#fbe7a2;padding:0 2px;border-radius:3px;}
+.hit mark,.hits mark{background:#e0b45e;color:#1a1405;padding:0 2px;border-radius:3px;}
 .hits-count{font-size:12px;color:var(--muted);letter-spacing:1px;margin-bottom:8px;}
 .err{color:#7d2a22;font-size:16px;padding:20px;}
 .lx-foot{border-top:1px solid var(--line);margin-top:50px;padding:30px 4px;color:var(--muted);font-size:13px;line-height:1.8;}
@@ -478,7 +478,7 @@ footer{display:none!important;}
 
 /* ---- Sticky nav ---- */
 .lx-nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:22px;
-  padding:14px 18px;margin:-8px -8px 0;background:rgba(250,248,244,.82);
+  padding:14px 18px;margin:-8px -8px 0;background:rgba(18,18,20,.82);
   backdrop-filter:saturate(180%) blur(10px);border-bottom:1px solid var(--line);}
 .lx-nav .brand{font-weight:700;letter-spacing:.5px;color:var(--ink);font-size:16px;margin-right:auto;}
 .lx-nav .brand span{color:var(--accent);}
@@ -500,17 +500,17 @@ footer{display:none!important;}
 .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
 .feat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 22px;
   transition:transform .3s cubic-bezier(.2,.7,.2,1),box-shadow .3s,border-color .3s;}
-.feat:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(31,58,95,.10);border-color:#cdd8e6;}
+.feat:hover{transform:translateY(-5px);box-shadow:0 16px 34px rgba(0,0,0,.4);border-color:var(--accent-soft);}
 .feat .ic{font-size:22px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;
-  border-radius:12px;background:#eef2f7;color:var(--accent);margin-bottom:14px;}
+  border-radius:12px;background:var(--accent-soft);color:var(--accent);margin-bottom:14px;}
 .feat h4{margin:0 0 7px;font-size:17px;font-weight:600;}
 .feat p{margin:0;font-size:14px;color:var(--muted);line-height:1.55;}
 
 /* ---- Step guide ---- */
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
 .step-c{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;position:relative;overflow:hidden;}
-.step-c:before{content:'';position:absolute;left:0;top:0;width:3px;height:100%;background:linear-gradient(var(--accent),#4a7bb5);}
-.step-n{font-size:34px;font-weight:700;color:#dbe3ee;line-height:1;letter-spacing:-1px;}
+.step-c:before{content:'';position:absolute;left:0;top:0;width:3px;height:100%;background:linear-gradient(var(--accent),#8a6a24);}
+.step-n{font-size:34px;font-weight:700;color:#38342a;line-height:1;letter-spacing:-1px;}
 .step-c h4{margin:8px 0 6px;font-size:16px;font-weight:600;}
 .step-c p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.55;}
 
@@ -525,10 +525,10 @@ footer{display:none!important;}
 .cmp-row .rl{font-size:13px;color:var(--ink);font-weight:600;}
 .bars{display:flex;flex-direction:column;gap:7px;}
 .bar{display:flex;align-items:center;gap:10px;font-size:12px;}
-.bar .track{display:block;flex:1;height:10px;background:#eef0ec;border-radius:6px;overflow:hidden;}
-.bar .fill{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,#4a7bb5,var(--accent));transition:width 1.1s cubic-bezier(.2,.7,.2,1);}
-.bar .fill.base{background:linear-gradient(90deg,#c9b89a,#a98f66);}
-.bar .fill.e3{background:linear-gradient(90deg,#9fb6cf,#6e8cab);}
+.bar .track{display:block;flex:1;height:10px;background:#26262b;border-radius:6px;overflow:hidden;}
+.bar .fill{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,#8a6a24,var(--accent));transition:width 1.1s cubic-bezier(.2,.7,.2,1);}
+.bar .fill.base{background:linear-gradient(90deg,#4a4a52,#6a6a74);}
+.bar .fill.e3{background:linear-gradient(90deg,#7a6a3a,#b08f46);}
 .bar .bl{width:92px;color:var(--muted);}
 .bar .bv{width:42px;text-align:right;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;}
 .metric-note{font-size:12.5px;color:var(--muted);font-style:italic;margin-top:14px;line-height:1.5;}
@@ -536,17 +536,17 @@ footer{display:none!important;}
 /* ---- Authors ---- */
 .team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
 .author{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 18px;text-align:center;transition:transform .3s,box-shadow .3s;}
-.author:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(31,58,95,.10);}
+.author:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.4);}
 .author .av{width:62px;height:62px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;
-  font-size:22px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--accent),#4a7bb5);letter-spacing:.5px;}
+  font-size:22px;font-weight:700;color:#1a1405;background:linear-gradient(135deg,var(--accent),#b0863a);letter-spacing:.5px;}
 .author h4{margin:0 0 3px;font-size:15.5px;font-weight:600;}
 .author .role{font-size:12px;color:var(--accent);font-weight:600;letter-spacing:.3px;}
 .author a{display:inline-block;margin-top:9px;font-size:12px;color:var(--muted);text-decoration:none;border:1px solid var(--line);padding:3px 11px;border-radius:20px;transition:all .2s;}
 .author a:hover{color:var(--accent);border-color:var(--accent);}
-.about-band{background:linear-gradient(135deg,#1f3a5f,#2d4f7a);color:#eaf0f7;border-radius:20px;padding:34px 36px;margin-top:8px;}
+.about-band{background:linear-gradient(135deg,#1d1a12,#262013);border:1px solid var(--accent-soft);color:#f3efe8;border-radius:20px;padding:34px 36px;margin-top:8px;}
 .about-band .slogan{font-size:24px;font-weight:600;letter-spacing:-.4px;margin:0 0 8px;}
-.about-band p{margin:0;font-size:15px;line-height:1.6;color:#c7d4e4;max-width:720px;}
-.about-band .team-tag{display:inline-block;margin-bottom:14px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#9ec2e8;font-weight:600;}
+.about-band p{margin:0;font-size:15px;line-height:1.6;color:var(--muted);max-width:720px;}
+.about-band .team-tag{display:inline-block;margin-bottom:14px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-weight:600;}
 
 @media (max-width:820px){.two-col,.kgrid,.egrid,.feat-grid,.steps,.team-grid{grid-template-columns:1fr;}
   .metric-grid{grid-template-columns:repeat(2,1fr);}.lx-hero h1{font-size:38px;}
@@ -555,10 +555,10 @@ footer{display:none!important;}
 
 
 # ---- Layout -------------------------------------------------------------
-THEME = gr.themes.Base(primary_hue="blue", neutral_hue="stone")
+THEME = gr.themes.Base(primary_hue="amber", neutral_hue="neutral")
 
-# LexNarrate is a light, editorial design; force Gradio's light mode so the
-# warm-white palette holds regardless of the viewer's system preference.
+# LexNarrate uses a dark charcoal + gold scheme; force Gradio's dark mode so the
+# palette holds regardless of the viewer's system preference.
 # ---- Static content sections (features, guide, metrics, authors) --------
 FEATURES_HTML = """
 <div class="sec reveal" id="features">
@@ -693,19 +693,19 @@ ANIMATE_JS = """
 }
 """
 
-FORCE_LIGHT = """
+FORCE_DARK = """
 <script>
 (function(){
   var u = new URL(window.location);
-  if (u.searchParams.get('__theme') !== 'light') {
-    u.searchParams.set('__theme','light');
+  if (u.searchParams.get('__theme') !== 'dark') {
+    u.searchParams.set('__theme','dark');
     window.location.replace(u.toString());
   }
 })();
 </script>
 """
 
-with gr.Blocks(title="LexNarrate", head=FORCE_LIGHT) as demo:
+with gr.Blocks(title="LexNarrate", head=FORCE_DARK) as demo:
     doc_state = gr.State("")
     json_state = gr.State(None)
 

@@ -45,21 +45,21 @@ Every summary sentence can be **traced back to the source text** via the Cite & 
                                          │
                                          ▼
 ┌────────────────────────────────────────────────────────────────────────────┐
-│                          src/pipeline.py                                  │
-│                                                                          │
-│  ┌──────────┐  ┌───────────┐  ┌──────────────┐  ┌──────────┐            │
-│  │ cleaning │→ │ PII       │→ │ section      │→ │ chunker  │            │
-│  │ .py      │  │ redaction │  │ detector     │  │ .py      │            │
-│  └──────────┘  └───────────┘  │ rule+joblib  │  │ 850 tok  │            │
-│                               └──────────────┘  │ overlap  │            │
-│                                                  └────┬─────┘            │
-│                                                       ▼                  │
-│  ┌─────────────────┐  ┌──────────────┐  ┌─────────────────────────────┐  │
-│  │ cite_verify.py  │← │ mode_format  │← │ summarizer.py (BART)       │  │
-│  │ NLI entailment  │  │ + jargon     │  │ section-aware profiles     │  │
-│  │ + verbatim      │  │ + extract    │  │ + extractive fallback      │  │
-│  └─────────────────┘  └──────────────┘  └─────────────────────────────┘  │
-│                                                                          │
+│                          src/pipeline.py                                   │
+│                                                                            │
+│  ┌──────────┐  ┌───────────┐  ┌──────────────┐  ┌──────────┐               │
+│  │ cleaning │→ │ PII       │→ │ section      │→ │ chunker  │               │
+│  │ .py      │  │ redaction │  │ detector     │  │ .py      │               │
+│  └──────────┘  └───────────┘  │ rule+joblib  │  │ 850 tok  │               │
+│                               └──────────────┘  │ overlap  │               │
+│                                                  └────┬─────┘              │
+│                                                       ▼                    │
+│  ┌─────────────────┐  ┌──────────────┐  ┌─────────────────────────────┐    │
+│  │ cite_verify.py  │← │ mode_format  │← │ summarizer.py (BART)        │    │
+│  │ NLI entailment  │  │ + jargon     │  │ section-aware profiles      │    │
+│  │ + verbatim      │  │ + extract    │  │ + extractive fallback       │    │
+│  └─────────────────┘  └──────────────┘  └─────────────────────────────┘    │
+│                                                                            │
 └────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -405,10 +405,10 @@ The suite covers chunking, section detection, alignment and evidence windows, ci
 
 <table>
   <tr>
-    <td align="center"><strong>Akula Manideep Reddy</strong><br/>Model & Integration<br/><a href="https://github.com/MANIDEEP2407-SYS">GitHub ↗</a></td>
-    <td align="center"><strong>Mahima R Iyer</strong><br/>Explainability<br/><a href="https://github.com/mahima1006">GitHub ↗</a></td>
-    <td align="center"><strong>Sivasubramani K J</strong><br/>Technical Team</td>
-    <td align="center"><strong>Samanyu Nair</strong><br/>Technical Team</td>
+    <td align="center"><strong>Akula Manideep Reddy</strong><br/>Frontend, Model & Integration<br/><a href="https://github.com/MANIDEEP2407-SYS">GitHub ↗</a></td>
+    <td align="center"><strong>Mahima R Iyer</strong><br/>Backend, Model & Integration<br/><a href="https://github.com/mahima1006">GitHub ↗</a></td>
+    <td align="center"><strong>Sivasubramani K J</strong><br/>Backend, Model & Integration<br/><a href="https://github.com/Phyboc">GitHub ↗</a></td>
+    <td align="center"><strong>Samanyu Nair</strong><br/>Frontend, Model & Integration<br/><a href="https://github.com/SamanyuNair">GitHub ↗</a></td>
   </tr>
 </table>
 

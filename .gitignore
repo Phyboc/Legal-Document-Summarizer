@@ -42,3 +42,7 @@ legal-doc-intelligence/.claude/
 lexnarrate_*.md
 
 .vercel
+
+# Local run venv for pinned Gradio
+.venv-run/
+legal-doc-intelligence/.venv-run/

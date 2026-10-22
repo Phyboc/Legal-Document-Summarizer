@@ -14,6 +14,11 @@ const MIN_TEXT_LENGTH = 100;
 const MAX_FILE_BYTES = 15 * 1024 * 1024;
 const ACCEPTED_TYPES = /\.(pdf|docx?|jpe?g|png)$/i;
 
+// The pasted-text path calls the real LegalLens model through the FastAPI
+// backend (legal-doc-intelligence/api.py). Point VITE_API_BASE at a hosted
+// API in production; it defaults to the local uvicorn server.
+const API_BASE = (import.meta.env.VITE_API_BASE || 'http://127.0.0.1:7860').replace(/\/$/, '');
+
 function formatBytes(bytes) {
   if (!bytes) return '0 KB';
   const units = ['B', 'KB', 'MB', 'GB'];
@@ -36,6 +41,43 @@ function buildResult(submission, lang) {
       clauses: analysis.clauses,
       words: analysis.words,
       isHeuristic: true,
+    };
+  }
+
+  if (submission.kind === 'model') {
+    const data = submission.data;
+    const citizen = data.citizen_mode?.full_text?.trim() || '';
+    const lawyer = data.lawyer_mode?.full_text?.trim() || '';
+    const cites = (data.lawyer_citations || [])
+      .slice()
+      .sort((a, b) => b.confidence - a.confidence)
+      .slice(0, 3);
+    const clauses = [
+      {
+        title: 'Structured legal summary (Lawyer Mode)',
+        original: lawyer || 'No structured summary was produced.',
+        simplified: citizen || 'No plain-language summary was produced.',
+      },
+      ...cites.map((cite) => ({
+        title: `Grounding · ${cite.source_section} · ${(cite.confidence * 100).toFixed(0)}% confidence`,
+        original: cite.sentence,
+        simplified: 'This sentence was checked against the source document by Cite & Verify.',
+      })),
+    ];
+    const words = countWords(`${lawyer} ${citizen}`);
+    return {
+      name: submission.name,
+      summary: citizen || lawyer,
+      clauses,
+      words,
+      isHeuristic: false,
+      isModel: true,
+      meta: {
+        sections: data.sections_detected || [],
+        chunks: data.n_chunks,
+        finetuned: data.is_finetuned,
+        verification: data.lawyer_verification || null,
+      },
     };
   }
 
@@ -63,15 +105,18 @@ export default function UploadInterface({ currentLang, onChangeLang }) {
   const [countdown, setCountdown] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingKind, setLoadingKind] = useState('mock');
   const [stepIndex, setStepIndex] = useState(0);
   const [submission, setSubmission] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [activeTab, setActiveTab] = useState('explainer');
   const [status, setStatus] = useState('');
+  const [modelError, setModelError] = useState('');
   const [isExporting, setIsExporting] = useState(false);
 
   const fileInputRef = useRef(null);
   const scanTimer = useRef(null);
+  const modelTimer = useRef(null);
 
   const result = useMemo(() => buildResult(submission, currentLang), [submission, currentLang]);
   const words = countWords(text);
@@ -79,7 +124,7 @@ export default function UploadInterface({ currentLang, onChangeLang }) {
     !isLoading && ((mode === 'upload' && Boolean(file)) || (mode === 'text' && text.trim().length >= MIN_TEXT_LENGTH));
 
   useEffect(() => {
-    if (!isLoading) return undefined;
+    if (!isLoading || loadingKind !== 'mock') return undefined;
     const interval = window.setInterval(() => {
       setStepIndex((current) => {
         if (current >= LOADING_STEPS.length - 1) {
@@ -96,6 +141,7 @@ export default function UploadInterface({ currentLang, onChangeLang }) {
 
   useEffect(() => () => {
     if (scanTimer.current) window.clearInterval(scanTimer.current);
+    if (modelTimer.current) window.clearInterval(modelTimer.current);
   }, []);
 
   const resetOutput = () => {
@@ -188,21 +234,61 @@ export default function UploadInterface({ currentLang, onChangeLang }) {
     }, 600);
   };
 
-  const startAnalysis = () => {
-    if (!canRun) return;
-    if (mode === 'upload') {
-      setSubmission(
-        file.isSample
-          ? { kind: 'sample', sampleId: file.sampleId }
-          : { kind: 'upload', name: file.name },
-      );
-    } else {
-      const firstLine = text.trim().split(/\n/)[0].slice(0, 80);
-      setSubmission({ kind: 'text', text, name: firstLine || 'Pasted document' });
-    }
+  const runTextThroughModel = async () => {
+    const firstLine = text.trim().split(/\n/)[0].slice(0, 80);
     setStatus('');
+    setModelError('');
     setShowResult(false);
     setStepIndex(0);
+    setLoadingKind('model');
+    setIsLoading(true);
+    // Cycle the loading steps on a loop while the model runs (60–90s on CPU).
+    if (modelTimer.current) window.clearInterval(modelTimer.current);
+    modelTimer.current = window.setInterval(() => {
+      setStepIndex((current) => (current + 1) % LOADING_STEPS.length);
+    }, 1200);
+
+    try {
+      const response = await fetch(`${API_BASE}/summarize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, redact_names: false, strip_preamble: true, mode: 'both' }),
+      });
+      if (!response.ok) {
+        const detail = await response.json().catch(() => ({}));
+        throw new Error(detail.detail || `API returned ${response.status}`);
+      }
+      const data = await response.json();
+      setSubmission({ kind: 'model', name: firstLine || 'Pasted document', data });
+    } catch (error) {
+      setModelError(
+        `Could not reach the LegalLens model API at ${API_BASE}. Start it with ` +
+          `"python api.py" in legal-doc-intelligence/, or set VITE_API_BASE. Falling back to the browser preview. (${error.message})`,
+      );
+      setSubmission({ kind: 'text', text, name: firstLine || 'Pasted document' });
+    } finally {
+      if (modelTimer.current) window.clearInterval(modelTimer.current);
+      setIsLoading(false);
+      setShowResult(true);
+    }
+  };
+
+  const startAnalysis = () => {
+    if (!canRun) return;
+    if (mode === 'text') {
+      runTextThroughModel();
+      return;
+    }
+    setSubmission(
+      file.isSample
+        ? { kind: 'sample', sampleId: file.sampleId }
+        : { kind: 'upload', name: file.name },
+    );
+    setStatus('');
+    setModelError('');
+    setShowResult(false);
+    setStepIndex(0);
+    setLoadingKind('mock');
     setIsLoading(true);
   };
 
@@ -538,10 +624,26 @@ export default function UploadInterface({ currentLang, onChangeLang }) {
                     <div>
                       <h3>{result.name}</h3>
                       <div className="result-meta">
-                        <span>{languageName(currentLang)}</span>
                         <span>{result.words.toLocaleString('en-IN')} words</span>
-                        <span>{result.clauses.length} clauses</span>
-                        {result.isHeuristic && <span>Browser preview</span>}
+                        {result.isModel ? (
+                          <>
+                            <span>{result.meta.finetuned ? 'Fine-tuned model' : 'Base model'}</span>
+                            {result.meta.sections?.length > 0 && (
+                              <span>Sections: {result.meta.sections.join(', ')}</span>
+                            )}
+                            {result.meta.verification && (
+                              <span>
+                                Verified {result.meta.verification.verified}/{result.meta.verification.total}
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <span>{languageName(currentLang)}</span>
+                            <span>{result.clauses.length} clauses</span>
+                            {result.isHeuristic && <span>Browser preview</span>}
+                          </>
+                        )}
                       </div>
                     </div>
                     <div className="output-actions">
@@ -586,8 +688,15 @@ export default function UploadInterface({ currentLang, onChangeLang }) {
 
                   {activeTab === 'explainer' && (
                     <div>
+                      {modelError && (
+                        <p className="small hint" role="alert" style={{ marginBottom: 12 }}>
+                          {modelError}
+                        </p>
+                      )}
                       <div className="summary-card">
-                        <span className="fragment-label">Summary</span>
+                        <span className="fragment-label">
+                          {result.isModel ? 'Plain-language summary (Citizen Mode)' : 'Summary'}
+                        </span>
                         <p>{result.summary}</p>
                       </div>
 

@@ -179,6 +179,35 @@ img,svg{display:block;}
 .vbadge .icon{font-size:13px;}
 .verify-row .vs{color:var(--muted);}
 
+/* Try it live */
+.try{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:8px;}
+.try-input,.try-output{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:18px;padding:20px;}
+.try-input textarea{width:100%;min-height:260px;resize:vertical;background:var(--bg2);color:var(--ink);
+  border:1px solid var(--line);border-radius:12px;padding:14px;font-family:ui-monospace,Menlo,monospace;
+  font-size:12.5px;line-height:1.6;}
+.try-input textarea:focus{outline:none;border-color:var(--accent);}
+.try-controls{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:14px;}
+.try-controls label{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);cursor:pointer;}
+.try-controls label input{accent-color:var(--accent);width:15px;height:15px;}
+.try-controls .btn{margin-left:auto;cursor:pointer;border:0;}
+.try-status{margin-top:12px;font-size:12.5px;color:var(--muted);min-height:18px;}
+.try-status.err{color:#e58b8b;}
+.try-output{min-height:316px;display:flex;flex-direction:column;}
+.try-idle{margin:auto;text-align:center;color:var(--faint);font-size:13.5px;max-width:280px;line-height:1.6;}
+.try-stats{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
+.try-stats span{font-size:11px;font-weight:600;letter-spacing:.3px;padding:5px 10px;border-radius:7px;
+  background:var(--accent-soft);color:var(--accent-2);border:1px solid #4a3c22;}
+.try-block{margin-bottom:16px;}
+.try-block h5{margin:0 0 7px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);font-weight:600;}
+.try-block p{margin:0;font-size:13.5px;line-height:1.65;color:var(--ink);white-space:pre-wrap;}
+.try-cite{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.5;padding:9px 0;border-bottom:1px solid var(--line);}
+.try-cite:last-child{border-bottom:0;}
+.try-cite .cb{flex:none;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:rgba(74,150,90,.16);color:#79c78f;}
+.try-cite .cb.low{background:rgba(190,70,70,.16);color:#e58b8b;}
+.try-spin{width:34px;height:34px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;
+  margin:0 auto 14px;animation:tspin .8s linear infinite;}
+@keyframes tspin{to{transform:rotate(360deg);}}
+
 /* Explainability / XAI */
 .xai-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
 .xai-card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:16px;padding:20px 18px;}
@@ -254,6 +283,7 @@ img,svg{display:block;}
     <div class="brand"><span class="mark"><svg class="icon"><use href="#i-scales"/></svg></span>Legal<span>Lens</span></div>
     <a class="link" href="#features">Features</a>
     <a class="link" href="#demo">Demo</a>
+    <a class="link" href="#try">Try it</a>
     <a class="link" href="#metrics">Evaluation</a>
     <a class="link" href="#xai">Explainability</a>
     <a class="link" href="#faq">FAQ</a>
@@ -364,6 +394,37 @@ The operative order is pinned to its own judgement chunk so the holding is never
           <div class="verify-row"><span class="vbadge ok"><svg class="icon"><use href="#i-check"/></svg>SUPPORTED</span><span class="vs">"Prolonged suspension without determination offends natural justice." <b style="color:var(--muted)">· entailment 0.91</b></span></div>
           <div class="verify-row"><span class="vbadge no"><svg class="icon"><use href="#i-x"/></svg>FLAGGED</span><span class="vs">Any claim the source does not support is marked, not shown as fact — e.g. an invented date or a reversed outcome.</span></div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRY IT LIVE -->
+  <section class="sec reveal" id="try">
+    <div class="label">Try it live / 07</div>
+    <h3 class="sec-head">Run a judgment through the model.</h3>
+    <p class="sec-sub">This calls the LegalLens model API directly — paste a judgment (the sample is pre-loaded) and get the real Lawyer and Citizen summaries with grounded citations. Start the API with <code style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:var(--accent-2)">python api.py</code> in <span style="color:var(--ink)">legal-doc-intelligence/</span>. A full judgment takes ~60–90s on CPU.</p>
+    <div class="try">
+      <div class="try-input">
+        <textarea id="try-text" spellcheck="false">The Judgment of the Court was delivered by SAHAI, J.
+
+The appellant was employed as an Assistant Engineer in the Central Public Works Department. He was placed under suspension on September 3, 1959, pending a departmental inquiry.
+
+The appellant filed a writ petition in the High Court challenging the prolonged suspension. Learned counsel for the appellant contended that the suspension was unjustified.
+
+The respondent State submitted that the suspension was necessary during the pendency of the departmental inquiry.
+
+We have considered the arguments. In our opinion, a suspension continuing for over a decade without a determination violates principles of natural justice.
+
+The order of compulsory retirement dated 25.4.1972 is set aside. The appeal is allowed with costs.</textarea>
+        <div class="try-controls">
+          <label><input type="checkbox" id="try-redact"> Redact names</label>
+          <label><input type="checkbox" id="try-strip" checked> Strip preamble</label>
+          <button class="btn primary" id="try-run">Summarize <svg class="icon"><use href="#i-arrow"/></svg></button>
+        </div>
+        <div class="try-status" id="try-status"></div>
+      </div>
+      <div class="try-output" id="try-output">
+        <div class="try-idle">The real Lawyer Mode and Citizen Mode summaries — plus grounded citations — appear here once the model finishes.</div>
       </div>
     </div>
   </section>
@@ -549,6 +610,68 @@ The operative order is pinned to its own judgement chunk so the holding is never
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
       ans.style.maxHeight = open ? (ans.scrollHeight + 'px') : '0px';
     });
+  });
+})();
+
+/* Try it live — calls the real LegalLens model API */
+(function(){
+  var API = new URLSearchParams(location.search).get('api') || 'http://127.0.0.1:7860';
+  API = API.replace(/\/$/, '');
+  var runBtn = document.getElementById('try-run');
+  if (!runBtn) return;
+  var out = document.getElementById('try-output');
+  var statusEl = document.getElementById('try-status');
+
+  function esc(s){ return (s || '').replace(/[&<>]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
+
+  function render(d){
+    var cites = (d.lawyer_citations || []).slice().sort(function(a,b){ return b.confidence - a.confidence; }).slice(0, 5);
+    var v = d.lawyer_verification || {};
+    var stats = '<div class="try-stats">' +
+      '<span>' + (d.is_finetuned ? 'Fine-tuned model' : 'Base model') + '</span>' +
+      '<span>' + (d.n_chunks || 0) + ' chunks</span>' +
+      (d.sections_detected && d.sections_detected.length ? '<span>' + esc(d.sections_detected.join(', ')) + '</span>' : '') +
+      (v.total != null ? '<span>Verified ' + v.verified + '/' + v.total + '</span>' : '') +
+      '</div>';
+    var citizen = '<div class="try-block"><h5>Citizen Mode</h5><p>' + esc((d.citizen_mode||{}).full_text) + '</p></div>';
+    var lawyer = '<div class="try-block"><h5>Lawyer Mode</h5><p>' + esc((d.lawyer_mode||{}).full_text) + '</p></div>';
+    var citeRows = cites.map(function(c){
+      var low = c.confidence < 0.45;
+      return '<div class="try-cite"><span class="cb' + (low ? ' low' : '') + '">' + (c.confidence*100).toFixed(0) + '%</span>' +
+        '<span><b style="color:var(--muted)">' + esc(c.source_section) + '</b> · ' + esc(c.sentence) + '</span></div>';
+    }).join('');
+    var citeBlock = cites.length ? '<div class="try-block"><h5>Cite &amp; Verify</h5>' + citeRows + '</div>' : '';
+    out.innerHTML = stats + citizen + lawyer + citeBlock;
+  }
+
+  runBtn.addEventListener('click', function(){
+    var text = (document.getElementById('try-text').value || '').trim();
+    if (text.length < 100){ statusEl.className = 'try-status err'; statusEl.textContent = 'Enter at least 100 characters of legal text.'; return; }
+    runBtn.disabled = true;
+    statusEl.className = 'try-status';
+    statusEl.textContent = 'Running the model at ' + API + ' — this takes ~60–90s on CPU…';
+    out.innerHTML = '<div style="margin:auto;text-align:center"><div class="try-spin"></div><div class="try-idle">Reading sections, summarizing each chunk, then checking every sentence against the source.</div></div>';
+    var started = Date.now();
+    fetch(API + '/summarize', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: text,
+        redact_names: document.getElementById('try-redact').checked,
+        strip_preamble: document.getElementById('try-strip').checked,
+        mode: 'both'
+      })
+    }).then(function(r){
+      if (!r.ok) return r.json().then(function(e){ throw new Error(e.detail || ('API returned ' + r.status)); });
+      return r.json();
+    }).then(function(d){
+      render(d);
+      statusEl.textContent = 'Done in ' + ((Date.now() - started) / 1000).toFixed(0) + 's.';
+    }).catch(function(err){
+      statusEl.className = 'try-status err';
+      statusEl.textContent = 'Could not reach the model API at ' + API + '. Start it with "python api.py" in legal-doc-intelligence/. (' + err.message + ')';
+      out.innerHTML = '<div class="try-idle">No result — the model API is not reachable. Once it is running, press Summarize again.</div>';
+    }).finally(function(){ runBtn.disabled = false; });
   });
 })();
 </script>

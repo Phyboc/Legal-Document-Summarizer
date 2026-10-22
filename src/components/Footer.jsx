@@ -56,6 +56,7 @@ export default function Footer({ onScrollToUpload }) {
                   <li><a href="#how-it-works">How it works</a></li>
                   <li><a href="#features">Capabilities</a></li>
                   <li><a href="#upload-tool">Console</a></li>
+                  <li><a href="#team">Team</a></li>
                 </ul>
               </div>
               <div>

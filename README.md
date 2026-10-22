@@ -405,10 +405,26 @@ The suite covers chunking, section detection, alignment and evidence windows, ci
 
 <table>
   <tr>
-    <td align="center"><strong>Akula Manideep Reddy</strong><br/>Frontend, Model & Integration<br/><a href="https://github.com/MANIDEEP2407-SYS">GitHub ↗</a></td>
-    <td align="center"><strong>Mahima R Iyer</strong><br/>Backend, Model & Integration<br/><a href="https://github.com/mahima1006">GitHub ↗</a></td>
-    <td align="center"><strong>Sivasubramani K J</strong><br/>Backend, Model & Integration<br/><a href="https://github.com/Phyboc">GitHub ↗</a></td>
-    <td align="center"><strong>Samanyu Nair</strong><br/>Frontend, Model & Integration<br/><a href="https://github.com/SamanyuNair">GitHub ↗</a></td>
+    <td align="center">
+      <a href="https://github.com/MANIDEEP2407-SYS"><img src="https://github.com/MANIDEEP2407-SYS.png" width="90" height="90" style="border-radius:50%; object-fit:cover;" alt="Akula Manideep Reddy"/><br/>
+      <strong>Akula Manideep Reddy</strong></a><br/>
+      <sub>Frontend, Model &amp; Integration</sub>
+    </td>
+    <td align="center">
+      <a href="https://github.com/mahima1006"><img src="https://github.com/mahima1006.png" width="90" height="90" style="border-radius:50%; object-fit:cover;" alt="Mahima R Iyer"/><br/>
+      <strong>Mahima R Iyer</strong></a><br/>
+      <sub>Backend, Model &amp; Integration</sub>
+    </td>
+    <td align="center">
+      <a href="https://github.com/Phyboc"><img src="https://github.com/Phyboc.png" width="90" height="90" style="border-radius:50%; object-fit:cover;" alt="Sivasubramani K J"/><br/>
+      <strong>Sivasubramani K J</strong></a><br/>
+      <sub>Backend, Model &amp; Integration</sub>
+    </td>
+    <td align="center">
+      <a href="https://github.com/SamanyuNair"><img src="https://github.com/SamanyuNair.png" width="90" height="90" style="border-radius:50%; object-fit:cover;" alt="Samanyu Nair"/><br/>
+      <strong>Samanyu Nair</strong></a><br/>
+      <sub>Frontend, Model &amp; Integration</sub>
+    </td>
   </tr>
 </table>
 

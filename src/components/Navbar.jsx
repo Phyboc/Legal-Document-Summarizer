@@ -5,6 +5,7 @@ const SECTIONS = [
   { id: 'how-it-works', label: 'How it works' },
   { id: 'features', label: 'Capabilities' },
   { id: 'faq', label: 'Questions' },
+  { id: 'team', label: 'Team' },
 ];
 
 function SunIcon() {

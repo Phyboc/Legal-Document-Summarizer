@@ -5,6 +5,7 @@ import UploadInterface from './components/UploadInterface';
 import HowItWorks from './components/HowItWorks';
 import Features from './components/Features';
 import FAQ from './components/FAQ';
+import Team from './components/Team';
 import Footer from './components/Footer';
 
 const THEME_KEY = 'legallens-theme';
@@ -104,6 +105,8 @@ export default function App() {
         </figure>
 
         <FAQ />
+
+        <Team />
       </main>
 
       <Footer onScrollToUpload={scrollToUpload} />

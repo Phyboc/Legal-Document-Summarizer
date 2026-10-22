@@ -7,6 +7,7 @@ rendered field is grounded in real pipeline output or deterministic regex
 extraction (``src/postprocess/legal_extract.py``) - nothing is invented, and
 missing values render as "Not identified".
 """
+import base64
 import html
 import json
 import os
@@ -22,6 +23,22 @@ from src.pipeline import process_document
 from src.postprocess.legal_extract import extract_all
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+def _author_img(filenames, github_user):
+    """Return local image as base64 Data URI if found, else fallback to GitHub avatar."""
+    team_dir = os.path.abspath(os.path.join(HERE, "..", "public", "images", "team"))
+    for fname in filenames:
+        path = os.path.join(team_dir, fname)
+        if os.path.exists(path):
+            try:
+                with open(path, "rb") as f:
+                    b64 = base64.b64encode(f.read()).decode("utf-8")
+                    mime = "image/png" if fname.lower().endswith(".png") else "image/jpeg"
+                    return f"data:{mime};base64,{b64}"
+            except Exception:
+                pass
+    return f"https://github.com/{github_user}.png"
 
 # ---- Model wiring -------------------------------------------------------
 def _local(name):
@@ -537,8 +554,9 @@ footer{display:none!important;}
 .team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
 .author{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 18px;text-align:center;transition:transform .3s,box-shadow .3s;}
 .author:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(0,0,0,.4);}
-.author .av{width:62px;height:62px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;
-  font-size:22px;font-weight:700;color:#1a1405;background:linear-gradient(135deg,var(--accent),#b0863a);letter-spacing:.5px;}
+.author .av{width:68px;height:68px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;border:2px solid var(--accent);background:var(--card2);box-shadow:0 4px 12px rgba(0,0,0,.3);}
+.author .av img{width:100%;height:100%;object-fit:cover;display:block;}
 .author h4{margin:0 0 3px;font-size:15.5px;font-weight:600;}
 .author .role{font-size:12px;color:var(--accent);font-weight:600;letter-spacing:.3px;}
 .author a{display:inline-block;margin-top:9px;font-size:12px;color:var(--muted);text-decoration:none;border:1px solid var(--line);padding:3px 11px;border-radius:20px;transition:all .2s;}
@@ -630,7 +648,7 @@ METRICS_HTML = """
 </div>
 """
 
-AUTHORS_HTML = """
+AUTHORS_HTML = f"""
 <div class="sec reveal" id="about">
   <div class="about-band">
     <div class="team-tag">Team 4 · NLP Case Study</div>
@@ -642,12 +660,30 @@ AUTHORS_HTML = """
   <div class="lx-label">THE TEAM</div>
   <h3 class="sec-head" style="font-size:26px">Creators &amp; authors.</h3>
   <div class="team-grid">
-    <div class="author"><div class="av">AM</div><h4>Akula Manideep Reddy</h4><div class="role">Model &amp; Integration</div>
-      <a href="https://github.com/MANIDEEP2407-SYS" target="_blank" rel="noopener">GitHub ↗</a></div>
-    <div class="author"><div class="av">MI</div><h4>Mahima R Iyer</h4><div class="role">Explainability</div>
-      <a href="https://github.com/mahima1006" target="_blank" rel="noopener">GitHub ↗</a></div>
-    <div class="author"><div class="av">SK</div><h4>Sivasubramani K J</h4><div class="role">Technical Team</div></div>
-    <div class="author"><div class="av">SN</div><h4>Samanyu Nair</h4><div class="role">Technical Team</div></div>
+    <div class="author">
+      <div class="av"><img src="{_author_img(['manideep.jpg', 'manideep.jpeg', 'manideep.png'], 'MANIDEEP2407-SYS')}" alt="Akula Manideep Reddy" /></div>
+      <h4>Akula Manideep Reddy</h4>
+      <div class="role">Frontend, Model &amp; Integration</div>
+      <a href="https://github.com/MANIDEEP2407-SYS" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+    <div class="author">
+      <div class="av"><img src="{_author_img(['mahima.jpeg', 'mahima.jpg', 'mahima.png'], 'mahima1006')}" alt="Mahima R Iyer" /></div>
+      <h4>Mahima R Iyer</h4>
+      <div class="role">Backend, Model &amp; Integration</div>
+      <a href="https://github.com/mahima1006" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+    <div class="author">
+      <div class="av"><img src="{_author_img(['siva.jpeg', 'siva.jpg', 'siva.png'], 'Phyboc')}" alt="Sivasubramani K J" /></div>
+      <h4>Sivasubramani K J</h4>
+      <div class="role">Backend, Model &amp; Integration</div>
+      <a href="https://github.com/Phyboc" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+    <div class="author">
+      <div class="av"><img src="{_author_img(['samanyu.jpg', 'samanyu.jpeg', 'samanyu.png'], 'SamanyuNair')}" alt="Samanyu Nair" /></div>
+      <h4>Samanyu Nair</h4>
+      <div class="role">Frontend, Model &amp; Integration</div>
+      <a href="https://github.com/SamanyuNair" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
   </div>
 </div>
 """

@@ -83,7 +83,7 @@ img,svg{display:block;}
 .flow .arr{color:var(--accent);font-size:16px;}
 
 /* Upload showcase */
-.upload{background:var(--card);border:1px dashed #3d3d46;border-radius:18px;padding:44px 24px;text-align:center;margin-top:16px;transition:border-color .3s,background .3s,transform .3s;}
+.upload{display:block;text-decoration:none;color:inherit;background:var(--card);border:1px dashed #3d3d46;border-radius:18px;padding:44px 24px;text-align:center;margin-top:16px;transition:border-color .3s,background .3s,transform .3s;}
 .upload:hover{border-color:var(--accent);background:var(--card2);transform:translateY(-2px);}
 .upload .ic{font-size:30px;color:var(--accent);display:flex;justify-content:center;margin-bottom:14px;}
 .upload .big{font-size:13px;letter-spacing:2px;color:var(--ink);font-weight:600;}
@@ -190,6 +190,12 @@ img,svg{display:block;}
 .try-controls label{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);cursor:pointer;}
 .try-controls label input{accent-color:var(--accent);width:15px;height:15px;}
 .try-controls .btn{margin-left:auto;cursor:pointer;border:0;}
+.try-drop{display:flex;align-items:center;gap:11px;margin-top:12px;padding:13px 15px;cursor:pointer;
+  background:var(--bg2);border:1px dashed #3d3d46;border-radius:12px;font-size:12.5px;color:var(--muted);
+  line-height:1.5;transition:border-color .25s,background .25s;}
+.try-drop:hover,.try-drop.drag{border-color:var(--accent);background:var(--card2);}
+.try-drop .icon{font-size:20px;color:var(--accent);flex:none;}
+.try-drop b{color:var(--ink);font-weight:600;}
 .try-status{margin-top:12px;font-size:12.5px;color:var(--muted);min-height:18px;}
 .try-status.err{color:#e58b8b;}
 .try-output{min-height:316px;display:flex;flex-direction:column;}
@@ -312,11 +318,11 @@ img,svg{display:block;}
       </div>
     </div>
 
-    <div class="upload reveal">
+    <a class="upload reveal" href="#try">
       <div class="ic"><svg class="icon"><use href="#i-upload"/></svg></div>
-      <div class="big">DROP YOUR DOCUMENT HERE</div>
-      <div class="small">PDF · DOCX · TXT</div>
-    </div>
+      <div class="big">UPLOAD OR PASTE A DOCUMENT</div>
+      <div class="small">PDF · DOCX · TXT — runs live on the model below</div>
+    </a>
   </header>
 
   <!-- FEATURES -->
@@ -420,6 +426,11 @@ The order of compulsory retirement dated 25.4.1972 is set aside. The appeal is a
           <label><input type="checkbox" id="try-redact"> Redact names</label>
           <label><input type="checkbox" id="try-strip" checked> Strip preamble</label>
           <button class="btn primary" id="try-run">Summarize <svg class="icon"><use href="#i-arrow"/></svg></button>
+        </div>
+        <div class="try-drop" id="try-drop" role="button" tabindex="0" aria-label="Upload a document">
+          <svg class="icon"><use href="#i-upload"/></svg>
+          <span>Drop a <b>PDF, DOCX or TXT</b> here, or click to choose — the file is read and summarized by the model.</span>
+          <input type="file" id="try-file" accept=".pdf,.docx,.txt" hidden>
         </div>
         <div class="try-status" id="try-status"></div>
       </div>
@@ -644,15 +655,33 @@ The order of compulsory retirement dated 25.4.1972 is set aside. The appeal is a
     out.innerHTML = stats + citizen + lawyer + citeBlock;
   }
 
+  var fileInput = document.getElementById('try-file');
+  var drop = document.getElementById('try-drop');
+
+  function run(label, fetchPromise){
+    runBtn.disabled = true;
+    statusEl.className = 'try-status';
+    statusEl.textContent = 'Running the model at ' + API + ' on ' + label + ' — this takes ~60–90s on CPU…';
+    out.innerHTML = '<div style="margin:auto;text-align:center"><div class="try-spin"></div><div class="try-idle">Reading sections, summarizing each chunk, then checking every sentence against the source.</div></div>';
+    var started = Date.now();
+    fetchPromise.then(function(r){
+      if (!r.ok) return r.json().then(function(e){ throw new Error(e.detail || ('API returned ' + r.status)); });
+      return r.json();
+    }).then(function(d){
+      render(d);
+      statusEl.className = 'try-status';
+      statusEl.textContent = 'Done in ' + ((Date.now() - started) / 1000).toFixed(0) + 's.';
+    }).catch(function(err){
+      statusEl.className = 'try-status err';
+      statusEl.textContent = 'Could not reach the model API at ' + API + '. Start it with "python api.py" in legal-doc-intelligence/. (' + err.message + ')';
+      out.innerHTML = '<div class="try-idle">No result — the model API is not reachable. Once it is running, try again.</div>';
+    }).finally(function(){ runBtn.disabled = false; });
+  }
+
   runBtn.addEventListener('click', function(){
     var text = (document.getElementById('try-text').value || '').trim();
     if (text.length < 100){ statusEl.className = 'try-status err'; statusEl.textContent = 'Enter at least 100 characters of legal text.'; return; }
-    runBtn.disabled = true;
-    statusEl.className = 'try-status';
-    statusEl.textContent = 'Running the model at ' + API + ' — this takes ~60–90s on CPU…';
-    out.innerHTML = '<div style="margin:auto;text-align:center"><div class="try-spin"></div><div class="try-idle">Reading sections, summarizing each chunk, then checking every sentence against the source.</div></div>';
-    var started = Date.now();
-    fetch(API + '/summarize', {
+    run('the pasted text', fetch(API + '/summarize', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -661,18 +690,25 @@ The order of compulsory retirement dated 25.4.1972 is set aside. The appeal is a
         strip_preamble: document.getElementById('try-strip').checked,
         mode: 'both'
       })
-    }).then(function(r){
-      if (!r.ok) return r.json().then(function(e){ throw new Error(e.detail || ('API returned ' + r.status)); });
-      return r.json();
-    }).then(function(d){
-      render(d);
-      statusEl.textContent = 'Done in ' + ((Date.now() - started) / 1000).toFixed(0) + 's.';
-    }).catch(function(err){
-      statusEl.className = 'try-status err';
-      statusEl.textContent = 'Could not reach the model API at ' + API + '. Start it with "python api.py" in legal-doc-intelligence/. (' + err.message + ')';
-      out.innerHTML = '<div class="try-idle">No result — the model API is not reachable. Once it is running, press Summarize again.</div>';
-    }).finally(function(){ runBtn.disabled = false; });
+    }));
   });
+
+  function uploadFile(file){
+    if (!file) return;
+    var fd = new FormData();
+    fd.append('file', file);
+    fd.append('redact_names', document.getElementById('try-redact').checked);
+    fd.append('strip_preamble', document.getElementById('try-strip').checked);
+    fd.append('mode', 'both');
+    run(file.name, fetch(API + '/summarize/upload', { method: 'POST', body: fd }));
+  }
+
+  drop.addEventListener('click', function(){ fileInput.click(); });
+  drop.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); fileInput.click(); } });
+  fileInput.addEventListener('change', function(){ uploadFile(fileInput.files && fileInput.files[0]); fileInput.value = ''; });
+  ['dragenter','dragover'].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add('drag'); }); });
+  ['dragleave','drop'].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove('drag'); }); });
+  drop.addEventListener('drop', function(e){ uploadFile(e.dataTransfer.files && e.dataTransfer.files[0]); });
 })();
 </script>
 </body>

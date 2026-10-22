@@ -52,8 +52,8 @@ Every summary sentence can be **traced back to the source text** via the Cite & 
 │  │ .py      │  │ redaction │  │ detector     │  │ .py      │               │
 │  └──────────┘  └───────────┘  │ rule+joblib  │  │ 850 tok  │               │
 │                               └──────────────┘  │ overlap  │               │
-│                                                  └────┬─────┘              │
-│                                                       ▼                    │
+│                                                 └────┬─────┘               │
+│                                                      ▼                     │
 │  ┌─────────────────┐  ┌──────────────┐  ┌─────────────────────────────┐    │
 │  │ cite_verify.py  │← │ mode_format  │← │ summarizer.py (BART)        │    │
 │  │ NLI entailment  │  │ + jargon     │  │ section-aware profiles      │    │

@@ -2114,6 +2114,35 @@ img {
   border-color: var(--accent);
 }
 
+.shap-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.shap-chip {
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.shap-chip.is-support {
+  background: var(--accent-soft);
+  color: var(--accent-soft-ink);
+}
+.shap-chip.is-oppose {
+  background: transparent;
+  border-color: var(--ink-soft);
+  color: var(--ink-soft);
+}
+.shap-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

@@ -179,6 +179,29 @@ curl -X POST http://localhost:7860/summarize \
 | `POST /summarize` | JSON body: `text`, `redact_names`, `strip_preamble`, `mode` (`lawyer` / `citizen` / `both`) |
 | `POST /summarize/upload` | Multipart text file; decoded as UTF-8 |
 
+## Explainable AI (XAI) — SHAP
+
+The repository implements **SHAP, not SHAM**. In this codebase, XAI is provided by `legal-doc-intelligence/src/explain/section_shap.py` using `shap.LinearExplainer` for the **section classifier only** (not the BART summarizer and not the Cite & Verify NLI model).
+
+- **Explained model artifact:** `models/section_classifier.joblib`, loaded in `legal-doc-intelligence/src/data/section_detector.py` as a `(TfidfVectorizer, LogisticRegression)` pair.
+- **Explained feature matrix:** TF-IDF word/bigram features from the vectorizer, plus four appended position features in fixed order: `position`, `position^2`, `position>0.85`, `position<0.2`.
+- **Explainer config:** `shap.LinearExplainer(clf, background, feature_perturbation="interventional")`.
+- **Why SHAP is efficient here:** for this linear classifier, SHAP values are exact/efficient additive attributions. They are computed relative to the mean paragraph background (`background = X`) when multiple paragraphs are explained; for a single paragraph, the implementation uses a zero reference (`background = X.multiply(0)`).
+- **Per-paragraph output:** predicted section, class probabilities, class-specific base value, and top present features ranked by absolute SHAP magnitude, each with signed `shap_value` and `direction` (`supports` / `opposes`).
+- **Interpretation:** positive SHAP values push toward the predicted section; negative values push away. This explains model behavior, not legal truth.
+- **API + UI flow:** `POST /explain` is implemented in `legal-doc-intelligence/api.py` and runs end-to-end preprocessing + explanation (`explain_text`). It requires at least 100 non-whitespace characters (same minimum check as summarize). In `lexnarrate-web/index.html`, the **“Explain sections (SHAP)”** button calls `/explain`, renders top features, and downloads `legallens-shap.json`.
+- **Dependency + failure mode:** `legal-doc-intelligence/requirements.txt` includes `shap>=0.44.0`. If SHAP is not installed or `models/section_classifier.joblib` is unavailable, the API returns an unavailable/error response (`503`, via `ShapUnavailable`) rather than fabricating explanations.
+
+Example (start API, then call `/explain`):
+
+```bash
+cd legal-doc-intelligence
+python api.py
+curl -X POST http://localhost:7860/explain \
+  -H "Content-Type: application/json" \
+  -d '{"text":"…at least 100 characters…","top_k":12}'
+```
+
 ### Pipeline Stages
 
 `src/pipeline.py` orchestrates all processing in a single `process_document()` call:

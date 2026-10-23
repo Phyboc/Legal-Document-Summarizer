@@ -113,6 +113,8 @@ export default function UploadInterface({ currentLang, onChangeLang }) {
   const [status, setStatus] = useState('');
   const [modelError, setModelError] = useState('');
   const [isExporting, setIsExporting] = useState(false);
+  const [isExplaining, setIsExplaining] = useState(false);
+  const [shap, setShap] = useState(null);
 
   const fileInputRef = useRef(null);
   const scanTimer = useRef(null);
@@ -148,6 +150,54 @@ export default function UploadInterface({ currentLang, onChangeLang }) {
     setShowResult(false);
     setSubmission(null);
     setStatus('');
+    setShap(null);
+  };
+
+  const runShapExplanation = async () => {
+    const source = text.trim();
+    if (source.length < MIN_TEXT_LENGTH) {
+      setStatus(
+        `SHAP explains the pasted text. Paste at least ${MIN_TEXT_LENGTH} characters, then try again.`,
+      );
+      return;
+    }
+    setIsExplaining(true);
+    setStatus('');
+    try {
+      const response = await fetch(`${API_BASE}/explain`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: source, redact_names: false, strip_preamble: true }),
+      });
+      if (!response.ok) {
+        const detail = await response.json().catch(() => ({}));
+        throw new Error(detail.detail || `API returned ${response.status}`);
+      }
+      const data = await response.json();
+      setShap(data);
+      setStatus('SHAP explanation ready. Download the JSON below.');
+    } catch (error) {
+      setStatus(
+        `Could not reach the LegalLens model API at ${API_BASE} for the SHAP explanation. ` +
+          `Start it with "python api.py" in legal-doc-intelligence/, or set VITE_API_BASE. (${error.message})`,
+      );
+    } finally {
+      setIsExplaining(false);
+    }
+  };
+
+  const downloadShapJson = () => {
+    if (!shap) return;
+    const payload = { ...shap, document_title: result?.name || 'Pasted legal text', generated_at: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'legallens-shap.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const acceptFile = (incoming) => {
@@ -718,6 +768,15 @@ export default function UploadInterface({ currentLang, onChangeLang }) {
                     >
                       Key insights <span className="phase">Phase 2</span>
                     </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={activeTab === 'shap'}
+                      className={`tab ${activeTab === 'shap' ? 'is-active' : ''}`}
+                      onClick={() => setActiveTab('shap')}
+                    >
+                      Explainability (SHAP)
+                    </button>
                   </div>
 
                   {activeTab === 'explainer' && (
@@ -795,6 +854,64 @@ export default function UploadInterface({ currentLang, onChangeLang }) {
                         This view will pull out dates, notice periods, payment milestones and the obligations that
                         fall due first. For now, scan the clause headings in the explainer.
                       </p>
+                    </div>
+                  )}
+
+                  {activeTab === 'shap' && (
+                    <div className="shap-tab">
+                      <p className="small">
+                        SHAP shows <b>why</b> the section classifier labelled each paragraph — the words and position
+                        cues behind every label. Positive scores push the paragraph toward its label. This is model
+                        interpretation (XAI), not legal advice. It explains the pasted text.
+                      </p>
+                      <div className="output-actions" style={{ marginTop: 12 }}>
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          onClick={runShapExplanation}
+                          disabled={isExplaining}
+                        >
+                          {isExplaining ? 'Explaining…' : shap ? 'Re-run SHAP' : 'Generate SHAP explanation'}
+                        </button>
+                        {shap && (
+                          <button type="button" className="btn btn-quiet" onClick={downloadShapJson}>
+                            Download JSON
+                          </button>
+                        )}
+                      </div>
+
+                      {shap && (
+                        <div className="shap-result" style={{ marginTop: 16 }}>
+                          <p className="small">
+                            {shap.n_paragraphs} paragraphs · classes: {shap.classes.join(', ')}
+                          </p>
+                          <div className="shap-list">
+                            {shap.paragraphs.map((para) => (
+                              <article className="clause" key={para.index}>
+                                <h4>
+                                  Paragraph {para.index + 1} · {para.predicted_section}
+                                </h4>
+                                <p className="small" style={{ marginBottom: 8 }}>
+                                  {para.text_preview}
+                                  {para.text_preview && para.text_preview.length >= 240 ? '…' : ''}
+                                </p>
+                                <div className="shap-features">
+                                  {para.top_features.slice(0, 6).map((feat) => (
+                                    <span
+                                      key={feat.feature}
+                                      className={`shap-chip ${feat.direction === 'supports' ? 'is-support' : 'is-oppose'}`}
+                                      title={`${feat.direction} ${para.predicted_section}`}
+                                    >
+                                      {feat.feature} {feat.shap_value >= 0 ? '+' : ''}
+                                      {feat.shap_value.toFixed(3)}
+                                    </span>
+                                  ))}
+                                </div>
+                              </article>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 

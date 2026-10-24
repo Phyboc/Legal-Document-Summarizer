@@ -7,6 +7,7 @@ from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from src.pipeline import process_document
+from src.explain.section_shap import ShapUnavailable, explain_text
 
 
 def _extract_text(filename: str, content: bytes) -> tuple[str, str]:
@@ -80,6 +81,13 @@ class SummarizeRequest(BaseModel):
     mode: str = "both"  # lawyer, citizen, both
 
 
+class ExplainRequest(BaseModel):
+    text: str
+    redact_names: bool = False
+    strip_preamble: bool = True
+    top_k: int = 12
+
+
 class SummaryResponse(BaseModel):
     lawyer_mode: dict | None = None
     citizen_mode: dict | None = None
@@ -114,6 +122,28 @@ def summarize(req: SummarizeRequest):
     )
 
     return _build_response(result, req.mode)
+
+
+@app.post("/explain")
+def explain(req: ExplainRequest):
+    """SHAP explanation of the section classifier's per-paragraph labels.
+
+    Returns the JSON structure from ``src.explain.section_shap.explain_text``:
+    each paragraph's predicted section, class probabilities, and the terms that
+    pushed the model toward that label. This is model interpretation (XAI), not
+    legal advice.
+    """
+    if not req.text or len(req.text.strip()) < 100:
+        raise HTTPException(status_code=400, detail="Input text too short")
+    try:
+        return explain_text(
+            req.text,
+            redact_names=req.redact_names,
+            strip_preamble=req.strip_preamble,
+            top_k=req.top_k,
+        )
+    except ShapUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
 
 
 @app.post("/summarize/upload")

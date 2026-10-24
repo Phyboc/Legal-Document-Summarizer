@@ -9,8 +9,10 @@ PDF text extraction uses pypdf when it is installed; without it the upload tab
 explains how to add the dependency instead of failing silently.
 """
 import html
+import json
 import os
 import sys
+import tempfile
 from datetime import datetime
 
 sys.path.insert(0, ".")
@@ -18,6 +20,7 @@ sys.path.insert(0, ".")
 import gradio as gr
 
 from src.pipeline import process_document
+from src.explain.section_shap import ShapUnavailable, explain_text
 
 SAMPLE_TEXT = """The Judgment of the Court was delivered by SAHAI, J.
 
@@ -122,7 +125,12 @@ def _print_document(title: str, result: dict, generated_at: str) -> str:
     """
 
 
-def summarize_ui(file_obj, pasted_text: str, redact_names: bool, strip_preamble: bool):
+def _resolve_input_text(file_obj, pasted_text: str) -> tuple[str, str]:
+    """Return (text, title) from the uploaded file or the pasted box.
+
+    Shared by the summary and the SHAP-explanation handlers so both read the
+    same document. Raises gr.Error on an unreadable file or too-short text.
+    """
     text = (pasted_text or "").strip()
     title = "Pasted legal text"
 
@@ -137,6 +145,58 @@ def summarize_ui(file_obj, pasted_text: str, redact_names: bool, strip_preamble:
 
     if len(text) < 100:
         raise gr.Error("Enter at least 100 characters, or upload a document with selectable text.")
+    return text, title
+
+
+def explain_ui(file_obj, pasted_text: str, redact_names: bool, strip_preamble: bool):
+    """Run SHAP on the section classifier and offer the result as a JSON file."""
+    text, title = _resolve_input_text(file_obj, pasted_text)
+
+    try:
+        explanation = explain_text(
+            text, redact_names=redact_names, strip_preamble=strip_preamble
+        )
+    except ShapUnavailable as exc:
+        raise gr.Error(str(exc))
+
+    explanation["document_title"] = title
+    explanation["generated_at"] = datetime.now().strftime("%d %b %Y, %H:%M")
+
+    fd, path = tempfile.mkstemp(prefix="legallens-shap-", suffix=".json")
+    with os.fdopen(fd, "w", encoding="utf-8") as handle:
+        json.dump(explanation, handle, ensure_ascii=False, indent=2)
+
+    n = explanation["n_paragraphs"]
+    preview_rows = ""
+    for entry in explanation["paragraphs"][:6]:
+        terms = ", ".join(
+            f"{html.escape(f['feature'])} ({f['shap_value']:+.3f})"
+            for f in entry["top_features"][:4]
+        )
+        preview_rows += (
+            f"<tr><td>{entry['index']}</td>"
+            f"<td><b>{html.escape(entry['predicted_section'])}</b></td>"
+            f"<td>{html.escape(terms) or '—'}</td></tr>"
+        )
+
+    summary_html = f"""
+    <div class="ll-shap">
+      <p class="ll-note">SHAP over the section classifier for <b>{n}</b> paragraphs.
+      Each row shows the label the model chose and the terms that pushed it there
+      (positive supports the label). Download the full JSON below.</p>
+      <table class="ll-shap-table">
+        <thead><tr><th>#</th><th>Section</th><th>Top contributing terms</th></tr></thead>
+        <tbody>{preview_rows}</tbody>
+      </table>
+      <p class="ll-note">Showing the first {min(n, 6)} of {n}. The JSON has every
+      paragraph, all class probabilities and the full feature list.</p>
+    </div>
+    """
+    return summary_html, gr.update(value=path, visible=True)
+
+
+def summarize_ui(file_obj, pasted_text: str, redact_names: bool, strip_preamble: bool):
+    text, title = _resolve_input_text(file_obj, pasted_text)
 
     result = process_document(
         text,
@@ -350,6 +410,26 @@ footer { display: none !important; }
 }
 
 .ll-note { font-size: 13px; color: var(--ll-muted); margin-top: 10px; }
+
+.ll-shap-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 13px;
+}
+.ll-shap-table th, .ll-shap-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--ll-quality);
+  vertical-align: top;
+  color: var(--ll-ink);
+}
+.ll-shap-table th {
+  font-family: 'Public Sans', sans-serif;
+  font-weight: 600;
+  color: var(--ll-muted);
+}
+.ll-shap-table td:nth-child(3) { font-family: ui-monospace, monospace; font-size: 12px; }
 .ll-export-row {
   display: flex;
   align-items: center;
@@ -503,6 +583,18 @@ with gr.Blocks(title="LegalLens — plain-language legal summaries", theme=THEME
                     )
                 with gr.Tab("Citations"):
                     citations_out = gr.Markdown("_Citations appear here after analysis._")
+                with gr.Tab("Explainability (SHAP)"):
+                    gr.HTML(
+                        '<p class="ll-note">See <b>why</b> the section classifier labelled each '
+                        'paragraph. SHAP scores the words and position cues behind every label, '
+                        'and the full breakdown downloads as JSON.</p>'
+                    )
+                    shap_btn = gr.Button("Generate SHAP explanation", variant="primary")
+                    shap_out = gr.HTML(
+                        '<p class="ll-note">Run this after loading a document to see the '
+                        'per-paragraph feature attributions.</p>'
+                    )
+                    shap_file = gr.File(label="SHAP explanation (JSON)", visible=False)
 
             gr.HTML(
                 '<div class="ll-export-row">'
@@ -523,6 +615,12 @@ with gr.Blocks(title="LegalLens — plain-language legal summaries", theme=THEME
         fn=summarize_ui,
         inputs=[file_in, text_in, redact_cb, strip_preamble_cb],
         outputs=[stats_html, lawyer_out, citizen_out, citations_out, print_html],
+    )
+
+    shap_btn.click(
+        fn=explain_ui,
+        inputs=[file_in, text_in, redact_cb, strip_preamble_cb],
+        outputs=[shap_out, shap_file],
     )
 
     export_btn.click(

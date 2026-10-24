@@ -426,6 +426,7 @@ The order of compulsory retirement dated 25.4.1972 is set aside. The appeal is a
           <label><input type="checkbox" id="try-redact"> Redact names</label>
           <label><input type="checkbox" id="try-strip" checked> Strip preamble</label>
           <button class="btn primary" id="try-run">Summarize <svg class="icon"><use href="#i-arrow"/></svg></button>
+          <button class="btn" id="try-shap">Explain sections (SHAP)</button>
         </div>
         <div class="try-drop" id="try-drop" role="button" tabindex="0" aria-label="Upload a document">
           <svg class="icon"><use href="#i-upload"/></svg>
@@ -721,6 +722,63 @@ The order of compulsory retirement dated 25.4.1972 is set aside. The appeal is a
     fd.append('strip_preamble', document.getElementById('try-strip').checked);
     fd.append('mode', 'both');
     run(file.name, fetch(API + '/summarize/upload', { method: 'POST', body: fd }));
+  }
+
+  var shapBtn = document.getElementById('try-shap');
+  if (shapBtn) {
+    shapBtn.addEventListener('click', function(){
+      var text = (document.getElementById('try-text').value || '').trim();
+      if (text.length < 100){ statusEl.className = 'try-status err'; statusEl.textContent = 'SHAP explains the pasted text. Enter at least 100 characters.'; return; }
+      shapBtn.disabled = true;
+      statusEl.className = 'try-status';
+      statusEl.textContent = 'Explaining the section classifier with SHAP at ' + API + '…';
+      fetch(API + '/explain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: text,
+          redact_names: document.getElementById('try-redact').checked,
+          strip_preamble: document.getElementById('try-strip').checked
+        })
+      }).then(function(r){
+        if (!r.ok) return r.json().then(function(e){ throw new Error(e.detail || ('API returned ' + r.status)); });
+        return r.json();
+      }).then(function(d){
+        renderShap(d);
+        downloadShap(d);
+        statusEl.className = 'try-status';
+        statusEl.textContent = 'SHAP explanation ready — JSON downloaded (' + d.n_paragraphs + ' paragraphs).';
+      }).catch(function(err){
+        statusEl.className = 'try-status err';
+        statusEl.textContent = 'Could not reach the model API at ' + API + ' for SHAP. Start it with "python api.py" in legal-doc-intelligence/. (' + err.message + ')';
+      }).finally(function(){ shapBtn.disabled = false; });
+    });
+  }
+
+  function renderShap(d){
+    var rows = (d.paragraphs || []).map(function(p){
+      var feats = (p.top_features || []).slice(0, 5).map(function(f){
+        var cls = f.shap_value >= 0 ? 'cb' : 'cb low';
+        return '<span class="' + cls + '">' + esc(f.feature) + ' ' + (f.shap_value >= 0 ? '+' : '') + f.shap_value.toFixed(3) + '</span>';
+      }).join(' ');
+      return '<div class="try-cite"><span class="cb"><b style="color:var(--muted)">' + esc(p.predicted_section) + '</b></span>' +
+        '<span>' + feats + '</span></div>';
+    }).join('');
+    out.innerHTML = '<div class="try-block"><h5>Explainability (SHAP) · section classifier</h5>' +
+      '<p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">Terms that pushed each paragraph toward its label (positive supports it). Full JSON downloaded.</p>' +
+      rows + '</div>';
+  }
+
+  function downloadShap(d){
+    try {
+      var payload = Object.assign({}, d, { generated_at: new Date().toISOString() });
+      var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = 'legallens-shap.json';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e) {}
   }
 
   drop.addEventListener('click', function(){ fileInput.click(); });

@@ -81,22 +81,111 @@ Every summary sentence can be **traced back to the source text** via the Cite & 
 
 ## Evaluation Results
 
-Measured on 100 held-out IN-ABS test judgments, full pipeline, vs the published IN-ABS reference summary:
+Primary reproduced document-level metrics (first 100 held-out IN-ABS **test** judgments, full pipeline, against published IN-ABS reference summaries):
 
-| Metric | Zero-shot BART | Fine-tuned e3 | e3-outcome |
-|---|---:|---:|---:|
-| **ROUGE-1** (Lawyer) | 50.93 | 55.15 | **55.4** |
-| **ROUGE-2** (Lawyer) | 24.96 | 30.75 | **30.9** |
-| **ROUGE-L** (Lawyer) | 44.65 | 49.64 | **50.3** |
-| **BERTScore F1** (Lawyer) | 83.51 | 85.04 | **85.2** |
-| **Outcome Presence** (full) | 98% | 48% | **53%** |
+| Metric | `facebook/bart-base` (zero-shot) | `models/legallens-bart-base-e3` |
+|---|---:|---:|
+| **ROUGE-1 (Lawyer)** | 50.93 | 55.15 |
+| **ROUGE-2 (Lawyer)** | 24.96 | 30.75 |
+| **ROUGE-L (Lawyer)** | 44.65 | 49.64 |
+| **BERTScore F1 (Lawyer)** | 83.51 | 85.04 |
+| **ROUGE-1 (full)** | 52.86 | 58.80 |
+| **ROUGE-2 (full)** | 30.05 | 34.04 |
+| **ROUGE-L (full)** | 45.11 | 51.07 |
+| **BERTScore F1 (full)** | 83.67 | 85.13 |
 
-> [!NOTE]
-> Zero-shot BART scores high on outcome presence because it near-copies the source verbatim (the operative sentence is carried along); it loses significantly on ROUGE/BERTScore. The e3-outcome checkpoint lifts the fine-tune's holding rate while preserving summarization quality.
+Sources: [`legal-doc-intelligence/reports/model_evaluation.md`](legal-doc-intelligence/reports/model_evaluation.md), [`Documents/Dataset_and_Training_Guide.md`](Documents/Dataset_and_Training_Guide.md), [`LegalLens — Forensic Audit Report.MD`](LegalLens%20%E2%80%94%20Forensic%20Audit%20Report.MD).
 
 ---
 
-## Four Surfaces
+## Ablation Study
+
+This ablation section reports only metrics present in committed artifacts. It does **not** claim that corrected outcome-preservation retraining has completed release-gate evaluation.
+
+### Dataset and comparison axes
+
+- **Dataset/scope:** first 100 held-out IN-ABS **test** judgments, document-level evaluation against published IN-ABS summaries where that is the source table.
+- **Axis A — Fine-tuning effect:** zero-shot `facebook/bart-base` vs fine-tuned e3 (`models/legallens-bart-base-e3`).
+- **Axis B — Training duration effect:** e1 (`models/legallens-bart-base-e1`) vs e3.
+- **Axis C — Outcome-preservation variant effect:** e3 vs e3-outcome (`fakechamp24/legallens-bart-base-e3-outcome`) using currently committed dashboard/README numbers only.
+
+### A. Zero-shot vs e3 (fine-tuning)
+
+| Metric (100 test docs) | Zero-shot `facebook/bart-base` | Fine-tuned e3 |
+|---|---:|---:|
+| ROUGE-1 (Lawyer) | 50.93 | 55.15 |
+| ROUGE-2 (Lawyer) | 24.96 | 30.75 |
+| ROUGE-L (Lawyer) | 44.65 | 49.64 |
+| BERTScore F1 (Lawyer) | 83.51 | 85.04 |
+| ROUGE-1 (full) | 52.86 | 58.80 |
+| ROUGE-2 (full) | 30.05 | 34.04 |
+| ROUGE-L (full) | 45.11 | 51.07 |
+| BERTScore F1 (full) | 83.67 | 85.13 |
+
+Sources: [`legal-doc-intelligence/reports/model_evaluation.md`](legal-doc-intelligence/reports/model_evaluation.md), [`Documents/Dataset_and_Training_Guide.md`](Documents/Dataset_and_Training_Guide.md), [`LegalLens — Forensic Audit Report.MD`](LegalLens%20%E2%80%94%20Forensic%20Audit%20Report.MD).
+
+### B. e1 vs e3 (training duration)
+
+| Metric (100 test docs) | e1 (`models/legallens-bart-base-e1`) | e3 (`models/legallens-bart-base-e3`) |
+|---|---:|---:|
+| ROUGE-1 (Lawyer) | 53.86 | 55.15 |
+| ROUGE-2 (Lawyer) | 29.48 | 30.75 |
+| ROUGE-L (Lawyer) | 48.03 | 49.64 |
+| BERTScore F1 (Lawyer) | 84.92 | 85.04 |
+| ROUGE-1 (full) | 57.53 | 58.80 |
+| ROUGE-2 (full) | 32.54 | 34.04 |
+| ROUGE-L (full) | 49.68 | 51.07 |
+| BERTScore F1 (full) | 85.00 | 85.13 |
+
+Source: [`Documents/Dataset_and_Training_Guide.md`](Documents/Dataset_and_Training_Guide.md) (sections 3.4.1–3.4.2).
+
+### C. e3 vs e3-outcome (outcome-preservation variant; committed dashboard scope)
+
+| Metric scope | e3 | e3-outcome | Source artifact |
+|---|---:|---:|---|
+| ROUGE-1 (Lawyer, dashboard/README display) | 55.15 | 55.4 | [`legal-doc-intelligence/lexnarrate.py`](legal-doc-intelligence/lexnarrate.py), [`lexnarrate-web/index.html`](lexnarrate-web/index.html) |
+| ROUGE-2 (Lawyer, dashboard/README display) | 30.75 | 30.9 | same as above |
+| ROUGE-L (Lawyer, dashboard/README display) | 49.64 | 50.3 | same as above |
+| BERTScore F1 (Lawyer, dashboard/README display) | 85.04 | 85.2 | same as above |
+| Outcome presence (full, dashboard/README display) | 48% | 53% | same as above |
+
+> [!IMPORTANT]
+> Outcome-presence values appear in multiple committed artifacts with different scopes/definitions and should not be cross-compared unless scope is matched:
+> - dashboard/raw display includes `98%` zero-shot, `48%` e3, `53%` e3-outcome (full-scope display);
+> - forensic/model-evaluation discussion includes a separately rescored **Lawyer-body** comparison (`78%` zero-shot vs `34%` e3) via `scripts/rescore_outcomes.py`.
+> The release checklist states corrected-model A/B/C evaluation and several gates are still **not run**.
+
+### Interpretation and caveats
+
+- Zero-shot can score high on outcome-presence because it near-copies source text; ROUGE/BERTScore reward lexical overlap differently.
+- e3 improves ROUGE/BERTScore over zero-shot on both Lawyer and full scopes in committed evaluations.
+- e3-outcome values above are committed dashboard/README numbers; they are informative but not a substitute for the blocked corrected-checkpoint release-gate evaluation.
+- Per [`legal-doc-intelligence/reports/release_checklist.md`](legal-doc-intelligence/reports/release_checklist.md), corrected-model A/B/C, outcome agreement, per-run NLI, perturbation stability, toxicity review, and Citizen length-compliance tabulation were not completed in this release cycle.
+
+### Reproducibility commands (from committed docs)
+
+Run from `legal-doc-intelligence/`:
+
+```bash
+# document-level ROUGE/BERTScore over first 100 test docs
+python -m src.eval.evaluate \
+  --models facebook/bart-base models/legallens-bart-base-e3 \
+  --split test --sample 100 --bertscore \
+  --output artifacts/eval/test100.json
+
+# outcome-survival audit used by the data audit report
+python scripts/audit_outcome_survival.py
+
+# rescore outcome metrics on a saved evaluation artifact
+python scripts/rescore_outcomes.py --eval artifacts/eval/abc_v2.json --label v2 \
+  --output reports/outcome_eval/v2_outcomes.json
+```
+
+Related artifacts: [`legal-doc-intelligence/reports/model_evaluation.md`](legal-doc-intelligence/reports/model_evaluation.md), [`legal-doc-intelligence/reports/outcome_data_audit.md`](legal-doc-intelligence/reports/outcome_data_audit.md), [`legal-doc-intelligence/reports/release_checklist.md`](legal-doc-intelligence/reports/release_checklist.md), [`Documents/Dataset_and_Training_Guide.md`](Documents/Dataset_and_Training_Guide.md), [`legal-doc-intelligence/artifacts/citation_calibration.json`](legal-doc-intelligence/artifacts/citation_calibration.json).
+
+---
+
+## Five Surfaces
 
 | Surface | Stack | Entry Point |
 |---|---|---|
@@ -179,6 +268,29 @@ curl -X POST http://localhost:7860/summarize \
 | `POST /summarize` | JSON body: `text`, `redact_names`, `strip_preamble`, `mode` (`lawyer` / `citizen` / `both`) |
 | `POST /summarize/upload` | Multipart text file; decoded as UTF-8 |
 
+## Explainable AI (XAI) — SHAP
+
+The repository implements **SHAP, not SHAM**. In this codebase, XAI is provided by `legal-doc-intelligence/src/explain/section_shap.py` using `shap.LinearExplainer` for the **section classifier only** (not the BART summarizer and not the Cite & Verify NLI model).
+
+- **Explained model artifact:** `models/section_classifier.joblib`, loaded in `legal-doc-intelligence/src/data/section_detector.py` as a `(TfidfVectorizer, LogisticRegression)` pair.
+- **Explained feature matrix:** TF-IDF word/bigram features from the vectorizer, plus four appended position features in fixed order: `position`, `position^2`, `position>0.85`, `position<0.2`.
+- **Explainer config:** `shap.LinearExplainer(clf, background, feature_perturbation="interventional")`.
+- **Why SHAP is efficient here:** for this linear classifier, SHAP values are exact/efficient additive attributions. They are computed relative to the mean paragraph background (`background = X`) when multiple paragraphs are explained; for a single paragraph, the implementation uses a zero reference (`background = X.multiply(0)`).
+- **Per-paragraph output:** predicted section, class probabilities, class-specific base value, and top present features ranked by absolute SHAP magnitude, each with signed `shap_value` and `direction` (`supports` / `opposes`).
+- **Interpretation:** positive SHAP values push toward the predicted section; negative values push away. This explains model behavior, not legal truth.
+- **API + UI flow:** `POST /explain` is implemented in `legal-doc-intelligence/api.py` and runs end-to-end preprocessing + explanation (`explain_text`). It requires at least 100 non-whitespace characters (same minimum check as summarize). In `lexnarrate-web/index.html`, the **“Explain sections (SHAP)”** button calls `/explain`, renders top features, and downloads `legallens-shap.json`.
+- **Dependency + failure mode:** `legal-doc-intelligence/requirements.txt` includes `shap>=0.44.0`. If SHAP is not installed or `models/section_classifier.joblib` is unavailable, the API returns an unavailable/error response (`503`, via `ShapUnavailable`) rather than fabricating explanations.
+
+Example (start API, then call `/explain`):
+
+```bash
+cd legal-doc-intelligence
+python api.py
+curl -X POST http://localhost:7860/explain \
+  -H "Content-Type: application/json" \
+  -d '{"text":"…at least 100 characters…","top_k":12}'
+```
+
 ### Pipeline Stages
 
 `src/pipeline.py` orchestrates all processing in a single `process_document()` call:
@@ -244,6 +356,7 @@ Launch with `python lexnarrate.py`.
 Training and dataset tooling lives in `legal-doc-intelligence/`:
 
 ```bash
+cd legal-doc-intelligence
 python scripts/train_section_classifier.py   # the joblib section classifier (MARRO + OpenNyAI)
 python -m src.model.train \
   --data artifacts/training_data/full \
